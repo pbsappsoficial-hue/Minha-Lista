@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Lista de Compras | Login com Sessão</title>
+    <title>Lista de Compras</title>
     <style>
         * {
             margin: 0;
@@ -136,72 +136,6 @@
         .btn-menu:hover {
             background: #e2e8f0;
             transform: scale(0.96);
-        }
-
-        /* Dialog personalizada para salvar credenciais */
-        .dialog-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-        .dialog-box {
-            background: white;
-            max-width: 400px;
-            width: 90%;
-            border-radius: 2rem;
-            padding: 1.8rem;
-            text-align: center;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
-            animation: fadeInUp 0.2s ease;
-        }
-        .dialog-box h3 {
-            font-size: 1.6rem;
-            margin-bottom: 1rem;
-            color: #0f172a;
-        }
-        .dialog-box p {
-            color: #334155;
-            margin-bottom: 1.8rem;
-            line-height: 1.4;
-        }
-        .dialog-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .dialog-btn {
-            border: none;
-            padding: 12px 24px;
-            border-radius: 60px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-        }
-        .dialog-btn.salvar {
-            background: #10b981;
-            color: white;
-            box-shadow: 0 4px 8px rgba(16,185,129,0.3);
-        }
-        .dialog-btn.salvar:hover {
-            background: #059669;
-            transform: scale(0.97);
-        }
-        .dialog-btn.nao-salvar {
-            background: #e2e8f0;
-            color: #1e293b;
-        }
-        .dialog-btn.nao-salvar:hover {
-            background: #cbd5e1;
         }
 
         .modal-menu {
@@ -353,6 +287,58 @@
             .painel { padding: 1.2rem; }
             .lista-header, .item-row { grid-template-columns: 2fr 0.8fr 1fr 1fr 1.5fr; font-size: 0.75rem; gap: 6px; }
         }
+
+        /* Modal de confirmação personalizado */
+        .modal-confirmacao {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        .modal-confirmacao-conteudo {
+            background: white;
+            max-width: 400px;
+            width: 90%;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
+        }
+        .modal-confirmacao-conteudo p {
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+        .modal-confirmacao-botoes {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn-confirmar {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-cancelar {
+            background: #e2e8f0;
+            color: #334155;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -367,7 +353,6 @@
             <input type="password" id="senha" placeholder="Digite sua senha">
         </div>
         <button class="btn-principal" onclick="entrar()">🔐 Entrar / Criar conta</button>
-        <div style="margin-top: 15px; font-size: 0.75rem; color: #6c757d;">🔁 Sessão automática se você já marcou "Salvar acesso"</div>
     </div>
 
     <!-- Área principal logada -->
@@ -395,18 +380,6 @@
     </div>
 </div>
 
-<!-- Dialog personalizada para salvar credenciais -->
-<div id="saveCredentialsDialog" class="dialog-overlay">
-    <div class="dialog-box">
-        <h3>💾 Salvar acesso?</h3>
-        <p>Deseja salvar seu usuário e senha?<br>Na próxima vez que acessar, você será logado automaticamente sem precisar digitar nada!</p>
-        <div class="dialog-buttons">
-            <button class="dialog-btn salvar" id="dialogSalvarBtn">✅ Sim, quero login automático</button>
-            <button class="dialog-btn nao-salvar" id="dialogNaoSalvarBtn">🚫 Não, só desta vez</button>
-        </div>
-    </div>
-</div>
-
 <!-- Modal do menu principal -->
 <div id="modalMenu" class="modal-menu">
     <div class="modal-menu-conteudo">
@@ -414,9 +387,21 @@
         <div class="modal-menu-opcoes">
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
             <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
-            <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair (logout)</button>
+            <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
+    </div>
+</div>
+
+<!-- Modal de confirmação para salvar login -->
+<div id="modalSalvarLogin" class="modal-confirmacao">
+    <div class="modal-confirmacao-conteudo">
+        <p>🔐 Deseja salvar seu login?</p>
+        <p style="font-size: 0.9rem; color: #666;">Na próxima vez você não precisará digitar a senha.</p>
+        <div class="modal-confirmacao-botoes">
+            <button class="btn-confirmar" onclick="confirmarSalvarLogin()">✅ Sim, salvar</button>
+            <button class="btn-cancelar" onclick="cancelarSalvarLogin()">❌ Não</button>
+        </div>
     </div>
 </div>
 
@@ -424,86 +409,18 @@
     let usuarioAtual = "";
     let totalGeral = 0;
     let currentListItems = [];
+    let loginPendente = { usuario: null, senha: null };
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
-    
-    // Controle da dialog de salvar credenciais
-    let pendingCredentials = { usuario: null, senha: null };
-    let dialogResolve = null;
 
-    function mostrarDialogSalvarCredenciais(usuario, senha) {
-        return new Promise((resolve) => {
-            pendingCredentials = { usuario, senha };
-            dialogResolve = resolve;
-            const dialog = document.getElementById("saveCredentialsDialog");
-            dialog.style.display = "flex";
-        });
-    }
-
-    function fecharDialogSalvar() {
-        const dialog = document.getElementById("saveCredentialsDialog");
-        dialog.style.display = "none";
-        if (dialogResolve) {
-            dialogResolve(false);
-            dialogResolve = null;
-        }
-        pendingCredentials = { usuario: null, senha: null };
-    }
-
-    // Salvar credenciais e ATIVAR SESSÃO AUTOMÁTICA (token de login)
-    function salvarCredenciaisComSessao(usuario, senha) {
-        localStorage.setItem("credenciais_usuario", usuario);
-        localStorage.setItem("credenciais_senha", senha);
-        // Sessão ativa: usuário permanece logado mesmo após recarregar a página
-        localStorage.setItem("sessao_ativa", "true");
-        localStorage.setItem("usuario_sessao", usuario);
-    }
-
-    function limparSessaoAutomatica() {
-        localStorage.removeItem("credenciais_usuario");
-        localStorage.removeItem("credenciais_senha");
-        localStorage.removeItem("sessao_ativa");
-        localStorage.removeItem("usuario_sessao");
-    }
-    
-    // Verificar se existe sessão ativa e realizar login automático (sem preencher campos!)
-    function verificarSessaoAtiva() {
-        const sessaoAtiva = localStorage.getItem("sessao_ativa") === "true";
-        const usuarioSessao = localStorage.getItem("usuario_sessao");
-        const senhaSalva = localStorage.getItem("credenciais_senha");
-        
-        if (sessaoAtiva && usuarioSessao && senhaSalva) {
-            const senhaArmazenada = localStorage.getItem("senha_" + usuarioSessao);
-            if (senhaArmazenada === senhaSalva) {
-                // Login automático sem digitar nada!
-                usuarioAtual = usuarioSessao;
-                localStorage.setItem("usuarioAtual", usuarioAtual);
-                document.getElementById("login").style.display = "none";
-                document.getElementById("app").style.display = "block";
-                document.getElementById("nomeUsuario").innerText = usuarioAtual;
-                carregarDadosUsuario();
-                return true;
-            } else {
-                // Senha inválida, limpar sessão corrompida
-                limparSessaoAutomatica();
-            }
-        }
-        return false;
-    }
-    
     function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
-    
     function salvarEstadoCompleto() {
         if (!usuarioAtual) return;
         const itensParaSalvar = currentListItems.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco, comprado: item.comprado }));
         localStorage.setItem(`lista_data_${usuarioAtual}`, JSON.stringify(itensParaSalvar));
         localStorage.setItem(`total_${usuarioAtual}`, totalGeral.toString());
     }
-    
-    function escapeHtml(str) { 
-        if (!str) return ""; 
-        return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); 
-    }
+    function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
     function renderizarLista() {
         if (!listaContainer) return;
@@ -543,8 +460,7 @@
         const novoId = Date.now() + "-" + Math.random().toString(36).substr(2, 6);
         currentListItems.push({ id: novoId, nome: produto, quantidade, preco, comprado: false });
         totalGeral += (quantidade * preco);
-        salvarEstadoCompleto(); 
-        renderizarLista();
+        salvarEstadoCompleto(); renderizarLista();
         document.getElementById("produto").value = "";
         document.getElementById("quantidade").value = "1";
         document.getElementById("preco").value = "";
@@ -552,20 +468,14 @@
     
     window.toggleComprado = function(id) {
         let item = currentListItems.find(i => i.id === id);
-        if(item) { 
-            item.comprado = !item.comprado; 
-            salvarEstadoCompleto(); 
-            renderizarLista(); 
-        }
+        if(item) { item.comprado = !item.comprado; salvarEstadoCompleto(); renderizarLista(); }
     };
-    
     window.removerItemComConfirmacao = function(id) {
         let item = currentListItems.find(i => i.id === id);
         if(item && confirm(`Remover "${item.nome}" permanentemente?`)) {
             totalGeral -= (item.quantidade * item.preco);
             currentListItems = currentListItems.filter(i => i.id !== id);
-            salvarEstadoCompleto(); 
-            renderizarLista();
+            salvarEstadoCompleto(); renderizarLista();
         }
     };
     
@@ -577,41 +487,81 @@
                 currentListItems = JSON.parse(stored).map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1 }));
                 totalGeral = parseFloat(localStorage.getItem(`total_${usuarioAtual}`)) || currentListItems.reduce((a,b)=> a+(b.quantidade*b.preco),0);
                 renderizarLista();
-            } catch(e) { 
-                currentListItems=[]; 
-                totalGeral=0; 
-                renderizarLista(); 
-            }
+            } catch(e) { currentListItems=[]; totalGeral=0; renderizarLista(); }
         } else {
-            currentListItems=[]; 
-            totalGeral=0; 
-            renderizarLista();
+            currentListItems=[]; totalGeral=0; renderizarLista();
         }
     }
     
-    // ========== LOGIN COM SESSÃO E SALVAMENTO DE CREDENCIAIS (DIALOG PERSONALIZADA) ==========
-    async function entrar() {
+    // Funções para salvar login
+    function salvarLoginLembrado(usuario, senha) {
+        localStorage.setItem("login_lembrado_usuario", usuario);
+        localStorage.setItem("login_lembrado_senha", senha);
+    }
+    
+    function limparLoginLembrado() {
+        localStorage.removeItem("login_lembrado_usuario");
+        localStorage.removeItem("login_lembrado_senha");
+    }
+    
+    function carregarLoginLembrado() {
+        const usuario = localStorage.getItem("login_lembrado_usuario");
+        const senha = localStorage.getItem("login_lembrado_senha");
+        if (usuario && senha) {
+            document.getElementById("usuario").value = usuario;
+            document.getElementById("senha").value = senha;
+            // Auto login após carregar a página
+            setTimeout(() => {
+                entrar();
+            }, 100);
+        }
+    }
+    
+    function confirmarSalvarLogin() {
+        if (loginPendente.usuario && loginPendente.senha) {
+            salvarLoginLembrado(loginPendente.usuario, loginPendente.senha);
+        }
+        loginPendente = { usuario: null, senha: null };
+        document.getElementById("modalSalvarLogin").style.display = "none";
+    }
+    
+    function cancelarSalvarLogin() {
+        limparLoginLembrado();
+        loginPendente = { usuario: null, senha: null };
+        document.getElementById("modalSalvarLogin").style.display = "none";
+    }
+    
+    function mostrarDialogoSalvarLogin(usuario, senha) {
+        loginPendente = { usuario, senha };
+        document.getElementById("modalSalvarLogin").style.display = "flex";
+    }
+    
+    // ========== LOGIN COM SALVAR LOGIN ==========
+    function entrar() {
         const usuario = document.getElementById("usuario").value.trim();
         const senha = document.getElementById("senha").value;
         if(!usuario || !senha) { alert("Preencha usuário e senha"); return; }
         
         const senhaSalva = localStorage.getItem("senha_" + usuario);
+        const isPrimeiroLogin = !senhaSalva;
+        
         if(!senhaSalva) {
+            // Primeiro login - criar conta
             localStorage.setItem("senha_" + usuario, senha);
             alert("✅ Conta criada com sucesso! Bem-vindo(a).");
+            
+            // Perguntar se quer salvar login
+            mostrarDialogoSalvarLogin(usuario, senha);
         } else {
             if(senha !== senhaSalva) { alert("Senha incorreta"); return; }
-        }
-        
-        // Exibe diálogo para decidir salvar credenciais e ativar login automático
-        const salvar = await mostrarDialogSalvarCredenciais(usuario, senha);
-        if (salvar) {
-            salvarCredenciaisComSessao(usuario, senha);
-            alert("🔐 Login automático ativado! Na próxima vez você será logado automaticamente.");
-        } else {
-            // Se não quiser salvar, garantimos que não exista nenhuma sessão ativa para esse usuário
-            if(localStorage.getItem("usuario_sessao") === usuario) {
-                limparSessaoAutomatica();
+            
+            // Verificar se já tem login salvo para este usuário
+            const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
+            const loginSalvoSenha = localStorage.getItem("login_lembrado_senha");
+            
+            // Se não tem login salvo, ou se o login salvo é diferente do atual, perguntar se quer salvar
+            if (!loginSalvoUsuario || loginSalvoUsuario !== usuario || loginSalvoSenha !== senha) {
+                mostrarDialogoSalvarLogin(usuario, senha);
             }
         }
         
@@ -624,19 +574,15 @@
         document.getElementById("senha").value = "";
     }
     
-    // ========== FUNÇÕES DE CONTA ==========
+    // ========== FUNÇÕES DE USUÁRIO ==========
     window.sair = function() {
-        if(confirm("Deseja realmente sair da sua conta?")) {
-            // Limpa a sessão ativa (remover login automático) mas mantém dados do usuário salvos
-            limparSessaoAutomatica();
+        if(confirm("Sair da sua conta?")) {
             localStorage.removeItem("usuarioAtual");
             document.getElementById("app").style.display = "none";
             document.getElementById("login").style.display = "block";
             usuarioAtual = "";
             currentListItems = [];
             renderizarLista();
-            // Recarrega campos de login com credenciais apenas se ainda existirem (não terão mais, pois limpamos)
-            // Preencher com valores vazios
             document.getElementById("usuario").value = "";
             document.getElementById("senha").value = "";
             fecharModalMenu();
@@ -652,95 +598,45 @@
         if(nova && nova.trim()) {
             localStorage.setItem("senha_" + usuarioAtual, nova);
             alert("Senha alterada com sucesso!");
-            // Se o usuário possui sessão salva e ativa, atualizar credenciais salvas também
-            const credencialUsuario = localStorage.getItem("credenciais_usuario");
-            if (credencialUsuario === usuarioAtual && localStorage.getItem("sessao_ativa") === "true") {
-                const atualizarAuto = confirm("Deseja atualizar também o login automático com a nova senha?");
-                if (atualizarAuto) {
-                    localStorage.setItem("credenciais_senha", nova);
-                    alert("Login automático atualizado!");
-                } else {
-                    // Se não atualizar, a sessão ficará inconsistente; recomendamos desativar login automático
-                    limparSessaoAutomatica();
-                    alert("ATENÇÃO: Login automático foi desativado por segurança. Faça login manualmente na próxima.");
-                }
+            // Se o usuário mudou a senha e tinha login salvo, atualizar o login salvo
+            const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
+            if (loginSalvoUsuario === usuarioAtual) {
+                salvarLoginLembrado(usuarioAtual, nova);
             }
         } else alert("Senha inválida");
     };
     
     window.apagarUsuario = function() {
-        if(usuarioAtual && confirm(`⚠️ ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}" permanentemente. Tem certeza?`)) {
-            // Limpa credenciais e sessão salva
-            const credencialUsuario = localStorage.getItem("credenciais_usuario");
-            if (credencialUsuario === usuarioAtual) {
-                limparSessaoAutomatica();
-            }
+        if(usuarioAtual && confirm(`ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}". Tem certeza?`)) {
             localStorage.removeItem(`lista_data_${usuarioAtual}`);
             localStorage.removeItem(`total_${usuarioAtual}`);
             localStorage.removeItem(`senha_${usuarioAtual}`);
             localStorage.removeItem("usuarioAtual");
-            alert("Usuário e todos os dados removidos permanentemente.");
+            // Se o usuário apagado é o que tinha login salvo, limpar também
+            const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
+            if (loginSalvoUsuario === usuarioAtual) {
+                limparLoginLembrado();
+            }
+            alert("Usuário e dados removidos permanentemente.");
             location.reload();
         }
     };
     
-    // ========== CONTROLE DO MODAL MENU ==========
-    function abrirModalMenu() { 
-        const modal = document.getElementById("modalMenu");
-        if(modal) modal.style.display = "flex"; 
-    }
-    function fecharModalMenu() { 
-        const modal = document.getElementById("modalMenu");
-        if(modal) modal.style.display = "none"; 
-    }
-    
+    // ========== CONTROLE DOS MODAIS ==========
+    function abrirModalMenu() { document.getElementById("modalMenu").style.display = "flex"; }
+    function fecharModalMenu() { document.getElementById("modalMenu").style.display = "none"; }
     window.onclick = function(event) {
-        const modalMenu = document.getElementById("modalMenu");
-        if (event.target === modalMenu) fecharModalMenu();
-        const dialog = document.getElementById("saveCredentialsDialog");
-        if (event.target === dialog) {
-            if (dialogResolve) {
-                dialogResolve(false);
-                dialogResolve = null;
-            }
-            dialog.style.display = "none";
-            pendingCredentials = { usuario: null, senha: null };
+        if (event.target === document.getElementById("modalMenu")) fecharModalMenu();
+        if (event.target === document.getElementById("modalSalvarLogin")) {
+            document.getElementById("modalSalvarLogin").style.display = "none";
         }
     };
-    
-    // Configurar eventos dos botões da dialog
-    document.getElementById("dialogSalvarBtn")?.addEventListener("click", () => {
-        if (dialogResolve) {
-            dialogResolve(true);
-            dialogResolve = null;
-        }
-        document.getElementById("saveCredentialsDialog").style.display = "none";
-        pendingCredentials = { usuario: null, senha: null };
-    });
-    document.getElementById("dialogNaoSalvarBtn")?.addEventListener("click", () => {
-        if (dialogResolve) {
-            dialogResolve(false);
-            dialogResolve = null;
-        }
-        document.getElementById("saveCredentialsDialog").style.display = "none";
-        pendingCredentials = { usuario: null, senha: null };
-    });
-    
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
     
-    // Inicialização: verificar se existe sessão ativa (login automático)
     window.onload = () => {
-        const logadoAuto = verificarSessaoAtiva();
-        if (!logadoAuto) {
-            // Sem sessão ativa, apenas exibe tela de login com possíveis credenciais salvas (sem login automático)
-            // Preencher campos se existir credenciais salvas (mas sem logar)
-            const userSaved = localStorage.getItem("credenciais_usuario");
-            const passSaved = localStorage.getItem("credenciais_senha");
-            if (userSaved && passSaved) {
-                document.getElementById("usuario").value = userSaved;
-                document.getElementById("senha").value = passSaved;
-            }
-        }
+        // Tenta carregar login salvo e fazer auto login
+        carregarLoginLembrado();
+        
         const menuBtn = document.getElementById("menuBtn");
         if (menuBtn) menuBtn.onclick = abrirModalMenu;
     };
