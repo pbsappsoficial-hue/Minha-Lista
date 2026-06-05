@@ -268,11 +268,17 @@
             border-radius: 1rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             border: 1px solid #edf2f7;
+            transition: all 0.2s ease;
         }
         .produto-nome { font-weight: 600; word-break: break-word; }
-        .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.8; }
+        .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.7; }
+        .comprado {
+            background: #f8fafc;
+            opacity: 0.85;
+        }
         .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-acao { background: #f1f5f9; border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; }
+        .btn-acao { background: #f1f5f9; border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; transition: 0.1s; }
+        .btn-acao:hover { background: #e2e8f0; transform: scale(0.95); }
         .total-area {
             text-align: right;
             font-size: 1.7rem;
@@ -422,19 +428,44 @@
     }
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
+    // Função para ordenar a lista: não comprados primeiro, comprados por último
+    function ordenarLista() {
+        currentListItems.sort((a, b) => {
+            if (a.comprado === b.comprado) return 0;
+            return a.comprado ? 1 : -1; // false (não comprado) vem primeiro, true (comprado) vem depois
+        });
+    }
+    
     function renderizarLista() {
         if (!listaContainer) return;
+        
+        // Ordenar a lista antes de renderizar
+        ordenarLista();
+        
         listaContainer.innerHTML = "";
         if (currentListItems.length === 0) {
             listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: #6c757d;">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>';
             atualizarTotalUI();
             return;
         }
-        for (let item of currentListItems) {
+        
+        let temComprados = currentListItems.some(item => item.comprado);
+        
+        for (let i = 0; i < currentListItems.length; i++) {
+            const item = currentListItems[i];
             const subtotal = item.quantidade * item.preco;
             const rowDiv = document.createElement("div");
             rowDiv.className = "item-row";
             if (item.comprado) rowDiv.classList.add("comprado");
+            
+            // Adicionar separador visual antes dos itens comprados
+            if (item.comprado && i > 0 && !currentListItems[i-1].comprado && temComprados) {
+                const separador = document.createElement("div");
+                separador.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: #eef2ff; border-radius: 20px; font-size: 0.8rem; color: #4f46e5; font-weight: 600;";
+                separador.innerText = "✓ ITENS JÁ ADQUIRIDOS ✓";
+                listaContainer.appendChild(separador);
+            }
+            
             rowDiv.innerHTML = `
                 <div class="produto-nome">${escapeHtml(item.nome)}</div>
                 <span>${item.quantidade}</span>
@@ -468,14 +499,20 @@
     
     window.toggleComprado = function(id) {
         let item = currentListItems.find(i => i.id === id);
-        if(item) { item.comprado = !item.comprado; salvarEstadoCompleto(); renderizarLista(); }
+        if(item) { 
+            item.comprado = !item.comprado; 
+            salvarEstadoCompleto(); 
+            renderizarLista(); // Re-renderiza com a nova ordem
+        }
     };
+    
     window.removerItemComConfirmacao = function(id) {
         let item = currentListItems.find(i => i.id === id);
         if(item && confirm(`Remover "${item.nome}" permanentemente?`)) {
             totalGeral -= (item.quantidade * item.preco);
             currentListItems = currentListItems.filter(i => i.id !== id);
-            salvarEstadoCompleto(); renderizarLista();
+            salvarEstadoCompleto(); 
+            renderizarLista();
         }
     };
     
@@ -510,7 +547,6 @@
         if (usuario && senha) {
             document.getElementById("usuario").value = usuario;
             document.getElementById("senha").value = senha;
-            // Auto login após carregar a página
             setTimeout(() => {
                 entrar();
             }, 100);
@@ -546,20 +582,15 @@
         const isPrimeiroLogin = !senhaSalva;
         
         if(!senhaSalva) {
-            // Primeiro login - criar conta
             localStorage.setItem("senha_" + usuario, senha);
             alert("✅ Conta criada com sucesso! Bem-vindo(a).");
-            
-            // Perguntar se quer salvar login
             mostrarDialogoSalvarLogin(usuario, senha);
         } else {
             if(senha !== senhaSalva) { alert("Senha incorreta"); return; }
             
-            // Verificar se já tem login salvo para este usuário
             const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
             const loginSalvoSenha = localStorage.getItem("login_lembrado_senha");
             
-            // Se não tem login salvo, ou se o login salvo é diferente do atual, perguntar se quer salvar
             if (!loginSalvoUsuario || loginSalvoUsuario !== usuario || loginSalvoSenha !== senha) {
                 mostrarDialogoSalvarLogin(usuario, senha);
             }
@@ -598,7 +629,6 @@
         if(nova && nova.trim()) {
             localStorage.setItem("senha_" + usuarioAtual, nova);
             alert("Senha alterada com sucesso!");
-            // Se o usuário mudou a senha e tinha login salvo, atualizar o login salvo
             const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
             if (loginSalvoUsuario === usuarioAtual) {
                 salvarLoginLembrado(usuarioAtual, nova);
@@ -612,7 +642,6 @@
             localStorage.removeItem(`total_${usuarioAtual}`);
             localStorage.removeItem(`senha_${usuarioAtual}`);
             localStorage.removeItem("usuarioAtual");
-            // Se o usuário apagado é o que tinha login salvo, limpar também
             const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
             if (loginSalvoUsuario === usuarioAtual) {
                 limparLoginLembrado();
@@ -634,9 +663,7 @@
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
     
     window.onload = () => {
-        // Tenta carregar login salvo e fazer auto login
         carregarLoginLembrado();
-        
         const menuBtn = document.getElementById("menuBtn");
         if (menuBtn) menuBtn.onclick = abrirModalMenu;
     };
