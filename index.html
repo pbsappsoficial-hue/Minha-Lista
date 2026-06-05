@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lista de Compras | Login com Sessão</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .painel {
+            padding: 2rem;
+        }
+
+        #login {
+            background: white;
+            text-align: center;
+        }
+
+        #login h2 {
+            font-size: 2rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .campo {
+            width: 100%;
+            max-width: 320px;
+            margin: 0.75rem auto;
+        }
+
+        .campo input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 60px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .campo input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: white;
+        }
+
+        .btn-principal {
+            background: linear-gradient(95deg, #4f46e5, #7c3aed);
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 6px 14px rgba(79, 70, 229, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-principal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(79, 70, 229, 0.35);
+        }
+
+        .topo-app {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #eef2ff;
+            padding-bottom: 0.75rem;
+        }
+        .titulo-app {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b, #4f46e5);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .usuario-info {
+            background: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-menu {
+            background: #f1f5f9;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 30px;
+            font-size: 1.6rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #334155;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .btn-menu:hover {
+            background: #e2e8f0;
+            transform: scale(0.96);
+        }
+
+        /* Dialog personalizada para salvar credenciais */
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .dialog-box {
+            background: white;
+            max-width: 400px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 1.8rem;
+            text-align: center;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.2s ease;
+        }
+        .dialog-box h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #0f172a;
+        }
+        .dialog-box p {
+            color: #334155;
+            margin-bottom: 1.8rem;
+            line-height: 1.4;
+        }
+        .dialog-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .dialog-btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .dialog-btn.salvar {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 4px 8px rgba(16,185,129,0.3);
+        }
+        .dialog-btn.salvar:hover {
+            background: #059669;
+            transform: scale(0.97);
+        }
+        .dialog-btn.nao-salvar {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .dialog-btn.nao-salvar:hover {
+            background: #cbd5e1;
+        }
+
+        .modal-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-menu-conteudo {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.2s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-menu-opcoes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .modal-menu-opcoes button {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+        .modal-menu-opcoes button:hover {
+            background: #eef2ff;
+            transform: scale(0.98);
+        }
+        .btn-fechar-modal {
+            background: #e2e8f0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .form-add {
+            background: #f8fafd;
+            padding: 1.2rem;
+            border-radius: 1.2rem;
+            margin: 1.5rem 0 1.8rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            border: 1px solid #e2edff;
+        }
+        .campo-add {
+            flex: 1;
+            min-width: 120px;
+        }
+        .campo-add label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #4b5563;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .campo-add input {
+            width: 100%;
+            padding: 12px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            background: white;
+        }
+        .btn-add {
+            background: #10b981;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin-top: 22px;
+        }
+        .btn-add:hover { background: #059669; }
+        .tabela-lista {
+            width: 100%;
+            border-radius: 1.2rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        .lista-header {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1.2fr 1.2fr 1.8fr;
+            background: #eef2ff;
+            padding: 14px 12px;
+            border-radius: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .item-row {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1.2fr 1.2fr 1.8fr;
+            align-items: center;
+            background: white;
+            padding: 12px 12px;
+            margin: 6px 0;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #edf2f7;
+        }
+        .produto-nome { font-weight: 600; word-break: break-word; }
+        .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.8; }
+        .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-acao { background: #f1f5f9; border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; }
+        .total-area {
+            text-align: right;
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-top: 1rem;
+            padding: 15px 20px;
+            background: #f1f5f9;
+            border-radius: 1.5rem;
+            color: #0f172a;
+        }
+        @media (max-width: 700px) {
+            .painel { padding: 1.2rem; }
+            .lista-header, .item-row { grid-template-columns: 2fr 0.8fr 1fr 1fr 1.5fr; font-size: 0.75rem; gap: 6px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Tela de login -->
+    <div id="login" class="painel">
+        <h2>🛒 Minha Lista</h2>
+        <div class="campo">
+            <input type="text" id="usuario" placeholder="Seu nome" autocomplete="off">
+        </div>
+        <div class="campo">
+            <input type="password" id="senha" placeholder="Digite sua senha">
+        </div>
+        <button class="btn-principal" onclick="entrar()">🔐 Entrar / Criar conta</button>
+        <div style="margin-top: 15px; font-size: 0.75rem; color: #6c757d;">🔁 Sessão automática se você já marcou "Salvar acesso"</div>
+    </div>
+
+    <!-- Área principal logada -->
+    <div id="app" style="display: none;">
+        <div class="painel">
+            <div class="topo-app">
+                <h1 class="titulo-app">📋 Lista de Compras</h1>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <span class="usuario-info">👤 <strong id="nomeUsuario"></strong></span>
+                    <button class="btn-menu" id="menuBtn" aria-label="Menu">⋮</button>
+                </div>
+            </div>
+            <div class="form-add">
+                <div class="campo-add" style="flex:2"><label>🏷️ Produto</label><input type="text" id="produto" placeholder="Ex: Arroz"></div>
+                <div class="campo-add"><label>📦 Qtd</label><input type="number" id="quantidade" value="1" min="1"></div>
+                <div class="campo-add"><label>💰 Preço (R$)</label><input type="number" id="preco" step="0.01" placeholder="0,00"></div>
+                <button class="btn-add" onclick="adicionarItem()">➕ Adicionar</button>
+            </div>
+            <div class="tabela-lista">
+                <div class="lista-header"><span>Produto</span><span>Quant.</span><span>Preço</span><span>Subtotal</span><span>Ações</span></div>
+                <div id="listaContainer"></div>
+            </div>
+            <div class="total-area">🧾 TOTAL: R$ <span id="total">0.00</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Dialog personalizada para salvar credenciais -->
+<div id="saveCredentialsDialog" class="dialog-overlay">
+    <div class="dialog-box">
+        <h3>💾 Salvar acesso?</h3>
+        <p>Deseja salvar seu usuário e senha?<br>Na próxima vez que acessar, você será logado automaticamente sem precisar digitar nada!</p>
+        <div class="dialog-buttons">
+            <button class="dialog-btn salvar" id="dialogSalvarBtn">✅ Sim, quero login automático</button>
+            <button class="dialog-btn nao-salvar" id="dialogNaoSalvarBtn">🚫 Não, só desta vez</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal do menu principal -->
+<div id="modalMenu" class="modal-menu">
+    <div class="modal-menu-conteudo">
+        <h3>⚙️ Opções</h3>
+        <div class="modal-menu-opcoes">
+            <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
+            <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
+            <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair (logout)</button>
+        </div>
+        <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
+    </div>
+</div>
+
+<script>
+    let usuarioAtual = "";
+    let totalGeral = 0;
+    let currentListItems = [];
+    const listaContainer = document.getElementById("listaContainer");
+    const totalSpan = document.getElementById("total");
+    
+    // Controle da dialog de salvar credenciais
+    let pendingCredentials = { usuario: null, senha: null };
+    let dialogResolve = null;
+
+    function mostrarDialogSalvarCredenciais(usuario, senha) {
+        return new Promise((resolve) => {
+            pendingCredentials = { usuario, senha };
+            dialogResolve = resolve;
+            const dialog = document.getElementById("saveCredentialsDialog");
+            dialog.style.display = "flex";
+        });
+    }
+
+    function fecharDialogSalvar() {
+        const dialog = document.getElementById("saveCredentialsDialog");
+        dialog.style.display = "none";
+        if (dialogResolve) {
+            dialogResolve(false);
+            dialogResolve = null;
+        }
+        pendingCredentials = { usuario: null, senha: null };
+    }
+
+    // Salvar credenciais e ATIVAR SESSÃO AUTOMÁTICA (token de login)
+    function salvarCredenciaisComSessao(usuario, senha) {
+        localStorage.setItem("credenciais_usuario", usuario);
+        localStorage.setItem("credenciais_senha", senha);
+        // Sessão ativa: usuário permanece logado mesmo após recarregar a página
+        localStorage.setItem("sessao_ativa", "true");
+        localStorage.setItem("usuario_sessao", usuario);
+    }
+
+    function limparSessaoAutomatica() {
+        localStorage.removeItem("credenciais_usuario");
+        localStorage.removeItem("credenciais_senha");
+        localStorage.removeItem("sessao_ativa");
+        localStorage.removeItem("usuario_sessao");
+    }
+    
+    // Verificar se existe sessão ativa e realizar login automático (sem preencher campos!)
+    function verificarSessaoAtiva() {
+        const sessaoAtiva = localStorage.getItem("sessao_ativa") === "true";
+        const usuarioSessao = localStorage.getItem("usuario_sessao");
+        const senhaSalva = localStorage.getItem("credenciais_senha");
+        
+        if (sessaoAtiva && usuarioSessao && senhaSalva) {
+            const senhaArmazenada = localStorage.getItem("senha_" + usuarioSessao);
+            if (senhaArmazenada === senhaSalva) {
+                // Login automático sem digitar nada!
+                usuarioAtual = usuarioSessao;
+                localStorage.setItem("usuarioAtual", usuarioAtual);
+                document.getElementById("login").style.display = "none";
+                document.getElementById("app").style.display = "block";
+                document.getElementById("nomeUsuario").innerText = usuarioAtual;
+                carregarDadosUsuario();
+                return true;
+            } else {
+                // Senha inválida, limpar sessão corrompida
+                limparSessaoAutomatica();
+            }
+        }
+        return false;
+    }
+    
+    function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
+    
+    function salvarEstadoCompleto() {
+        if (!usuarioAtual) return;
+        const itensParaSalvar = currentListItems.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco, comprado: item.comprado }));
+        localStorage.setItem(`lista_data_${usuarioAtual}`, JSON.stringify(itensParaSalvar));
+        localStorage.setItem(`total_${usuarioAtual}`, totalGeral.toString());
+    }
+    
+    function escapeHtml(str) { 
+        if (!str) return ""; 
+        return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); 
+    }
+    
+    function renderizarLista() {
+        if (!listaContainer) return;
+        listaContainer.innerHTML = "";
+        if (currentListItems.length === 0) {
+            listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: #6c757d;">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>';
+            atualizarTotalUI();
+            return;
+        }
+        for (let item of currentListItems) {
+            const subtotal = item.quantidade * item.preco;
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "item-row";
+            if (item.comprado) rowDiv.classList.add("comprado");
+            rowDiv.innerHTML = `
+                <div class="produto-nome">${escapeHtml(item.nome)}</div>
+                <span>${item.quantidade}</span>
+                <span>R$ ${item.preco.toFixed(2)}</span>
+                <span>R$ ${subtotal.toFixed(2)}</span>
+                <div class="acoes">
+                    <button class="btn-acao btn-check" onclick="toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button>
+                    <button class="btn-acao btn-del" onclick="removerItemComConfirmacao('${item.id}')">🗑️</button>
+                </div>
+            `;
+            listaContainer.appendChild(rowDiv);
+        }
+        atualizarTotalUI();
+    }
+    
+    function adicionarItem() {
+        const produto = document.getElementById("produto").value.trim();
+        let quantidade = parseInt(document.getElementById("quantidade").value);
+        let preco = parseFloat(document.getElementById("preco").value);
+        if (!produto) { alert("Digite o nome do produto."); return; }
+        if (isNaN(quantidade) || quantidade < 1) quantidade = 1;
+        if (isNaN(preco) || preco < 0) preco = 0;
+        const novoId = Date.now() + "-" + Math.random().toString(36).substr(2, 6);
+        currentListItems.push({ id: novoId, nome: produto, quantidade, preco, comprado: false });
+        totalGeral += (quantidade * preco);
+        salvarEstadoCompleto(); 
+        renderizarLista();
+        document.getElementById("produto").value = "";
+        document.getElementById("quantidade").value = "1";
+        document.getElementById("preco").value = "";
+    }
+    
+    window.toggleComprado = function(id) {
+        let item = currentListItems.find(i => i.id === id);
+        if(item) { 
+            item.comprado = !item.comprado; 
+            salvarEstadoCompleto(); 
+            renderizarLista(); 
+        }
+    };
+    
+    window.removerItemComConfirmacao = function(id) {
+        let item = currentListItems.find(i => i.id === id);
+        if(item && confirm(`Remover "${item.nome}" permanentemente?`)) {
+            totalGeral -= (item.quantidade * item.preco);
+            currentListItems = currentListItems.filter(i => i.id !== id);
+            salvarEstadoCompleto(); 
+            renderizarLista();
+        }
+    };
+    
+    function carregarDadosUsuario() {
+        if(!usuarioAtual) return;
+        let stored = localStorage.getItem(`lista_data_${usuarioAtual}`);
+        if(stored) {
+            try {
+                currentListItems = JSON.parse(stored).map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1 }));
+                totalGeral = parseFloat(localStorage.getItem(`total_${usuarioAtual}`)) || currentListItems.reduce((a,b)=> a+(b.quantidade*b.preco),0);
+                renderizarLista();
+            } catch(e) { 
+                currentListItems=[]; 
+                totalGeral=0; 
+                renderizarLista(); 
+            }
+        } else {
+            currentListItems=[]; 
+            totalGeral=0; 
+            renderizarLista();
+        }
+    }
+    
+    // ========== LOGIN COM SESSÃO E SALVAMENTO DE CREDENCIAIS (DIALOG PERSONALIZADA) ==========
+    async function entrar() {
+        const usuario = document.getElementById("usuario").value.trim();
+        const senha = document.getElementById("senha").value;
+        if(!usuario || !senha) { alert("Preencha usuário e senha"); return; }
+        
+        const senhaSalva = localStorage.getItem("senha_" + usuario);
+        if(!senhaSalva) {
+            localStorage.setItem("senha_" + usuario, senha);
+            alert("✅ Conta criada com sucesso! Bem-vindo(a).");
+        } else {
+            if(senha !== senhaSalva) { alert("Senha incorreta"); return; }
+        }
+        
+        // Exibe diálogo para decidir salvar credenciais e ativar login automático
+        const salvar = await mostrarDialogSalvarCredenciais(usuario, senha);
+        if (salvar) {
+            salvarCredenciaisComSessao(usuario, senha);
+            alert("🔐 Login automático ativado! Na próxima vez você será logado automaticamente.");
+        } else {
+            // Se não quiser salvar, garantimos que não exista nenhuma sessão ativa para esse usuário
+            if(localStorage.getItem("usuario_sessao") === usuario) {
+                limparSessaoAutomatica();
+            }
+        }
+        
+        usuarioAtual = usuario;
+        localStorage.setItem("usuarioAtual", usuarioAtual);
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        document.getElementById("nomeUsuario").innerText = usuarioAtual;
+        carregarDadosUsuario();
+        document.getElementById("senha").value = "";
+    }
+    
+    // ========== FUNÇÕES DE CONTA ==========
+    window.sair = function() {
+        if(confirm("Deseja realmente sair da sua conta?")) {
+            // Limpa a sessão ativa (remover login automático) mas mantém dados do usuário salvos
+            limparSessaoAutomatica();
+            localStorage.removeItem("usuarioAtual");
+            document.getElementById("app").style.display = "none";
+            document.getElementById("login").style.display = "block";
+            usuarioAtual = "";
+            currentListItems = [];
+            renderizarLista();
+            // Recarrega campos de login com credenciais apenas se ainda existirem (não terão mais, pois limpamos)
+            // Preencher com valores vazios
+            document.getElementById("usuario").value = "";
+            document.getElementById("senha").value = "";
+            fecharModalMenu();
+        }
+    };
+    
+    window.mudarSenha = function() {
+        if(!usuarioAtual) return;
+        const antiga = prompt("Digite a senha atual:");
+        const senhaSalva = localStorage.getItem("senha_" + usuarioAtual);
+        if(antiga !== senhaSalva) { alert("Senha atual incorreta"); return; }
+        const nova = prompt("Digite a nova senha:");
+        if(nova && nova.trim()) {
+            localStorage.setItem("senha_" + usuarioAtual, nova);
+            alert("Senha alterada com sucesso!");
+            // Se o usuário possui sessão salva e ativa, atualizar credenciais salvas também
+            const credencialUsuario = localStorage.getItem("credenciais_usuario");
+            if (credencialUsuario === usuarioAtual && localStorage.getItem("sessao_ativa") === "true") {
+                const atualizarAuto = confirm("Deseja atualizar também o login automático com a nova senha?");
+                if (atualizarAuto) {
+                    localStorage.setItem("credenciais_senha", nova);
+                    alert("Login automático atualizado!");
+                } else {
+                    // Se não atualizar, a sessão ficará inconsistente; recomendamos desativar login automático
+                    limparSessaoAutomatica();
+                    alert("ATENÇÃO: Login automático foi desativado por segurança. Faça login manualmente na próxima.");
+                }
+            }
+        } else alert("Senha inválida");
+    };
+    
+    window.apagarUsuario = function() {
+        if(usuarioAtual && confirm(`⚠️ ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}" permanentemente. Tem certeza?`)) {
+            // Limpa credenciais e sessão salva
+            const credencialUsuario = localStorage.getItem("credenciais_usuario");
+            if (credencialUsuario === usuarioAtual) {
+                limparSessaoAutomatica();
+            }
+            localStorage.removeItem(`lista_data_${usuarioAtual}`);
+            localStorage.removeItem(`total_${usuarioAtual}`);
+            localStorage.removeItem(`senha_${usuarioAtual}`);
+            localStorage.removeItem("usuarioAtual");
+            alert("Usuário e todos os dados removidos permanentemente.");
+            location.reload();
+        }
+    };
+    
+    // ========== CONTROLE DO MODAL MENU ==========
+    function abrirModalMenu() { 
+        const modal = document.getElementById("modalMenu");
+        if(modal) modal.style.display = "flex"; 
+    }
+    function fecharModalMenu() { 
+        const modal = document.getElementById("modalMenu");
+        if(modal) modal.style.display = "none"; 
+    }
+    
+    window.onclick = function(event) {
+        const modalMenu = document.getElementById("modalMenu");
+        if (event.target === modalMenu) fecharModalMenu();
+        const dialog = document.getElementById("saveCredentialsDialog");
+        if (event.target === dialog) {
+            if (dialogResolve) {
+                dialogResolve(false);
+                dialogResolve = null;
+            }
+            dialog.style.display = "none";
+            pendingCredentials = { usuario: null, senha: null };
+        }
+    };
+    
+    // Configurar eventos dos botões da dialog
+    document.getElementById("dialogSalvarBtn")?.addEventListener("click", () => {
+        if (dialogResolve) {
+            dialogResolve(true);
+            dialogResolve = null;
+        }
+        document.getElementById("saveCredentialsDialog").style.display = "none";
+        pendingCredentials = { usuario: null, senha: null };
+    });
+    document.getElementById("dialogNaoSalvarBtn")?.addEventListener("click", () => {
+        if (dialogResolve) {
+            dialogResolve(false);
+            dialogResolve = null;
+        }
+        document.getElementById("saveCredentialsDialog").style.display = "none";
+        pendingCredentials = { usuario: null, senha: null };
+    });
+    
+    document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
+    
+    // Inicialização: verificar se existe sessão ativa (login automático)
+    window.onload = () => {
+        const logadoAuto = verificarSessaoAtiva();
+        if (!logadoAuto) {
+            // Sem sessão ativa, apenas exibe tela de login com possíveis credenciais salvas (sem login automático)
+            // Preencher campos se existir credenciais salvas (mas sem logar)
+            const userSaved = localStorage.getItem("credenciais_usuario");
+            const passSaved = localStorage.getItem("credenciais_senha");
+            if (userSaved && passSaved) {
+                document.getElementById("usuario").value = userSaved;
+                document.getElementById("senha").value = passSaved;
+            }
+        }
+        const menuBtn = document.getElementById("menuBtn");
+        if (menuBtn) menuBtn.onclick = abrirModalMenu;
+    };
+</script>
+</body>
+</html>
