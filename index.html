@@ -379,6 +379,35 @@
             font-size: 0.75rem;
             cursor: pointer;
         }
+        
+        .submenu-opcoes {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin: 5px 0 5px 30px;
+        }
+        .submenu-opcoes button {
+            background: #f1f5f9;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            text-align: left;
+            justify-content: flex-start;
+        }
+        .submenu-opcoes button:hover {
+            background: #e2e8f0;
+        }
+        .submenu-toggle {
+            cursor: pointer;
+        }
+        .submenu-toggle .seta {
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .submenu-toggle.aberto .seta {
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body>
@@ -426,6 +455,14 @@
     <div class="modal-menu-conteudo">
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
+            <button class="submenu-toggle" onclick="toggleSubmenu(event)">
+                <span>🔄</span> Mudar Ordem da Lista <span class="seta">▶</span>
+            </button>
+            <div id="submenuOrdenacao" class="submenu-opcoes">
+                <button onclick="mudarOrdem('data'); fecharModalMenu();"><span>📅</span> Padrão (Data)</button>
+                <button onclick="mudarOrdem('nome'); fecharModalMenu();"><span>🔤</span> A-Z (Nome)</button>
+                <button onclick="mudarOrdem('preco'); fecharModalMenu();"><span>💰</span> Preço (Menor ao Maior)</button>
+            </div>
             <button onclick="ativarModoMover(); fecharModalMenu();"><span>🔼🔽</span> Mover Itens de Lugar</button>
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
             <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
@@ -465,6 +502,7 @@
     let loginPendente = { usuario: null, senha: null };
     let itemSelecionadoId = null;
     let modoMoverAtivo = false;
+    let ordemAtual = "data";
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
     const infoMoverDiv = document.getElementById("infoMover");
@@ -476,9 +514,37 @@
         const itensParaSalvar = currentListItems.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco, comprado: item.comprado, dataCriacao: item.dataCriacao }));
         localStorage.setItem(`lista_data_${usuarioAtual}`, JSON.stringify(itensParaSalvar));
         localStorage.setItem(`total_${usuarioAtual}`, totalGeral.toString());
+        localStorage.setItem(`ordem_${usuarioAtual}`, ordemAtual);
     }
     
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    
+    // Função para ordenar: pendentes primeiro (com ordem escolhida), adquiridos sempre no final
+    function ordenarLista() {
+        // Separar pendentes e adquiridos
+        const pendentes = currentListItems.filter(item => !item.comprado);
+        const adquiridos = currentListItems.filter(item => item.comprado);
+        
+        // Ordenar pendentes conforme critério escolhido
+        if (ordemAtual === 'nome') {
+            pendentes.sort((a, b) => a.nome.localeCompare(b.nome));
+        } else if (ordemAtual === 'preco') {
+            pendentes.sort((a, b) => a.preco - b.preco);
+        } else { // data (mais recentes primeiro)
+            pendentes.sort((a, b) => (b.dataCriacao || 0) - (a.dataCriacao || 0));
+        }
+        
+        // Adquiridos mantêm a ordem original (sem ordenação específica)
+        // Juntar: pendentes + adquiridos
+        currentListItems = [...pendentes, ...adquiridos];
+    }
+    
+    function mudarOrdem(tipo) {
+        ordemAtual = tipo;
+        salvarEstadoCompleto();
+        ordenarLista();
+        renderizarLista();
+    }
     
     function ativarModoMover() {
         modoMoverAtivo = true;
@@ -525,24 +591,45 @@
             return;
         }
         
+        // Verificar se está tentando mover um item comprado
+        if (currentListItems[index].comprado) {
+            alert("⚠️ Itens já adquiridos ficam no final da lista e não podem ser movidos.");
+            return;
+        }
+        
+        // Encontrar o último índice dos itens pendentes
+        const ultimoPendenteIndex = currentListItems.findIndex(item => item.comprado) - 1;
+        const limiteSuperior = (ultimoPendenteIndex >= 0) ? ultimoPendenteIndex : currentListItems.length - 1;
+        
         if (direcao === 'cima' && index > 0) {
+            // Verificar se o item acima não é comprado
+            if (currentListItems[index - 1].comprado) {
+                alert("⚠️ Não é possível mover um item pendente para baixo de um item já adquirido.");
+                return;
+            }
             [currentListItems[index - 1], currentListItems[index]] = [currentListItems[index], currentListItems[index - 1]];
             salvarEstadoCompleto();
             renderizarLista();
         } 
-        else if (direcao === 'baixo' && index < currentListItems.length - 1) {
+        else if (direcao === 'baixo' && index < limiteSuperior) {
             [currentListItems[index + 1], currentListItems[index]] = [currentListItems[index], currentListItems[index + 1]];
             salvarEstadoCompleto();
             renderizarLista();
         }
-        else {
-            alert(direcao === 'cima' ? "⚠️ Este item já está no topo da lista." : "⚠️ Este item já está no final da lista.");
+        else if (direcao === 'baixo' && index === limiteSuperior) {
+            alert("⚠️ Este item já é o último da lista de pendentes.");
+        }
+        else if (direcao === 'cima' && index === 0) {
+            alert("⚠️ Este item já está no topo da lista.");
         }
         fecharModalMover();
     }
     
     function renderizarLista() {
         if (!listaContainer) return;
+        
+        // Ordenar a lista antes de renderizar
+        ordenarLista();
         
         listaContainer.innerHTML = "";
         if (currentListItems.length === 0) {
@@ -552,6 +639,7 @@
         }
         
         let temComprados = currentListItems.some(item => item.comprado);
+        let primeiroCompradoIndex = currentListItems.findIndex(item => item.comprado);
         
         for (let i = 0; i < currentListItems.length; i++) {
             const item = currentListItems[i];
@@ -563,7 +651,8 @@
                 rowDiv.classList.add("selecionado");
             }
             
-            if (item.comprado && i > 0 && !currentListItems[i-1].comprado && temComprados) {
+            // Adicionar separador visual antes dos itens comprados
+            if (item.comprado && i === primeiroCompradoIndex && temComprados && primeiroCompradoIndex > 0) {
                 const separador = document.createElement("div");
                 separador.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: #eef2ff; border-radius: 20px; font-size: 0.8rem; color: #4f46e5; font-weight: 600;";
                 separador.innerText = "✓ ITENS JÁ ADQUIRIDOS ✓";
@@ -608,6 +697,7 @@
         currentListItems.push({ id: novoId, nome: produto, quantidade, preco, comprado: false, dataCriacao: Date.now() });
         totalGeral += (quantidade * preco);
         salvarEstadoCompleto(); 
+        ordenarLista();
         renderizarLista();
         document.getElementById("produto").value = "";
         document.getElementById("quantidade").value = "1";
@@ -620,6 +710,7 @@
         if(item) { 
             item.comprado = !item.comprado; 
             salvarEstadoCompleto(); 
+            ordenarLista();
             renderizarLista();
         }
     };
@@ -631,6 +722,7 @@
             totalGeral -= (item.quantidade * item.preco);
             currentListItems = currentListItems.filter(i => i.id !== id);
             salvarEstadoCompleto(); 
+            ordenarLista();
             renderizarLista();
         }
     };
@@ -638,10 +730,14 @@
     function carregarDadosUsuario() {
         if(!usuarioAtual) return;
         let stored = localStorage.getItem(`lista_data_${usuarioAtual}`);
+        let ordemSalva = localStorage.getItem(`ordem_${usuarioAtual}`);
+        if (ordemSalva) ordemAtual = ordemSalva;
+        
         if(stored) {
             try {
                 currentListItems = JSON.parse(stored).map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1, dataCriacao: it.dataCriacao || Date.now() }));
                 totalGeral = parseFloat(localStorage.getItem(`total_${usuarioAtual}`)) || currentListItems.reduce((a,b)=> a+(b.quantidade*b.preco),0);
+                ordenarLista();
                 renderizarLista();
             } catch(e) { currentListItems=[]; totalGeral=0; renderizarLista(); }
         } else {
@@ -757,6 +853,7 @@
             localStorage.removeItem(`lista_data_${usuarioAtual}`);
             localStorage.removeItem(`total_${usuarioAtual}`);
             localStorage.removeItem(`senha_${usuarioAtual}`);
+            localStorage.removeItem(`ordem_${usuarioAtual}`);
             localStorage.removeItem("usuarioAtual");
             const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
             if (loginSalvoUsuario === usuarioAtual) {
@@ -767,8 +864,23 @@
         }
     };
     
+    function toggleSubmenu(event) {
+        event.stopPropagation();
+        const btn = event.currentTarget;
+        const submenu = document.getElementById("submenuOrdenacao");
+        if (submenu.style.display === "flex") {
+            submenu.style.display = "none";
+            btn.classList.remove("aberto");
+        } else {
+            submenu.style.display = "flex";
+            btn.classList.add("aberto");
+        }
+    }
+    
     function abrirModalMenu() { 
         document.getElementById("modalMenu").style.display = "flex"; 
+        document.getElementById("submenuOrdenacao").style.display = "none";
+        document.querySelector(".submenu-toggle")?.classList.remove("aberto");
     }
     function fecharModalMenu() { 
         document.getElementById("modalMenu").style.display = "none"; 
