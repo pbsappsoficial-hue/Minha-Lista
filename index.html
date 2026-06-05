@@ -270,6 +270,11 @@
             border: 1px solid #edf2f7;
             transition: all 0.2s ease;
         }
+        .item-row.selecionado {
+            background: #dbeafe;
+            border: 2px solid #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
         .produto-nome { font-weight: 600; word-break: break-word; }
         .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.7; }
         .comprado {
@@ -279,6 +284,13 @@
         .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
         .btn-acao { background: #f1f5f9; border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; transition: 0.1s; }
         .btn-acao:hover { background: #e2e8f0; transform: scale(0.95); }
+        .btn-mover {
+            background: #4f46e5;
+            color: white;
+        }
+        .btn-mover:hover {
+            background: #4338ca;
+        }
         .total-area {
             text-align: right;
             font-size: 1.7rem;
@@ -294,7 +306,6 @@
             .lista-header, .item-row { grid-template-columns: 2fr 0.8fr 1fr 1fr 1.5fr; font-size: 0.75rem; gap: 6px; }
         }
 
-        /* Modal de confirmação personalizado */
         .modal-confirmacao {
             display: none;
             position: fixed;
@@ -345,11 +356,33 @@
             font-weight: 500;
             cursor: pointer;
         }
+        
+        .info-mover {
+            background: #e0e7ff;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #3730a3;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .btn-sair-mover {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Tela de login -->
     <div id="login" class="painel">
         <h2>🛒 Minha Lista</h2>
         <div class="campo">
@@ -361,7 +394,6 @@
         <button class="btn-principal" onclick="entrar()">🔐 Entrar / Criar conta</button>
     </div>
 
-    <!-- Área principal logada -->
     <div id="app" style="display: none;">
         <div class="painel">
             <div class="topo-app">
@@ -370,6 +402,10 @@
                     <span class="usuario-info">👤 <strong id="nomeUsuario"></strong></span>
                     <button class="btn-menu" id="menuBtn" aria-label="Menu">⋮</button>
                 </div>
+            </div>
+            <div id="infoMover" class="info-mover" style="display: none;">
+                <span>🔘 Modo Mover Ativo - Clique em "Selecionar" no item desejado</span>
+                <button class="btn-sair-mover" onclick="desativarModoMover()">✕ Sair</button>
             </div>
             <div class="form-add">
                 <div class="campo-add" style="flex:2"><label>🏷️ Produto</label><input type="text" id="produto" placeholder="Ex: Arroz"></div>
@@ -386,11 +422,11 @@
     </div>
 </div>
 
-<!-- Modal do menu principal -->
 <div id="modalMenu" class="modal-menu">
     <div class="modal-menu-conteudo">
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
+            <button onclick="ativarModoMover(); fecharModalMenu();"><span>🔼🔽</span> Mover Itens de Lugar</button>
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
             <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
             <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
@@ -399,7 +435,6 @@
     </div>
 </div>
 
-<!-- Modal de confirmação para salvar login -->
 <div id="modalSalvarLogin" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>🔐 Deseja salvar seu login?</p>
@@ -411,36 +446,103 @@
     </div>
 </div>
 
+<div id="modalMover" class="modal-confirmacao">
+    <div class="modal-confirmacao-conteudo">
+        <p id="modalMoverItemNome">🔼🔽 <strong>Mover Item</strong></p>
+        <p style="font-size: 0.9rem; color: #666;">Escolha para onde mover o item selecionado</p>
+        <div style="display: flex; gap: 15px; justify-content: center; margin: 15px 0;">
+            <button onclick="moverItemSelecionado('cima')" class="btn-confirmar" style="background: #4f46e5;">⬆️ Mover Para Cima</button>
+            <button onclick="moverItemSelecionado('baixo')" class="btn-confirmar" style="background: #4f46e5;">⬇️ Mover Para Baixo</button>
+        </div>
+        <button class="btn-cancelar" onclick="fecharModalMover()" style="width: 100%;">Cancelar</button>
+    </div>
+</div>
+
 <script>
     let usuarioAtual = "";
     let totalGeral = 0;
     let currentListItems = [];
     let loginPendente = { usuario: null, senha: null };
+    let itemSelecionadoId = null;
+    let modoMoverAtivo = false;
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
+    const infoMoverDiv = document.getElementById("infoMover");
 
     function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
+    
     function salvarEstadoCompleto() {
         if (!usuarioAtual) return;
-        const itensParaSalvar = currentListItems.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco, comprado: item.comprado }));
+        const itensParaSalvar = currentListItems.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco, comprado: item.comprado, dataCriacao: item.dataCriacao }));
         localStorage.setItem(`lista_data_${usuarioAtual}`, JSON.stringify(itensParaSalvar));
         localStorage.setItem(`total_${usuarioAtual}`, totalGeral.toString());
     }
+    
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
-    // Função para ordenar a lista: não comprados primeiro, comprados por último
-    function ordenarLista() {
-        currentListItems.sort((a, b) => {
-            if (a.comprado === b.comprado) return 0;
-            return a.comprado ? 1 : -1; // false (não comprado) vem primeiro, true (comprado) vem depois
-        });
+    function ativarModoMover() {
+        modoMoverAtivo = true;
+        itemSelecionadoId = null;
+        infoMoverDiv.style.display = "flex";
+        renderizarLista();
+    }
+    
+    function desativarModoMover() {
+        modoMoverAtivo = false;
+        itemSelecionadoId = null;
+        infoMoverDiv.style.display = "none";
+        renderizarLista();
+        fecharModalMover();
+    }
+    
+    function fecharModalMover() {
+        document.getElementById("modalMover").style.display = "none";
+    }
+    
+    function abrirModalMover(itemNome) {
+        document.getElementById("modalMoverItemNome").innerHTML = `🔼🔽 <strong>Mover: ${escapeHtml(itemNome)}</strong>`;
+        document.getElementById("modalMover").style.display = "flex";
+    }
+    
+    function selecionarItemParaMover(id, nome) {
+        if (!modoMoverAtivo) return false;
+        itemSelecionadoId = id;
+        renderizarLista();
+        abrirModalMover(nome);
+        return true;
+    }
+    
+    function moverItemSelecionado(direcao) {
+        if (!itemSelecionadoId) {
+            alert("⚠️ Primeiro selecione um item clicando em 'Selecionar'.");
+            return;
+        }
+        
+        const index = currentListItems.findIndex(i => i.id === itemSelecionadoId);
+        if (index === -1) {
+            alert("Item não encontrado.");
+            desativarModoMover();
+            return;
+        }
+        
+        if (direcao === 'cima' && index > 0) {
+            [currentListItems[index - 1], currentListItems[index]] = [currentListItems[index], currentListItems[index - 1]];
+            salvarEstadoCompleto();
+            renderizarLista();
+        } 
+        else if (direcao === 'baixo' && index < currentListItems.length - 1) {
+            [currentListItems[index + 1], currentListItems[index]] = [currentListItems[index], currentListItems[index + 1]];
+            salvarEstadoCompleto();
+            renderizarLista();
+        }
+        else {
+            alert(direcao === 'cima' ? "⚠️ Este item já está no topo da lista." : "⚠️ Este item já está no final da lista.");
+        }
+        fecharModalMover();
     }
     
     function renderizarLista() {
         if (!listaContainer) return;
-        
-        // Ordenar a lista antes de renderizar
-        ordenarLista();
         
         listaContainer.innerHTML = "";
         if (currentListItems.length === 0) {
@@ -457,8 +559,10 @@
             const rowDiv = document.createElement("div");
             rowDiv.className = "item-row";
             if (item.comprado) rowDiv.classList.add("comprado");
+            if (modoMoverAtivo && itemSelecionadoId === item.id) {
+                rowDiv.classList.add("selecionado");
+            }
             
-            // Adicionar separador visual antes dos itens comprados
             if (item.comprado && i > 0 && !currentListItems[i-1].comprado && temComprados) {
                 const separador = document.createElement("div");
                 separador.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: #eef2ff; border-radius: 20px; font-size: 0.8rem; color: #4f46e5; font-weight: 600;";
@@ -466,16 +570,28 @@
                 listaContainer.appendChild(separador);
             }
             
-            rowDiv.innerHTML = `
-                <div class="produto-nome">${escapeHtml(item.nome)}</div>
-                <span>${item.quantidade}</span>
-                <span>R$ ${item.preco.toFixed(2)}</span>
-                <span>R$ ${subtotal.toFixed(2)}</span>
-                <div class="acoes">
-                    <button class="btn-acao btn-check" onclick="toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button>
-                    <button class="btn-acao btn-del" onclick="removerItemComConfirmacao('${item.id}')">🗑️</button>
-                </div>
-            `;
+            if (modoMoverAtivo) {
+                rowDiv.innerHTML = `
+                    <div class="produto-nome">${escapeHtml(item.nome)}</div>
+                    <span>${item.quantidade}</span>
+                    <span>R$ ${item.preco.toFixed(2)}</span>
+                    <span>R$ ${subtotal.toFixed(2)}</span>
+                    <div class="acoes">
+                        <button class="btn-acao btn-mover" onclick="selecionarItemParaMover('${item.id}', '${escapeHtml(item.nome)}')">✨ Selecionar</button>
+                    </div>
+                `;
+            } else {
+                rowDiv.innerHTML = `
+                    <div class="produto-nome">${escapeHtml(item.nome)}</div>
+                    <span>${item.quantidade}</span>
+                    <span>R$ ${item.preco.toFixed(2)}</span>
+                    <span>R$ ${subtotal.toFixed(2)}</span>
+                    <div class="acoes">
+                        <button class="btn-acao btn-check" onclick="toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button>
+                        <button class="btn-acao btn-del" onclick="removerItemComConfirmacao('${item.id}')">🗑️</button>
+                    </div>
+                `;
+            }
             listaContainer.appendChild(rowDiv);
         }
         atualizarTotalUI();
@@ -489,24 +605,27 @@
         if (isNaN(quantidade) || quantidade < 1) quantidade = 1;
         if (isNaN(preco) || preco < 0) preco = 0;
         const novoId = Date.now() + "-" + Math.random().toString(36).substr(2, 6);
-        currentListItems.push({ id: novoId, nome: produto, quantidade, preco, comprado: false });
+        currentListItems.push({ id: novoId, nome: produto, quantidade, preco, comprado: false, dataCriacao: Date.now() });
         totalGeral += (quantidade * preco);
-        salvarEstadoCompleto(); renderizarLista();
+        salvarEstadoCompleto(); 
+        renderizarLista();
         document.getElementById("produto").value = "";
         document.getElementById("quantidade").value = "1";
         document.getElementById("preco").value = "";
     }
     
     window.toggleComprado = function(id) {
+        if (modoMoverAtivo) return;
         let item = currentListItems.find(i => i.id === id);
         if(item) { 
             item.comprado = !item.comprado; 
             salvarEstadoCompleto(); 
-            renderizarLista(); // Re-renderiza com a nova ordem
+            renderizarLista();
         }
     };
     
     window.removerItemComConfirmacao = function(id) {
+        if (modoMoverAtivo) return;
         let item = currentListItems.find(i => i.id === id);
         if(item && confirm(`Remover "${item.nome}" permanentemente?`)) {
             totalGeral -= (item.quantidade * item.preco);
@@ -521,7 +640,7 @@
         let stored = localStorage.getItem(`lista_data_${usuarioAtual}`);
         if(stored) {
             try {
-                currentListItems = JSON.parse(stored).map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1 }));
+                currentListItems = JSON.parse(stored).map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1, dataCriacao: it.dataCriacao || Date.now() }));
                 totalGeral = parseFloat(localStorage.getItem(`total_${usuarioAtual}`)) || currentListItems.reduce((a,b)=> a+(b.quantidade*b.preco),0);
                 renderizarLista();
             } catch(e) { currentListItems=[]; totalGeral=0; renderizarLista(); }
@@ -530,7 +649,6 @@
         }
     }
     
-    // Funções para salvar login
     function salvarLoginLembrado(usuario, senha) {
         localStorage.setItem("login_lembrado_usuario", usuario);
         localStorage.setItem("login_lembrado_senha", senha);
@@ -572,14 +690,12 @@
         document.getElementById("modalSalvarLogin").style.display = "flex";
     }
     
-    // ========== LOGIN COM SALVAR LOGIN ==========
     function entrar() {
         const usuario = document.getElementById("usuario").value.trim();
         const senha = document.getElementById("senha").value;
         if(!usuario || !senha) { alert("Preencha usuário e senha"); return; }
         
         const senhaSalva = localStorage.getItem("senha_" + usuario);
-        const isPrimeiroLogin = !senhaSalva;
         
         if(!senhaSalva) {
             localStorage.setItem("senha_" + usuario, senha);
@@ -605,7 +721,6 @@
         document.getElementById("senha").value = "";
     }
     
-    // ========== FUNÇÕES DE USUÁRIO ==========
     window.sair = function() {
         if(confirm("Sair da sua conta?")) {
             localStorage.removeItem("usuarioAtual");
@@ -617,6 +732,7 @@
             document.getElementById("usuario").value = "";
             document.getElementById("senha").value = "";
             fecharModalMenu();
+            desativarModoMover();
         }
     };
     
@@ -651,15 +767,23 @@
         }
     };
     
-    // ========== CONTROLE DOS MODAIS ==========
-    function abrirModalMenu() { document.getElementById("modalMenu").style.display = "flex"; }
-    function fecharModalMenu() { document.getElementById("modalMenu").style.display = "none"; }
+    function abrirModalMenu() { 
+        document.getElementById("modalMenu").style.display = "flex"; 
+    }
+    function fecharModalMenu() { 
+        document.getElementById("modalMenu").style.display = "none"; 
+    }
+    
     window.onclick = function(event) {
         if (event.target === document.getElementById("modalMenu")) fecharModalMenu();
         if (event.target === document.getElementById("modalSalvarLogin")) {
             document.getElementById("modalSalvarLogin").style.display = "none";
         }
+        if (event.target === document.getElementById("modalMover")) {
+            fecharModalMover();
+        }
     };
+    
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
     
     window.onload = () => {
