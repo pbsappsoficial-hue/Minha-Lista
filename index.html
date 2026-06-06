@@ -12,23 +12,107 @@
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
 
+        /* Modo Claro (padrão) */
+        :root {
+            --bg-body: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+            --bg-container: rgba(255, 255, 255, 0.96);
+            --bg-painel: white;
+            --text-color: #1e293b;
+            --text-secondary: #334155;
+            --border-color: #e2e8f0;
+            --input-bg: #f8fafc;
+            --input-border: #e2e8f0;
+            --input-focus: #6366f1;
+            --btn-primary: linear-gradient(95deg, #4f46e5, #7c3aed);
+            --btn-primary-hover: rgba(79, 70, 229, 0.35);
+            --usuario-info-bg: #f1f5f9;
+            --btn-menu-bg: #f1f5f9;
+            --btn-menu-hover: #e2e8f0;
+            --modal-bg: white;
+            --modal-btn-bg: #f8fafc;
+            --modal-btn-border: #e2e8f0;
+            --modal-btn-hover: #eef2ff;
+            --form-bg: #f8fafd;
+            --form-border: #e2edff;
+            --header-bg: #eef2ff;
+            --item-bg: white;
+            --item-border: #edf2f7;
+            --item-shadow: rgba(0, 0, 0, 0.05);
+            --total-bg: #f1f5f9;
+            --total-color: #0f172a;
+            --separador-bg: #eef2ff;
+            --separador-color: #4f46e5;
+            --badge-admin: #dc2626;
+            --btn-add: #10b981;
+            --btn-add-hover: #059669;
+            --btn-acao: #f1f5f9;
+            --btn-acao-hover: #e2e8f0;
+            --btn-del: #fee2e2;
+            --btn-del-hover: #fecaca;
+            --scrollbar-track: #f1f1f1;
+            --scrollbar-thumb: #cbd5e1;
+        }
+
+        /* Modo Escuro */
+        body.dark {
+            --bg-body: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            --bg-container: #1e293b;
+            --bg-painel: #0f172a;
+            --text-color: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-color: #334155;
+            --input-bg: #1e293b;
+            --input-border: #475569;
+            --input-focus: #818cf8;
+            --btn-primary: linear-gradient(95deg, #6366f1, #a78bfa);
+            --btn-primary-hover: rgba(99, 102, 241, 0.4);
+            --usuario-info-bg: #334155;
+            --btn-menu-bg: #334155;
+            --btn-menu-hover: #475569;
+            --modal-bg: #1e293b;
+            --modal-btn-bg: #334155;
+            --modal-btn-border: #475569;
+            --modal-btn-hover: #475569;
+            --form-bg: #1e293b;
+            --form-border: #334155;
+            --header-bg: #334155;
+            --item-bg: #1e293b;
+            --item-border: #334155;
+            --item-shadow: rgba(0, 0, 0, 0.2);
+            --total-bg: #334155;
+            --total-color: #f1f5f9;
+            --separador-bg: #334155;
+            --separador-color: #a78bfa;
+            --badge-admin: #ef4444;
+            --btn-add: #059669;
+            --btn-add-hover: #10b981;
+            --btn-acao: #334155;
+            --btn-acao-hover: #475569;
+            --btn-del: #7f1d1d;
+            --btn-del-hover: #991b1b;
+            --scrollbar-track: #1e293b;
+            --scrollbar-thumb: #475569;
+        }
+
         body {
-            background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+            background: var(--bg-body);
             min-height: 100vh;
             padding: 30px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background 0.3s ease;
         }
 
         .container {
             max-width: 1100px;
             width: 100%;
             margin: auto;
-            background: rgba(255, 255, 255, 0.96);
+            background: var(--bg-container);
             border-radius: 2rem;
             box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.05);
             overflow: hidden;
+            transition: background 0.3s ease;
         }
 
         .painel {
@@ -36,13 +120,14 @@
         }
 
         #login {
-            background: white;
+            background: var(--bg-painel);
             text-align: center;
+            transition: background 0.3s ease;
         }
 
         #login h2 {
             font-size: 2rem;
-            color: #1e293b;
+            color: var(--text-color);
             margin-bottom: 1rem;
             font-weight: 700;
         }
@@ -56,22 +141,27 @@
         .campo input {
             width: 100%;
             padding: 14px 18px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--input-border);
             border-radius: 60px;
             font-size: 1rem;
             transition: all 0.2s;
-            background: #f8fafc;
+            background: var(--input-bg);
+            color: var(--text-color);
         }
 
         .campo input:focus {
             outline: none;
-            border-color: #6366f1;
+            border-color: var(--input-focus);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            background: white;
+            background: var(--input-bg);
+        }
+
+        .campo input::placeholder {
+            color: var(--text-secondary);
         }
 
         .btn-principal {
-            background: linear-gradient(95deg, #4f46e5, #7c3aed);
+            background: var(--btn-primary);
             border: none;
             padding: 12px 28px;
             font-size: 1rem;
@@ -86,7 +176,7 @@
 
         .btn-principal:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 20px rgba(79, 70, 229, 0.35);
+            box-shadow: 0 12px 20px var(--btn-primary-hover);
         }
 
         .topo-app {
@@ -95,19 +185,19 @@
             align-items: baseline;
             flex-wrap: wrap;
             margin-bottom: 1rem;
-            border-bottom: 2px solid #eef2ff;
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.75rem;
         }
         .titulo-app {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #1e293b, #4f46e5);
+            background: linear-gradient(135deg, var(--text-color), var(--input-focus));
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
         .usuario-info {
-            background: #f1f5f9;
+            background: var(--usuario-info-bg);
             padding: 6px 14px;
             border-radius: 40px;
             font-size: 0.85rem;
@@ -115,10 +205,11 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            color: var(--text-color);
         }
 
         .btn-menu {
-            background: #f1f5f9;
+            background: var(--btn-menu-bg);
             border: none;
             width: 42px;
             height: 42px;
@@ -130,11 +221,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #334155;
+            color: var(--text-color);
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
         .btn-menu:hover {
-            background: #e2e8f0;
+            background: var(--btn-menu-hover);
             transform: scale(0.96);
         }
 
@@ -152,7 +243,7 @@
             z-index: 1000;
         }
         .modal-menu-conteudo {
-            background: white;
+            background: var(--modal-bg);
             max-width: 500px;
             width: 90%;
             border-radius: 2rem;
@@ -174,8 +265,8 @@
             margin: 20px 0;
         }
         .modal-menu-opcoes button {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background: var(--modal-btn-bg);
+            border: 1px solid var(--modal-btn-border);
             padding: 12px 16px;
             border-radius: 60px;
             font-size: 1rem;
@@ -186,23 +277,25 @@
             align-items: center;
             gap: 12px;
             justify-content: center;
+            color: var(--text-color);
         }
         .modal-menu-opcoes button:hover {
-            background: #eef2ff;
+            background: var(--modal-btn-hover);
             transform: scale(0.98);
         }
         .btn-fechar-modal {
-            background: #e2e8f0;
-            border: none;
+            background: var(--modal-btn-bg);
+            border: 1px solid var(--modal-btn-border);
             padding: 10px 20px;
             border-radius: 40px;
             font-weight: 500;
             cursor: pointer;
             margin-top: 10px;
+            color: var(--text-color);
         }
 
         .form-add {
-            background: #f8fafd;
+            background: var(--form-bg);
             padding: 1.2rem;
             border-radius: 1.2rem;
             margin: 1.5rem 0 1.8rem 0;
@@ -210,7 +303,7 @@
             flex-wrap: wrap;
             gap: 12px;
             align-items: flex-end;
-            border: 1px solid #e2edff;
+            border: 1px solid var(--form-border);
         }
         .campo-add {
             flex: 1;
@@ -220,20 +313,24 @@
             font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
-            color: #4b5563;
+            color: var(--text-secondary);
             display: block;
             margin-bottom: 4px;
         }
         .campo-add input {
             width: 100%;
             padding: 12px 12px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--input-border);
             border-radius: 60px;
             font-size: 0.9rem;
-            background: white;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+        .campo-add input::placeholder {
+            color: var(--text-secondary);
         }
         .btn-add {
-            background: #10b981;
+            background: var(--btn-add);
             border: none;
             padding: 12px 24px;
             border-radius: 60px;
@@ -242,7 +339,7 @@
             cursor: pointer;
             margin-top: 22px;
         }
-        .btn-add:hover { background: #059669; }
+        .btn-add:hover { background: var(--btn-add-hover); }
         .tabela-lista {
             width: 100%;
             border-radius: 1.2rem;
@@ -252,24 +349,26 @@
         .lista-header {
             display: grid;
             grid-template-columns: 3fr 1fr 1.2fr 1.2fr 1.8fr;
-            background: #eef2ff;
+            background: var(--header-bg);
             padding: 14px 12px;
             border-radius: 1rem;
             font-weight: 700;
             margin-bottom: 8px;
+            color: var(--text-color);
         }
         .item-row {
             display: grid;
             grid-template-columns: 3fr 1fr 1.2fr 1.2fr 1.8fr;
             align-items: center;
-            background: white;
+            background: var(--item-bg);
             padding: 12px 12px;
             margin: 6px 0;
             border-radius: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #edf2f7;
+            box-shadow: 0 1px 3px var(--item-shadow);
+            border: 1px solid var(--item-border);
             transition: all 0.2s ease;
             cursor: grab;
+            color: var(--text-color);
         }
         .item-row:active {
             cursor: grabbing;
@@ -279,13 +378,13 @@
             cursor: grabbing;
         }
         .item-row.drag-over {
-            border-top: 3px solid #4f46e5;
+            border-top: 3px solid var(--input-focus);
             margin-top: -3px;
         }
         .produto-nome { font-weight: 600; word-break: break-word; }
         .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.7; }
         .comprado {
-            background: #f8fafc;
+            background: var(--modal-btn-bg);
             opacity: 0.85;
             cursor: not-allowed !important;
         }
@@ -293,17 +392,17 @@
             cursor: not-allowed !important;
         }
         .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-acao { background: #f1f5f9; border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; transition: 0.1s; }
-        .btn-acao:hover { background: #e2e8f0; transform: scale(0.95); }
+        .btn-acao { background: var(--btn-acao); border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; transition: 0.1s; color: var(--text-color); }
+        .btn-acao:hover { background: var(--btn-acao-hover); transform: scale(0.95); }
         .total-area {
             text-align: right;
             font-size: 1.7rem;
             font-weight: 800;
             margin-top: 1rem;
             padding: 15px 20px;
-            background: #f1f5f9;
+            background: var(--total-bg);
             border-radius: 1.5rem;
-            color: #0f172a;
+            color: var(--total-color);
         }
         @media (max-width: 700px) {
             .painel { padding: 1.2rem; }
@@ -324,13 +423,14 @@
             z-index: 1001;
         }
         .modal-confirmacao-conteudo {
-            background: white;
+            background: var(--modal-bg);
             max-width: 400px;
             width: 90%;
             border-radius: 1.5rem;
             padding: 1.5rem;
             text-align: center;
             box-shadow: 0 30px 40px rgba(0,0,0,0.3);
+            color: var(--text-color);
         }
         .modal-confirmacao-conteudo p {
             margin: 15px 0;
@@ -352,13 +452,25 @@
             cursor: pointer;
         }
         .btn-cancelar {
-            background: #e2e8f0;
-            color: #334155;
-            border: none;
+            background: var(--modal-btn-bg);
+            color: var(--text-color);
+            border: 1px solid var(--modal-btn-border);
             padding: 10px 24px;
             border-radius: 40px;
             font-weight: 500;
             cursor: pointer;
+        }
+
+        /* Scrollbar para modo escuro */
+        body.dark ::-webkit-scrollbar {
+            width: 10px;
+        }
+        body.dark ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+        body.dark ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -403,6 +515,7 @@
     <div class="modal-menu-conteudo">
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
+            <button id="btnModoEscuro" onclick="toggleModoEscuro(); fecharModalMenu();"><span>🌙</span> Modo Escuro</button>
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
             <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
             <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
@@ -414,7 +527,7 @@
 <div id="modalSalvarLogin" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>🔐 Deseja salvar seu login?</p>
-        <p style="font-size: 0.9rem; color: #666;">Na próxima vez você não precisará digitar a senha.</p>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">Na próxima vez você não precisará digitar a senha.</p>
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" onclick="confirmarSalvarLogin()">✅ Sim, salvar</button>
             <button class="btn-cancelar" onclick="cancelarSalvarLogin()">❌ Não</button>
@@ -431,6 +544,33 @@
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
 
+    // Funções do Modo Escuro
+    function toggleModoEscuro() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        localStorage.setItem('modo_escuro', isDark ? 'true' : 'false');
+        // Atualizar texto do botão no modal (se estiver visível)
+        const btnModoEscuro = document.getElementById('btnModoEscuro');
+        if (btnModoEscuro) {
+            if (isDark) {
+                btnModoEscuro.innerHTML = '<span>☀️</span> Modo Claro';
+            } else {
+                btnModoEscuro.innerHTML = '<span>🌙</span> Modo Escuro';
+            }
+        }
+    }
+
+    function carregarModoEscuro() {
+        const isDark = localStorage.getItem('modo_escuro') === 'true';
+        if (isDark) {
+            document.body.classList.add('dark');
+            const btnModoEscuro = document.getElementById('btnModoEscuro');
+            if (btnModoEscuro) {
+                btnModoEscuro.innerHTML = '<span>☀️</span> Modo Claro';
+            }
+        }
+    }
+
     function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
     
     function salvarEstadoCompleto() {
@@ -442,7 +582,6 @@
     
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
-    // Função para separar pendentes e adquiridos (adquiridos sempre no final)
     function separarLista() {
         const pendentes = currentListItems.filter(item => !item.comprado);
         const adquiridos = currentListItems.filter(item => item.comprado);
@@ -464,7 +603,6 @@
     function handleDragEnd(e) {
         e.target.classList.remove('dragging');
         draggedItemId = null;
-        // Remover todas as classes drag-over
         document.querySelectorAll('.item-row').forEach(row => {
             row.classList.remove('drag-over');
         });
@@ -474,7 +612,6 @@
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         
-        // Se o item alvo é comprado, não permitir
         if (isCompradoTarget) {
             return;
         }
@@ -491,14 +628,12 @@
     function handleDrop(e, targetId, isCompradoTarget) {
         e.preventDefault();
         
-        // Remover classes de drag-over
         document.querySelectorAll('.item-row').forEach(row => {
             row.classList.remove('drag-over');
         });
         
         if (!draggedItemId) return;
         
-        // Se o alvo é comprado, não permitir
         if (isCompradoTarget) {
             alert("⚠️ Não é possível mover itens para a área de adquiridos.");
             return;
@@ -509,26 +644,21 @@
         
         if (draggedIndex === -1 || targetIndex === -1) return;
         
-        // Verificar se o item arrastado é comprado
         if (currentListItems[draggedIndex].comprado) {
             alert("⚠️ Itens adquiridos não podem ser movidos.");
             return;
         }
         
-        // Verificar se o alvo é comprado
         if (currentListItems[targetIndex].comprado) {
             alert("⚠️ Não é possível mover itens para depois dos itens adquiridos.");
             return;
         }
         
-        // Mover o item
         const [movedItem] = currentListItems.splice(draggedIndex, 1);
         const newTargetIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
         currentListItems.splice(newTargetIndex, 0, movedItem);
         
-        // Separar novamente para garantir que adquiridos fiquem no final
         separarLista();
-        
         salvarEstadoCompleto();
         renderizarLista();
         
@@ -538,12 +668,11 @@
     function renderizarLista() {
         if (!listaContainer) return;
         
-        // Separar pendentes e adquiridos
         separarLista();
         
         listaContainer.innerHTML = "";
         if (currentListItems.length === 0) {
-            listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: #6c757d;">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>';
+            listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-secondary);">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>';
             atualizarTotalUI();
             return;
         }
@@ -565,16 +694,14 @@
             
             rowDiv.setAttribute('data-id', item.id);
             
-            // Eventos de drag and drop
             rowDiv.addEventListener('dragstart', (e) => handleDragStart(e, item.id, item.comprado));
             rowDiv.addEventListener('dragend', handleDragEnd);
             rowDiv.addEventListener('dragover', (e) => handleDragOver(e, item.id, item.comprado));
             rowDiv.addEventListener('drop', (e) => handleDrop(e, item.id, item.comprado));
             
-            // Adicionar separador visual antes dos itens comprados
             if (item.comprado && i === primeiroCompradoIndex && temComprados && primeiroCompradoIndex > 0) {
                 const separador = document.createElement("div");
-                separador.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: #eef2ff; border-radius: 20px; font-size: 0.8rem; color: #4f46e5; font-weight: 600;";
+                separador.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: var(--separador-bg); border-radius: 20px; font-size: 0.8rem; color: var(--separador-color); font-weight: 600;";
                 separador.innerText = "✓ ITENS JÁ ADQUIRIDOS ✓";
                 listaContainer.appendChild(separador);
             }
@@ -783,6 +910,7 @@
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
     
     window.onload = () => {
+        carregarModoEscuro();
         carregarLoginLembrado();
         const menuBtn = document.getElementById("menuBtn");
         if (menuBtn) menuBtn.onclick = abrirModalMenu;
