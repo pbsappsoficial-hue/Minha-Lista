@@ -291,6 +291,15 @@
         .btn-mover:hover {
             background: #4338ca;
         }
+        .btn-mover-desabilitado {
+            background: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        .btn-mover-desabilitado:hover {
+            background: #cbd5e1;
+            transform: none;
+        }
         .total-area {
             text-align: right;
             font-size: 1.7rem;
@@ -379,35 +388,6 @@
             font-size: 0.75rem;
             cursor: pointer;
         }
-        
-        .submenu-opcoes {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            margin: 5px 0 5px 30px;
-        }
-        .submenu-opcoes button {
-            background: #f1f5f9;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            text-align: left;
-            justify-content: flex-start;
-        }
-        .submenu-opcoes button:hover {
-            background: #e2e8f0;
-        }
-        .submenu-toggle {
-            cursor: pointer;
-        }
-        .submenu-toggle .seta {
-            transition: transform 0.2s;
-            display: inline-block;
-        }
-        .submenu-toggle.aberto .seta {
-            transform: rotate(90deg);
-        }
     </style>
 </head>
 <body>
@@ -455,14 +435,6 @@
     <div class="modal-menu-conteudo">
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
-            <button class="submenu-toggle" onclick="toggleSubmenu(event)">
-                <span>🔄</span> Mudar Ordem da Lista <span class="seta">▶</span>
-            </button>
-            <div id="submenuOrdenacao" class="submenu-opcoes">
-                <button onclick="mudarOrdem('data'); fecharModalMenu();"><span>📅</span> Padrão (Data)</button>
-                <button onclick="mudarOrdem('nome'); fecharModalMenu();"><span>🔤</span> A-Z (Nome)</button>
-                <button onclick="mudarOrdem('preco'); fecharModalMenu();"><span>💰</span> Preço (Menor ao Maior)</button>
-            </div>
             <button onclick="ativarModoMover(); fecharModalMenu();"><span>🔼🔽</span> Mover Itens de Lugar</button>
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
             <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
@@ -502,7 +474,6 @@
     let loginPendente = { usuario: null, senha: null };
     let itemSelecionadoId = null;
     let modoMoverAtivo = false;
-    let ordemAtual = "data";
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
     const infoMoverDiv = document.getElementById("infoMover");
@@ -514,36 +485,21 @@
         const itensParaSalvar = currentListItems.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco, comprado: item.comprado, dataCriacao: item.dataCriacao }));
         localStorage.setItem(`lista_data_${usuarioAtual}`, JSON.stringify(itensParaSalvar));
         localStorage.setItem(`total_${usuarioAtual}`, totalGeral.toString());
-        localStorage.setItem(`ordem_${usuarioAtual}`, ordemAtual);
     }
     
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
-    // Função para ordenar: pendentes primeiro (com ordem escolhida), adquiridos sempre no final
+    // Função para ordenar: pendentes primeiro (mantendo ordem de criação), adquiridos no final
     function ordenarLista() {
         // Separar pendentes e adquiridos
         const pendentes = currentListItems.filter(item => !item.comprado);
         const adquiridos = currentListItems.filter(item => item.comprado);
         
-        // Ordenar pendentes conforme critério escolhido
-        if (ordemAtual === 'nome') {
-            pendentes.sort((a, b) => a.nome.localeCompare(b.nome));
-        } else if (ordemAtual === 'preco') {
-            pendentes.sort((a, b) => a.preco - b.preco);
-        } else { // data (mais recentes primeiro)
-            pendentes.sort((a, b) => (b.dataCriacao || 0) - (a.dataCriacao || 0));
-        }
+        // Pendentes mantêm a ordem original (por data de criação)
+        pendentes.sort((a, b) => (a.dataCriacao || 0) - (b.dataCriacao || 0));
         
-        // Adquiridos mantêm a ordem original (sem ordenação específica)
         // Juntar: pendentes + adquiridos
         currentListItems = [...pendentes, ...adquiridos];
-    }
-    
-    function mudarOrdem(tipo) {
-        ordemAtual = tipo;
-        salvarEstadoCompleto();
-        ordenarLista();
-        renderizarLista();
     }
     
     function ativarModoMover() {
@@ -570,8 +526,12 @@
         document.getElementById("modalMover").style.display = "flex";
     }
     
-    function selecionarItemParaMover(id, nome) {
+    function selecionarItemParaMover(id, nome, isComprado) {
         if (!modoMoverAtivo) return false;
+        if (isComprado) {
+            alert("⚠️ Itens já adquiridos ficam no final da lista e não podem ser movidos.");
+            return false;
+        }
         itemSelecionadoId = id;
         renderizarLista();
         abrirModalMover(nome);
@@ -591,15 +551,16 @@
             return;
         }
         
-        // Verificar se está tentando mover um item comprado
+        // Verificar se o item é comprado (não pode mover)
         if (currentListItems[index].comprado) {
             alert("⚠️ Itens já adquiridos ficam no final da lista e não podem ser movidos.");
+            desativarModoMover();
             return;
         }
         
-        // Encontrar o último índice dos itens pendentes
-        const ultimoPendenteIndex = currentListItems.findIndex(item => item.comprado) - 1;
-        const limiteSuperior = (ultimoPendenteIndex >= 0) ? ultimoPendenteIndex : currentListItems.length - 1;
+        // Encontrar o último índice dos itens pendentes (antes do primeiro comprado)
+        const primeiroCompradoIndex = currentListItems.findIndex(item => item.comprado);
+        const ultimoPendenteIndex = (primeiroCompradoIndex === -1) ? currentListItems.length - 1 : primeiroCompradoIndex - 1;
         
         if (direcao === 'cima' && index > 0) {
             // Verificar se o item acima não é comprado
@@ -607,20 +568,22 @@
                 alert("⚠️ Não é possível mover um item pendente para baixo de um item já adquirido.");
                 return;
             }
+            // Trocar com o item de cima
             [currentListItems[index - 1], currentListItems[index]] = [currentListItems[index], currentListItems[index - 1]];
             salvarEstadoCompleto();
             renderizarLista();
         } 
-        else if (direcao === 'baixo' && index < limiteSuperior) {
+        else if (direcao === 'baixo' && index < ultimoPendenteIndex) {
+            // Trocar com o item de baixo
             [currentListItems[index + 1], currentListItems[index]] = [currentListItems[index], currentListItems[index + 1]];
             salvarEstadoCompleto();
             renderizarLista();
         }
-        else if (direcao === 'baixo' && index === limiteSuperior) {
-            alert("⚠️ Este item já é o último da lista de pendentes.");
-        }
         else if (direcao === 'cima' && index === 0) {
             alert("⚠️ Este item já está no topo da lista.");
+        }
+        else if (direcao === 'baixo' && index === ultimoPendenteIndex) {
+            alert("⚠️ Este item já é o último da lista de pendentes.");
         }
         fecharModalMover();
     }
@@ -638,8 +601,8 @@
             return;
         }
         
-        let temComprados = currentListItems.some(item => item.comprado);
-        let primeiroCompradoIndex = currentListItems.findIndex(item => item.comprado);
+        const primeiroCompradoIndex = currentListItems.findIndex(item => item.comprado);
+        const temComprados = primeiroCompradoIndex !== -1;
         
         for (let i = 0; i < currentListItems.length; i++) {
             const item = currentListItems[i];
@@ -660,15 +623,27 @@
             }
             
             if (modoMoverAtivo) {
-                rowDiv.innerHTML = `
-                    <div class="produto-nome">${escapeHtml(item.nome)}</div>
-                    <span>${item.quantidade}</span>
-                    <span>R$ ${item.preco.toFixed(2)}</span>
-                    <span>R$ ${subtotal.toFixed(2)}</span>
-                    <div class="acoes">
-                        <button class="btn-acao btn-mover" onclick="selecionarItemParaMover('${item.id}', '${escapeHtml(item.nome)}')">✨ Selecionar</button>
-                    </div>
-                `;
+                if (item.comprado) {
+                    rowDiv.innerHTML = `
+                        <div class="produto-nome">${escapeHtml(item.nome)}</div>
+                        <span>${item.quantidade}</span>
+                        <span>R$ ${item.preco.toFixed(2)}</span>
+                        <span>R$ ${subtotal.toFixed(2)}</span>
+                        <div class="acoes">
+                            <button class="btn-acao btn-mover-desabilitado" disabled style="cursor: not-allowed;">🔒 Bloqueado</button>
+                        </div>
+                    `;
+                } else {
+                    rowDiv.innerHTML = `
+                        <div class="produto-nome">${escapeHtml(item.nome)}</div>
+                        <span>${item.quantidade}</span>
+                        <span>R$ ${item.preco.toFixed(2)}</span>
+                        <span>R$ ${subtotal.toFixed(2)}</span>
+                        <div class="acoes">
+                            <button class="btn-acao btn-mover" onclick="selecionarItemParaMover('${item.id}', '${escapeHtml(item.nome)}', false)">✨ Selecionar</button>
+                        </div>
+                    `;
+                }
             } else {
                 rowDiv.innerHTML = `
                     <div class="produto-nome">${escapeHtml(item.nome)}</div>
@@ -730,8 +705,6 @@
     function carregarDadosUsuario() {
         if(!usuarioAtual) return;
         let stored = localStorage.getItem(`lista_data_${usuarioAtual}`);
-        let ordemSalva = localStorage.getItem(`ordem_${usuarioAtual}`);
-        if (ordemSalva) ordemAtual = ordemSalva;
         
         if(stored) {
             try {
@@ -853,7 +826,6 @@
             localStorage.removeItem(`lista_data_${usuarioAtual}`);
             localStorage.removeItem(`total_${usuarioAtual}`);
             localStorage.removeItem(`senha_${usuarioAtual}`);
-            localStorage.removeItem(`ordem_${usuarioAtual}`);
             localStorage.removeItem("usuarioAtual");
             const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
             if (loginSalvoUsuario === usuarioAtual) {
@@ -864,23 +836,8 @@
         }
     };
     
-    function toggleSubmenu(event) {
-        event.stopPropagation();
-        const btn = event.currentTarget;
-        const submenu = document.getElementById("submenuOrdenacao");
-        if (submenu.style.display === "flex") {
-            submenu.style.display = "none";
-            btn.classList.remove("aberto");
-        } else {
-            submenu.style.display = "flex";
-            btn.classList.add("aberto");
-        }
-    }
-    
     function abrirModalMenu() { 
         document.getElementById("modalMenu").style.display = "flex"; 
-        document.getElementById("submenuOrdenacao").style.display = "none";
-        document.querySelector(".submenu-toggle")?.classList.remove("aberto");
     }
     function fecharModalMenu() { 
         document.getElementById("modalMenu").style.display = "none"; 
