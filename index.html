@@ -372,6 +372,7 @@
             transition: all 0.2s ease;
             cursor: grab;
             color: var(--text-color);
+            position: relative;
         }
         .item-row:active {
             cursor: grabbing;
@@ -383,6 +384,13 @@
         .item-row.drag-over {
             border-top: 3px solid var(--input-focus);
             margin-top: -3px;
+        }
+        /* Efeito visual para arrastar para editar */
+        .item-row.editing-swipe {
+            background: var(--input-focus);
+            color: white;
+            transition: background 0.1s ease;
+            cursor: ew-resize;
         }
         .produto-nome { font-weight: 600; word-break: break-word; }
         .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.7; }
@@ -464,6 +472,52 @@
             font-weight: 500;
             cursor: pointer;
         }
+        
+        /* Modal de edição */
+        .modal-edicao {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+        }
+        .modal-edicao-conteudo {
+            background: var(--modal-bg);
+            max-width: 400px;
+            width: 90%;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        .modal-edicao-conteudo input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid var(--input-border);
+            border-radius: 40px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        .modal-edicao-conteudo input:focus {
+            outline: none;
+            border-color: var(--input-focus);
+        }
+        .modal-edicao-botoes {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+        }
 
         /* Scrollbar para modo escuro */
         body.dark ::-webkit-scrollbar {
@@ -539,12 +593,29 @@
     </div>
 </div>
 
+<!-- Modal de edição -->
+<div id="modalEdicao" class="modal-edicao">
+    <div class="modal-edicao-conteudo">
+        <h3>✏️ Editar Item</h3>
+        <input type="text" id="editNome" placeholder="Nome do produto">
+        <input type="number" id="editQuantidade" placeholder="Quantidade" min="1">
+        <input type="number" id="editPreco" step="0.01" placeholder="Preço">
+        <div class="modal-edicao-botoes">
+            <button class="btn-confirmar" onclick="salvarEdicao()">💾 Salvar</button>
+            <button class="btn-cancelar" onclick="fecharModalEdicao()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let usuarioAtual = "";
     let totalGeral = 0;
     let currentListItems = [];
     let loginPendente = { usuario: null, senha: null };
     let draggedItemId = null;
+    let swipeStartX = null;
+    let swipeItemId = null;
+    let editandoItemId = null;
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
 
@@ -574,7 +645,13 @@
         }
     }
 
-    function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
+    function atualizarTotalUI() { 
+        totalSpan.innerText = totalGeral.toFixed(2); 
+    }
+    
+    function recalcularTotal() {
+        totalGeral = currentListItems.reduce((sum, item) => sum + (item.quantidade * item.preco), 0);
+    }
     
     function salvarEstadoCompleto() {
         if (!usuarioAtual) return;
@@ -591,6 +668,91 @@
         currentListItems = [...pendentes, ...adquiridos];
     }
     
+    // Funções para edição por arrasto lateral
+    function abrirModalEdicao(itemId) {
+        const item = currentListItems.find(i => i.id === itemId);
+        if (!item) return;
+        if (item.comprado) {
+            alert("⚠️ Itens adquiridos não podem ser editados.");
+            return;
+        }
+        editandoItemId = itemId;
+        document.getElementById("editNome").value = item.nome;
+        document.getElementById("editQuantidade").value = item.quantidade;
+        document.getElementById("editPreco").value = item.preco;
+        document.getElementById("modalEdicao").style.display = "flex";
+    }
+    
+    function fecharModalEdicao() {
+        document.getElementById("modalEdicao").style.display = "none";
+        editandoItemId = null;
+    }
+    
+    function salvarEdicao() {
+        if (!editandoItemId) return;
+        const novoNome = document.getElementById("editNome").value.trim();
+        const novaQuantidade = parseInt(document.getElementById("editQuantidade").value);
+        const novoPreco = parseFloat(document.getElementById("editPreco").value);
+        
+        if (!novoNome) {
+            alert("Digite o nome do produto.");
+            return;
+        }
+        if (isNaN(novaQuantidade) || novaQuantidade < 1) {
+            alert("Quantidade inválida.");
+            return;
+        }
+        if (isNaN(novoPreco) || novoPreco < 0) {
+            alert("Preço inválido.");
+            return;
+        }
+        
+        const item = currentListItems.find(i => i.id === editandoItemId);
+        if (item && !item.comprado) {
+            // Remover o valor antigo do total
+            totalGeral -= (item.quantidade * item.preco);
+            // Atualizar item
+            item.nome = novoNome;
+            item.quantidade = novaQuantidade;
+            item.preco = novoPreco;
+            // Adicionar novo valor ao total
+            totalGeral += (novaQuantidade * novoPreco);
+            salvarEstadoCompleto();
+            separarLista();
+            renderizarLista();
+        }
+        fecharModalEdicao();
+    }
+    
+    function handleSwipeStart(e, itemId, isComprado) {
+        if (isComprado) return;
+        swipeStartX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+        swipeItemId = itemId;
+    }
+    
+    function handleSwipeMove(e, rowElement, isComprado) {
+        if (isComprado || !swipeStartX || !swipeItemId) return;
+        const currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+        const diffX = currentX - swipeStartX;
+        
+        // Se arrastou mais de 50px para qualquer lado, abrir edição
+        if (Math.abs(diffX) > 50) {
+            rowElement.classList.add('editing-swipe');
+            setTimeout(() => {
+                rowElement.classList.remove('editing-swipe');
+            }, 200);
+            abrirModalEdicao(swipeItemId);
+            swipeStartX = null;
+            swipeItemId = null;
+        }
+    }
+    
+    function handleSwipeEnd() {
+        swipeStartX = null;
+        swipeItemId = null;
+    }
+    
+    // Drag and drop para reorganizar
     function handleDragStart(e, id, isComprado) {
         if (isComprado) {
             e.preventDefault();
@@ -697,10 +859,21 @@
             
             rowDiv.setAttribute('data-id', item.id);
             
+            // Eventos de drag and drop
             rowDiv.addEventListener('dragstart', (e) => handleDragStart(e, item.id, item.comprado));
             rowDiv.addEventListener('dragend', handleDragEnd);
             rowDiv.addEventListener('dragover', (e) => handleDragOver(e, item.id, item.comprado));
             rowDiv.addEventListener('drop', (e) => handleDrop(e, item.id, item.comprado));
+            
+            // Eventos de arrasto lateral para editar (mouse)
+            rowDiv.addEventListener('mousedown', (e) => handleSwipeStart(e, item.id, item.comprado));
+            rowDiv.addEventListener('mousemove', (e) => handleSwipeMove(e, rowDiv, item.comprado));
+            rowDiv.addEventListener('mouseup', () => handleSwipeEnd());
+            
+            // Eventos de toque para mobile
+            rowDiv.addEventListener('touchstart', (e) => handleSwipeStart(e, item.id, item.comprado));
+            rowDiv.addEventListener('touchmove', (e) => handleSwipeMove(e, rowDiv, item.comprado));
+            rowDiv.addEventListener('touchend', () => handleSwipeEnd());
             
             if (item.comprado && i === primeiroCompradoIndex && temComprados && primeiroCompradoIndex > 0) {
                 const separador = document.createElement("div");
@@ -733,7 +906,7 @@
         if (isNaN(preco) || preco < 0) preco = 0;
         const novoId = Date.now() + "-" + Math.random().toString(36).substr(2, 6);
         currentListItems.push({ id: novoId, nome: produto, quantidade, preco, comprado: false, dataCriacao: Date.now() });
-        totalGeral += (quantidade * preco);
+        recalcularTotal();
         salvarEstadoCompleto(); 
         separarLista();
         renderizarLista();
@@ -746,6 +919,7 @@
         let item = currentListItems.find(i => i.id === id);
         if(item) { 
             item.comprado = !item.comprado; 
+            recalcularTotal();
             salvarEstadoCompleto(); 
             separarLista();
             renderizarLista();
@@ -770,7 +944,7 @@
         if(stored) {
             try {
                 currentListItems = JSON.parse(stored).map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1, dataCriacao: it.dataCriacao || Date.now() }));
-                totalGeral = parseFloat(localStorage.getItem(`total_${usuarioAtual}`)) || currentListItems.reduce((a,b)=> a+(b.quantidade*b.preco),0);
+                recalcularTotal();
                 separarLista();
                 renderizarLista();
             } catch(e) { currentListItems=[]; totalGeral=0; renderizarLista(); }
@@ -907,6 +1081,9 @@
         if (event.target === document.getElementById("modalMenu")) fecharModalMenu();
         if (event.target === document.getElementById("modalSalvarLogin")) {
             document.getElementById("modalSalvarLogin").style.display = "none";
+        }
+        if (event.target === document.getElementById("modalEdicao")) {
+            fecharModalEdicao();
         }
     };
     
