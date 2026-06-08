@@ -42,26 +42,24 @@
             --total-color: #0f172a;
             --separador-bg: #eef2ff;
             --separador-color: #4f46e5;
-            --badge-admin: #dc2626;
             --btn-add: #10b981;
             --btn-add-hover: #059669;
             --btn-acao: #f1f5f9;
             --btn-acao-hover: #e2e8f0;
-            --btn-del: #fee2e2;
-            --btn-del-hover: #fecaca;
             --scrollbar-track: #f1f1f1;
             --scrollbar-thumb: #cbd5e1;
             --comprado-bg: #f8fafc;
+            --selector-bg: #f1f5f9;
         }
 
-        /* Modo Escuro Bem Preto */
+        /* Modo Escuro Super Escuro */
         body.dark {
             --bg-body: #000000;
             --bg-container: #0a0a0a;
             --bg-painel: #0a0a0a;
-            --text-color: #ffffff;
-            --text-secondary: #a0a0a0;
-            --border-color: #1a1a1a;
+            --text-color: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #1e1e1e;
             --input-bg: #1a1a1a;
             --input-border: #2a2a2a;
             --input-focus: #818cf8;
@@ -76,24 +74,22 @@
             --modal-btn-hover: #2a2a2a;
             --form-bg: #0a0a0a;
             --form-border: #1a1a1a;
-            --header-bg: #1a1a1a;
+            --header-bg: #111111;
             --item-bg: #0a0a0a;
             --item-border: #1a1a1a;
             --item-shadow: rgba(0, 0, 0, 0.5);
-            --total-bg: #1a1a1a;
-            --total-color: #ffffff;
-            --separador-bg: #1a1a1a;
+            --total-bg: #111111;
+            --total-color: #f1f5f9;
+            --separador-bg: #111111;
             --separador-color: #a78bfa;
-            --badge-admin: #ef4444;
             --btn-add: #059669;
             --btn-add-hover: #10b981;
             --btn-acao: #1a1a1a;
             --btn-acao-hover: #2a2a2a;
-            --btn-del: #3a0a0a;
-            --btn-del-hover: #5a1010;
             --scrollbar-track: #1a1a1a;
             --scrollbar-thumb: #2a2a2a;
             --comprado-bg: #0a0a0a;
+            --selector-bg: #0a0a0a;
         }
 
         body {
@@ -193,7 +189,7 @@
         .titulo-app {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--text-color), var(--input-focus));
+            background: linear-gradient(135deg, var(--text-color), #4f46e5);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
@@ -231,6 +227,59 @@
             transform: scale(0.96);
         }
 
+        /* Seletor de listas em linha reta - com botão Nova Lista */
+        .lista-section {
+            margin: 1rem 0 1.5rem 0;
+            padding: 0.75rem 1rem;
+            background: var(--selector-bg);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease;
+        }
+        .lista-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .lista-selector select {
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            padding: 8px 12px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+        .lista-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .btn-acao-lista {
+            background: var(--btn-acao);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-acao-lista:hover {
+            background: var(--btn-acao-hover);
+            transform: scale(0.95);
+        }
+
         .modal-menu {
             display: none;
             position: fixed;
@@ -238,7 +287,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
@@ -256,6 +305,9 @@
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid var(--border-color);
+        }
+        .modal-menu-conteudo h3 {
+            color: var(--text-color);
         }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -385,7 +437,6 @@
             border-top: 3px solid var(--input-focus);
             margin-top: -3px;
         }
-        /* Efeito visual para arrastar para editar */
         .item-row.editing-swipe {
             background: var(--input-focus);
             color: white;
@@ -418,6 +469,8 @@
         @media (max-width: 700px) {
             .painel { padding: 1.2rem; }
             .lista-header, .item-row { grid-template-columns: 2fr 0.8fr 1fr 1fr 1.5fr; font-size: 0.75rem; gap: 6px; }
+            .lista-section { flex-direction: column; align-items: stretch; }
+            .lista-selector { justify-content: space-between; }
         }
 
         .modal-confirmacao {
@@ -427,7 +480,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
@@ -447,6 +500,15 @@
         .modal-confirmacao-conteudo p {
             margin: 15px 0;
             font-size: 1.1rem;
+        }
+        .modal-confirmacao-conteudo input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid var(--input-border);
+            border-radius: 40px;
+            background: var(--input-bg);
+            color: var(--text-color);
         }
         .modal-confirmacao-botoes {
             display: flex;
@@ -473,7 +535,6 @@
             cursor: pointer;
         }
         
-        /* Modal de edição */
         .modal-edicao {
             display: none;
             position: fixed;
@@ -481,7 +542,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
@@ -519,7 +580,7 @@
             margin-top: 15px;
         }
 
-        /* Scrollbar para modo escuro */
+        /* Scrollbar */
         body.dark ::-webkit-scrollbar {
             width: 10px;
         }
@@ -554,6 +615,18 @@
                     <button class="btn-menu" id="menuBtn" aria-label="Menu">⋮</button>
                 </div>
             </div>
+            
+            <!-- Seletor de listas em linha reta com botão Nova Lista -->
+            <div class="lista-section">
+                <div class="lista-selector">
+                    <span class="lista-label">📁 Lista:</span>
+                    <select id="listaSelect" onchange="trocarLista()"></select>
+                    <button class="btn-acao-lista" onclick="mostrarModalNovaLista()" title="Nova lista">➕ Nova</button>
+                    <button class="btn-acao-lista" onclick="renomearListaAtual()" title="Renomear lista">✏️ Renomear</button>
+                    <button class="btn-acao-lista" onclick="excluirListaAtual()" title="Excluir lista">🗑️ Excluir</button>
+                </div>
+            </div>
+            
             <div class="form-add">
                 <div class="campo-add" style="flex:2"><label>🏷️ Produto</label><input type="text" id="produto" placeholder="Ex: Arroz"></div>
                 <div class="campo-add"><label>📦 Qtd</label><input type="number" id="quantidade" value="1" min="1"></div>
@@ -593,7 +666,28 @@
     </div>
 </div>
 
-<!-- Modal de edição -->
+<div id="modalNovaLista" class="modal-confirmacao">
+    <div class="modal-confirmacao-conteudo">
+        <p>📝 Criar nova lista</p>
+        <input type="text" id="novaListaNome" placeholder="Nome da lista" autocomplete="off">
+        <div class="modal-confirmacao-botoes">
+            <button class="btn-confirmar" onclick="criarNovaLista()">Criar</button>
+            <button class="btn-cancelar" onclick="fecharModalNovaLista()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalRenomearLista" class="modal-confirmacao">
+    <div class="modal-confirmacao-conteudo">
+        <p>✏️ Renomear lista</p>
+        <input type="text" id="renomearListaNome" placeholder="Novo nome" autocomplete="off">
+        <div class="modal-confirmacao-botoes">
+            <button class="btn-confirmar" onclick="confirmarRenomearLista()">Salvar</button>
+            <button class="btn-cancelar" onclick="fecharModalRenomearLista()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <div id="modalEdicao" class="modal-edicao">
     <div class="modal-edicao-conteudo">
         <h3>✏️ Editar Item</h3>
@@ -609,8 +703,10 @@
 
 <script>
     let usuarioAtual = "";
-    let totalGeral = 0;
     let currentListItems = [];
+    let totalGeral = 0;
+    let listaAtual = "default";
+    let listas = ["default"];
     let loginPendente = { usuario: null, senha: null };
     let draggedItemId = null;
     let swipeStartX = null;
@@ -618,281 +714,194 @@
     let editandoItemId = null;
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
+    const listaSelect = document.getElementById("listaSelect");
 
-    // Funções do Modo Escuro
+    function carregarListasDoUsuario() {
+        const listasSalvas = localStorage.getItem(`listas_${usuarioAtual}`);
+        if (listasSalvas) listas = JSON.parse(listasSalvas);
+        else listas = ["default"];
+        if (!listas.includes(listaAtual) || (listaAtual === "default" && listas.length > 0)) listaAtual = listas[0];
+        atualizarSelectListas();
+    }
+    
+    function salvarListas() { localStorage.setItem(`listas_${usuarioAtual}`, JSON.stringify(listas)); }
+    
+    function atualizarSelectListas() {
+        listaSelect.innerHTML = "";
+        listas.forEach(lista => {
+            const option = document.createElement("option");
+            option.value = lista;
+            option.textContent = lista === "default" ? "📋 Principal" : `📋 ${lista}`;
+            if (lista === listaAtual) option.selected = true;
+            listaSelect.appendChild(option);
+        });
+    }
+    
+    function salvarListaAtual() {
+        if (!usuarioAtual) return;
+        localStorage.setItem(`lista_${usuarioAtual}_${listaAtual}`, JSON.stringify({ itens: currentListItems, total: totalGeral }));
+    }
+    
+    function carregarListaAtual() {
+        const dadosSalvos = localStorage.getItem(`lista_${usuarioAtual}_${listaAtual}`);
+        if (dadosSalvos) {
+            try {
+                const dados = JSON.parse(dadosSalvos);
+                currentListItems = dados.itens.map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1, dataCriacao: it.dataCriacao || Date.now() }));
+                totalGeral = dados.total || currentListItems.reduce((a,b)=> a+(b.quantidade*b.preco),0);
+            } catch(e) { currentListItems=[]; totalGeral=0; }
+        } else { currentListItems=[]; totalGeral=0; }
+        separarLista();
+        renderizarLista();
+    }
+    
+    function trocarLista() { salvarListaAtual(); listaAtual = listaSelect.value; carregarListaAtual(); }
+    function mostrarModalNovaLista() { document.getElementById("novaListaNome").value = ""; document.getElementById("modalNovaLista").style.display = "flex"; }
+    function fecharModalNovaLista() { document.getElementById("modalNovaLista").style.display = "none"; }
+    
+    function criarNovaLista() {
+        const nome = document.getElementById("novaListaNome").value.trim();
+        if (!nome) { alert("Digite um nome para a lista."); return; }
+        if (listas.includes(nome)) { alert("Já existe uma lista com este nome."); return; }
+        salvarListaAtual();
+        listas.push(nome);
+        salvarListas();
+        listaAtual = nome;
+        atualizarSelectListas();
+        currentListItems = [];
+        totalGeral = 0;
+        separarLista();
+        renderizarLista();
+        fecharModalNovaLista();
+    }
+    
+    function renomearListaAtual() { document.getElementById("renomearListaNome").value = listaAtual === "default" ? "Principal" : listaAtual; document.getElementById("modalRenomearLista").style.display = "flex"; }
+    function fecharModalRenomearLista() { document.getElementById("modalRenomearLista").style.display = "none"; }
+    
+    function confirmarRenomearLista() {
+        let novoNome = document.getElementById("renomearListaNome").value.trim();
+        if (!novoNome) { alert("Digite um nome válido."); return; }
+        if (novoNome === "default") novoNome = "default";
+        if (listas.includes(novoNome) && novoNome !== listaAtual) { alert("Já existe uma lista com este nome."); return; }
+        const index = listas.indexOf(listaAtual);
+        if (index !== -1) {
+            const dadosAntigos = localStorage.getItem(`lista_${usuarioAtual}_${listaAtual}`);
+            listas[index] = novoNome;
+            salvarListas();
+            if (dadosAntigos) { localStorage.setItem(`lista_${usuarioAtual}_${novoNome}`, dadosAntigos); localStorage.removeItem(`lista_${usuarioAtual}_${listaAtual}`); }
+            listaAtual = novoNome;
+            atualizarSelectListas();
+            carregarListaAtual();
+        }
+        fecharModalRenomearLista();
+    }
+    
+    function excluirListaAtual() {
+        if (listaAtual === "default" && listas.length === 1) { alert("Você não pode excluir a última lista. Crie uma nova primeiro."); return; }
+        if (confirm(`Tem certeza que deseja excluir a lista "${listaAtual === 'default' ? 'Principal' : listaAtual}"?`)) {
+            localStorage.removeItem(`lista_${usuarioAtual}_${listaAtual}`);
+            const index = listas.indexOf(listaAtual);
+            if (index !== -1) listas.splice(index, 1);
+            salvarListas();
+            listaAtual = listas[0];
+            atualizarSelectListas();
+            carregarListaAtual();
+        }
+    }
+
     function toggleModoEscuro() {
         document.body.classList.toggle('dark');
         const isDark = document.body.classList.contains('dark');
         localStorage.setItem('modo_escuro', isDark ? 'true' : 'false');
-        const btnModoEscuro = document.getElementById('btnModoEscuro');
-        if (btnModoEscuro) {
-            if (isDark) {
-                btnModoEscuro.innerHTML = '<span>☀️</span> Modo Claro';
-            } else {
-                btnModoEscuro.innerHTML = '<span>🌙</span> Modo Escuro';
-            }
-        }
+        const btn = document.getElementById('btnModoEscuro');
+        if (btn) btn.innerHTML = isDark ? '<span>☀️</span> Modo Claro' : '<span>🌙</span> Modo Escuro';
     }
-
-    function carregarModoEscuro() {
-        const isDark = localStorage.getItem('modo_escuro') === 'true';
-        if (isDark) {
-            document.body.classList.add('dark');
-            const btnModoEscuro = document.getElementById('btnModoEscuro');
-            if (btnModoEscuro) {
-                btnModoEscuro.innerHTML = '<span>☀️</span> Modo Claro';
-            }
-        }
-    }
-
-    function atualizarTotalUI() { 
-        totalSpan.innerText = totalGeral.toFixed(2); 
-    }
+    function carregarModoEscuro() { if (localStorage.getItem('modo_escuro') === 'true') { document.body.classList.add('dark'); const btn = document.getElementById('btnModoEscuro'); if (btn) btn.innerHTML = '<span>☀️</span> Modo Claro'; } }
     
-    function recalcularTotal() {
-        totalGeral = currentListItems.reduce((sum, item) => sum + (item.quantidade * item.preco), 0);
-    }
-    
-    function salvarEstadoCompleto() {
-        if (!usuarioAtual) return;
-        const itensParaSalvar = currentListItems.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco, comprado: item.comprado, dataCriacao: item.dataCriacao }));
-        localStorage.setItem(`lista_data_${usuarioAtual}`, JSON.stringify(itensParaSalvar));
-        localStorage.setItem(`total_${usuarioAtual}`, totalGeral.toString());
-    }
-    
+    function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
+    function recalcularTotal() { totalGeral = currentListItems.reduce((s, i) => s + (i.quantidade * i.preco), 0); }
+    function salvarEstadoCompleto() { salvarListaAtual(); }
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    function separarLista() { const p = currentListItems.filter(i => !i.comprado), a = currentListItems.filter(i => i.comprado); currentListItems = [...p, ...a]; }
     
-    function separarLista() {
-        const pendentes = currentListItems.filter(item => !item.comprado);
-        const adquiridos = currentListItems.filter(item => item.comprado);
-        currentListItems = [...pendentes, ...adquiridos];
-    }
-    
-    // Funções para edição por arrasto lateral
     function abrirModalEdicao(itemId) {
         const item = currentListItems.find(i => i.id === itemId);
-        if (!item) return;
-        if (item.comprado) {
-            alert("⚠️ Itens adquiridos não podem ser editados.");
-            return;
-        }
+        if (!item || item.comprado) { if(item && item.comprado) alert("⚠️ Itens adquiridos não podem ser editados."); return; }
         editandoItemId = itemId;
         document.getElementById("editNome").value = item.nome;
         document.getElementById("editQuantidade").value = item.quantidade;
         document.getElementById("editPreco").value = item.preco;
         document.getElementById("modalEdicao").style.display = "flex";
     }
-    
-    function fecharModalEdicao() {
-        document.getElementById("modalEdicao").style.display = "none";
-        editandoItemId = null;
-    }
-    
+    function fecharModalEdicao() { document.getElementById("modalEdicao").style.display = "none"; editandoItemId = null; }
     function salvarEdicao() {
         if (!editandoItemId) return;
         const novoNome = document.getElementById("editNome").value.trim();
         const novaQuantidade = parseInt(document.getElementById("editQuantidade").value);
         const novoPreco = parseFloat(document.getElementById("editPreco").value);
-        
-        if (!novoNome) {
-            alert("Digite o nome do produto.");
-            return;
-        }
-        if (isNaN(novaQuantidade) || novaQuantidade < 1) {
-            alert("Quantidade inválida.");
-            return;
-        }
-        if (isNaN(novoPreco) || novoPreco < 0) {
-            alert("Preço inválido.");
-            return;
-        }
-        
+        if (!novoNome) { alert("Digite o nome do produto."); return; }
+        if (isNaN(novaQuantidade) || novaQuantidade < 1) { alert("Quantidade inválida."); return; }
+        if (isNaN(novoPreco) || novoPreco < 0) { alert("Preço inválido."); return; }
         const item = currentListItems.find(i => i.id === editandoItemId);
         if (item && !item.comprado) {
-            // Remover o valor antigo do total
             totalGeral -= (item.quantidade * item.preco);
-            // Atualizar item
-            item.nome = novoNome;
-            item.quantidade = novaQuantidade;
-            item.preco = novoPreco;
-            // Adicionar novo valor ao total
+            item.nome = novoNome; item.quantidade = novaQuantidade; item.preco = novoPreco;
             totalGeral += (novaQuantidade * novoPreco);
-            salvarEstadoCompleto();
-            separarLista();
-            renderizarLista();
+            salvarEstadoCompleto(); separarLista(); renderizarLista();
         }
         fecharModalEdicao();
     }
     
-    function handleSwipeStart(e, itemId, isComprado) {
-        if (isComprado) return;
-        swipeStartX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
-        swipeItemId = itemId;
-    }
+    function handleSwipeStart(e, id, comprado) { if (comprado) return; swipeStartX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX; swipeItemId = id; }
+    function handleSwipeMove(e, row, comprado) { if (comprado || !swipeStartX || !swipeItemId) return; const diff = (e.type === 'mousemove' ? e.clientX : e.touches[0].clientX) - swipeStartX; if (Math.abs(diff) > 50) { row.classList.add('editing-swipe'); setTimeout(() => row.classList.remove('editing-swipe'), 200); abrirModalEdicao(swipeItemId); swipeStartX = null; swipeItemId = null; } }
+    function handleSwipeEnd() { swipeStartX = null; swipeItemId = null; }
     
-    function handleSwipeMove(e, rowElement, isComprado) {
-        if (isComprado || !swipeStartX || !swipeItemId) return;
-        const currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
-        const diffX = currentX - swipeStartX;
-        
-        // Se arrastou mais de 50px para qualquer lado, abrir edição
-        if (Math.abs(diffX) > 50) {
-            rowElement.classList.add('editing-swipe');
-            setTimeout(() => {
-                rowElement.classList.remove('editing-swipe');
-            }, 200);
-            abrirModalEdicao(swipeItemId);
-            swipeStartX = null;
-            swipeItemId = null;
-        }
-    }
-    
-    function handleSwipeEnd() {
-        swipeStartX = null;
-        swipeItemId = null;
-    }
-    
-    // Drag and drop para reorganizar
-    function handleDragStart(e, id, isComprado) {
-        if (isComprado) {
-            e.preventDefault();
-            return false;
-        }
-        draggedItemId = id;
-        e.target.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', id);
-        return true;
-    }
-    
-    function handleDragEnd(e) {
-        e.target.classList.remove('dragging');
-        draggedItemId = null;
-        document.querySelectorAll('.item-row').forEach(row => {
-            row.classList.remove('drag-over');
-        });
-    }
-    
-    function handleDragOver(e, targetId, isCompradoTarget) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        
-        if (isCompradoTarget) {
-            return;
-        }
-        
-        const targetRow = e.target.closest('.item-row');
-        if (targetRow) {
-            document.querySelectorAll('.item-row').forEach(row => {
-                row.classList.remove('drag-over');
-            });
-            targetRow.classList.add('drag-over');
-        }
-    }
-    
-    function handleDrop(e, targetId, isCompradoTarget) {
-        e.preventDefault();
-        
-        document.querySelectorAll('.item-row').forEach(row => {
-            row.classList.remove('drag-over');
-        });
-        
+    function handleDragStart(e, id, comprado) { if (comprado) { e.preventDefault(); return false; } draggedItemId = id; e.target.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); return true; }
+    function handleDragEnd(e) { e.target.classList.remove('dragging'); draggedItemId = null; document.querySelectorAll('.item-row').forEach(r => r.classList.remove('drag-over')); }
+    function handleDragOver(e, targetId, compradoTarget) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (compradoTarget) return; const tr = e.target.closest('.item-row'); if (tr) { document.querySelectorAll('.item-row').forEach(r => r.classList.remove('drag-over')); tr.classList.add('drag-over'); } }
+    function handleDrop(e, targetId, compradoTarget) {
+        e.preventDefault(); document.querySelectorAll('.item-row').forEach(r => r.classList.remove('drag-over'));
         if (!draggedItemId) return;
-        
-        if (isCompradoTarget) {
-            alert("⚠️ Não é possível mover itens para a área de adquiridos.");
-            return;
-        }
-        
-        const draggedIndex = currentListItems.findIndex(item => item.id === draggedItemId);
-        const targetIndex = currentListItems.findIndex(item => item.id === targetId);
-        
-        if (draggedIndex === -1 || targetIndex === -1) return;
-        
-        if (currentListItems[draggedIndex].comprado) {
-            alert("⚠️ Itens adquiridos não podem ser movidos.");
-            return;
-        }
-        
-        if (currentListItems[targetIndex].comprado) {
-            alert("⚠️ Não é possível mover itens para depois dos itens adquiridos.");
-            return;
-        }
-        
-        const [movedItem] = currentListItems.splice(draggedIndex, 1);
-        const newTargetIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
-        currentListItems.splice(newTargetIndex, 0, movedItem);
-        
-        separarLista();
-        salvarEstadoCompleto();
-        renderizarLista();
-        
-        draggedItemId = null;
+        if (compradoTarget) { alert("⚠️ Não é possível mover itens para a área de adquiridos."); return; }
+        const di = currentListItems.findIndex(i => i.id === draggedItemId), ti = currentListItems.findIndex(i => i.id === targetId);
+        if (di === -1 || ti === -1) return;
+        if (currentListItems[di].comprado) { alert("⚠️ Itens adquiridos não podem ser movidos."); return; }
+        if (currentListItems[ti].comprado) { alert("⚠️ Não é possível mover itens para depois dos itens adquiridos."); return; }
+        const [m] = currentListItems.splice(di, 1);
+        const nt = di < ti ? ti - 1 : ti;
+        currentListItems.splice(nt, 0, m);
+        separarLista(); salvarEstadoCompleto(); renderizarLista(); draggedItemId = null;
     }
     
     function renderizarLista() {
         if (!listaContainer) return;
-        
         separarLista();
-        
         listaContainer.innerHTML = "";
-        if (currentListItems.length === 0) {
-            listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-secondary);">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>';
-            atualizarTotalUI();
-            return;
-        }
-        
-        const primeiroCompradoIndex = currentListItems.findIndex(item => item.comprado);
-        const temComprados = primeiroCompradoIndex !== -1;
-        
+        if (currentListItems.length === 0) { listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-secondary);">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>'; atualizarTotalUI(); return; }
+        const pcIndex = currentListItems.findIndex(i => i.comprado), hasComp = pcIndex !== -1;
         for (let i = 0; i < currentListItems.length; i++) {
-            const item = currentListItems[i];
-            const subtotal = item.quantidade * item.preco;
-            const rowDiv = document.createElement("div");
-            rowDiv.className = "item-row";
-            if (item.comprado) {
-                rowDiv.classList.add("comprado");
-                rowDiv.draggable = false;
-            } else {
-                rowDiv.draggable = true;
+            const item = currentListItems[i], sub = item.quantidade * item.preco;
+            const row = document.createElement("div"); row.className = "item-row";
+            if (item.comprado) { row.classList.add("comprado"); row.draggable = false; } else row.draggable = true;
+            row.setAttribute('data-id', item.id);
+            row.addEventListener('dragstart', e => handleDragStart(e, item.id, item.comprado));
+            row.addEventListener('dragend', handleDragEnd);
+            row.addEventListener('dragover', e => handleDragOver(e, item.id, item.comprado));
+            row.addEventListener('drop', e => handleDrop(e, item.id, item.comprado));
+            row.addEventListener('mousedown', e => handleSwipeStart(e, item.id, item.comprado));
+            row.addEventListener('mousemove', e => handleSwipeMove(e, row, item.comprado));
+            row.addEventListener('mouseup', handleSwipeEnd);
+            row.addEventListener('touchstart', e => handleSwipeStart(e, item.id, item.comprado));
+            row.addEventListener('touchmove', e => handleSwipeMove(e, row, item.comprado));
+            row.addEventListener('touchend', handleSwipeEnd);
+            if (item.comprado && i === pcIndex && hasComp && pcIndex > 0) {
+                const sep = document.createElement("div");
+                sep.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: var(--separador-bg); border-radius: 20px; font-size: 0.8rem; color: var(--separador-color); font-weight: 600;";
+                sep.innerText = "✓ ITENS JÁ ADQUIRIDOS ✓";
+                listaContainer.appendChild(sep);
             }
-            
-            rowDiv.setAttribute('data-id', item.id);
-            
-            // Eventos de drag and drop
-            rowDiv.addEventListener('dragstart', (e) => handleDragStart(e, item.id, item.comprado));
-            rowDiv.addEventListener('dragend', handleDragEnd);
-            rowDiv.addEventListener('dragover', (e) => handleDragOver(e, item.id, item.comprado));
-            rowDiv.addEventListener('drop', (e) => handleDrop(e, item.id, item.comprado));
-            
-            // Eventos de arrasto lateral para editar (mouse)
-            rowDiv.addEventListener('mousedown', (e) => handleSwipeStart(e, item.id, item.comprado));
-            rowDiv.addEventListener('mousemove', (e) => handleSwipeMove(e, rowDiv, item.comprado));
-            rowDiv.addEventListener('mouseup', () => handleSwipeEnd());
-            
-            // Eventos de toque para mobile
-            rowDiv.addEventListener('touchstart', (e) => handleSwipeStart(e, item.id, item.comprado));
-            rowDiv.addEventListener('touchmove', (e) => handleSwipeMove(e, rowDiv, item.comprado));
-            rowDiv.addEventListener('touchend', () => handleSwipeEnd());
-            
-            if (item.comprado && i === primeiroCompradoIndex && temComprados && primeiroCompradoIndex > 0) {
-                const separador = document.createElement("div");
-                separador.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: var(--separador-bg); border-radius: 20px; font-size: 0.8rem; color: var(--separador-color); font-weight: 600;";
-                separador.innerText = "✓ ITENS JÁ ADQUIRIDOS ✓";
-                listaContainer.appendChild(separador);
-            }
-            
-            rowDiv.innerHTML = `
-                <div class="produto-nome">${escapeHtml(item.nome)}</div>
-                <span>${item.quantidade}</span>
-                <span>R$ ${item.preco.toFixed(2)}</span>
-                <span>R$ ${subtotal.toFixed(2)}</span>
-                <div class="acoes">
-                    <button class="btn-acao btn-check" onclick="toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button>
-                    <button class="btn-acao btn-del" onclick="removerItemComConfirmacao('${item.id}')">🗑️</button>
-                </div>
-            `;
-            listaContainer.appendChild(rowDiv);
+            row.innerHTML = `<div class="produto-nome">${escapeHtml(item.nome)}</div><span>${item.quantidade}</span><span>R$ ${item.preco.toFixed(2)}</span><span>R$ ${sub.toFixed(2)}</span><div class="acoes"><button class="btn-acao btn-check" onclick="toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button><button class="btn-acao btn-del" onclick="removerItemComConfirmacao('${item.id}')">🗑️</button></div>`;
+            listaContainer.appendChild(row);
         }
         atualizarTotalUI();
     }
@@ -937,154 +946,39 @@
         }
     };
     
-    function carregarDadosUsuario() {
-        if(!usuarioAtual) return;
-        let stored = localStorage.getItem(`lista_data_${usuarioAtual}`);
-        
-        if(stored) {
-            try {
-                currentListItems = JSON.parse(stored).map(it => ({ ...it, preco: parseFloat(it.preco)||0, quantidade: parseInt(it.quantidade)||1, dataCriacao: it.dataCriacao || Date.now() }));
-                recalcularTotal();
-                separarLista();
-                renderizarLista();
-            } catch(e) { currentListItems=[]; totalGeral=0; renderizarLista(); }
-        } else {
-            currentListItems=[]; totalGeral=0; renderizarLista();
-        }
-    }
+    function carregarDadosUsuario() { carregarListasDoUsuario(); carregarListaAtual(); }
     
-    function salvarLoginLembrado(usuario, senha) {
-        localStorage.setItem("login_lembrado_usuario", usuario);
-        localStorage.setItem("login_lembrado_senha", senha);
-    }
-    
-    function limparLoginLembrado() {
-        localStorage.removeItem("login_lembrado_usuario");
-        localStorage.removeItem("login_lembrado_senha");
-    }
-    
-    function carregarLoginLembrado() {
-        const usuario = localStorage.getItem("login_lembrado_usuario");
-        const senha = localStorage.getItem("login_lembrado_senha");
-        if (usuario && senha) {
-            document.getElementById("usuario").value = usuario;
-            document.getElementById("senha").value = senha;
-            setTimeout(() => {
-                entrar();
-            }, 100);
-        }
-    }
-    
-    function confirmarSalvarLogin() {
-        if (loginPendente.usuario && loginPendente.senha) {
-            salvarLoginLembrado(loginPendente.usuario, loginPendente.senha);
-        }
-        loginPendente = { usuario: null, senha: null };
-        document.getElementById("modalSalvarLogin").style.display = "none";
-    }
-    
-    function cancelarSalvarLogin() {
-        limparLoginLembrado();
-        loginPendente = { usuario: null, senha: null };
-        document.getElementById("modalSalvarLogin").style.display = "none";
-    }
-    
-    function mostrarDialogoSalvarLogin(usuario, senha) {
-        loginPendente = { usuario, senha };
-        document.getElementById("modalSalvarLogin").style.display = "flex";
-    }
+    function salvarLoginLembrado(usuario, senha) { localStorage.setItem("login_lembrado_usuario", usuario); localStorage.setItem("login_lembrado_senha", senha); }
+    function limparLoginLembrado() { localStorage.removeItem("login_lembrado_usuario"); localStorage.removeItem("login_lembrado_senha"); }
+    function carregarLoginLembrado() { const u = localStorage.getItem("login_lembrado_usuario"), s = localStorage.getItem("login_lembrado_senha"); if (u && s) { document.getElementById("usuario").value = u; document.getElementById("senha").value = s; setTimeout(() => entrar(), 100); } }
+    function confirmarSalvarLogin() { if (loginPendente.usuario && loginPendente.senha) salvarLoginLembrado(loginPendente.usuario, loginPendente.senha); loginPendente = {}; document.getElementById("modalSalvarLogin").style.display = "none"; }
+    function cancelarSalvarLogin() { limparLoginLembrado(); loginPendente = {}; document.getElementById("modalSalvarLogin").style.display = "none"; }
+    function mostrarDialogoSalvarLogin(usuario, senha) { loginPendente = { usuario, senha }; document.getElementById("modalSalvarLogin").style.display = "flex"; }
     
     function entrar() {
-        const usuario = document.getElementById("usuario").value.trim();
-        const senha = document.getElementById("senha").value;
-        if(!usuario || !senha) { alert("Preencha usuário e senha"); return; }
-        
+        const usuario = document.getElementById("usuario").value.trim(), senha = document.getElementById("senha").value;
+        if (!usuario || !senha) { alert("Preencha usuário e senha"); return; }
         const senhaSalva = localStorage.getItem("senha_" + usuario);
-        
-        if(!senhaSalva) {
-            localStorage.setItem("senha_" + usuario, senha);
-            alert("✅ Conta criada com sucesso! Bem-vindo(a).");
-            mostrarDialogoSalvarLogin(usuario, senha);
-        } else {
-            if(senha !== senhaSalva) { alert("Senha incorreta"); return; }
-            
-            const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
-            const loginSalvoSenha = localStorage.getItem("login_lembrado_senha");
-            
-            if (!loginSalvoUsuario || loginSalvoUsuario !== usuario || loginSalvoSenha !== senha) {
-                mostrarDialogoSalvarLogin(usuario, senha);
-            }
-        }
-        
-        usuarioAtual = usuario;
-        localStorage.setItem("usuarioAtual", usuarioAtual);
-        document.getElementById("login").style.display = "none";
-        document.getElementById("app").style.display = "block";
-        document.getElementById("nomeUsuario").innerText = usuarioAtual;
-        carregarDadosUsuario();
-        document.getElementById("senha").value = "";
+        if (!senhaSalva) { localStorage.setItem("senha_" + usuario, senha); alert("✅ Conta criada com sucesso! Bem-vindo(a)."); mostrarDialogoSalvarLogin(usuario, senha); }
+        else { if (senha !== senhaSalva) { alert("Senha incorreta"); return; } const lu = localStorage.getItem("login_lembrado_usuario"), ls = localStorage.getItem("login_lembrado_senha"); if (!lu || lu !== usuario || ls !== senha) mostrarDialogoSalvarLogin(usuario, senha); }
+        usuarioAtual = usuario; localStorage.setItem("usuarioAtual", usuarioAtual);
+        document.getElementById("login").style.display = "none"; document.getElementById("app").style.display = "block";
+        document.getElementById("nomeUsuario").innerText = usuarioAtual; carregarDadosUsuario(); document.getElementById("senha").value = "";
     }
     
-    window.sair = function() {
-        if(confirm("Sair da sua conta?")) {
-            localStorage.removeItem("usuarioAtual");
-            document.getElementById("app").style.display = "none";
-            document.getElementById("login").style.display = "block";
-            usuarioAtual = "";
-            currentListItems = [];
-            renderizarLista();
-            document.getElementById("usuario").value = "";
-            document.getElementById("senha").value = "";
-            fecharModalMenu();
-        }
-    };
+    window.sair = function() { if(confirm("Sair da sua conta?")) { localStorage.removeItem("usuarioAtual"); document.getElementById("app").style.display = "none"; document.getElementById("login").style.display = "block"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("usuario").value = ""; document.getElementById("senha").value = ""; fecharModalMenu(); } };
+    window.mudarSenha = function() { if(!usuarioAtual) return; const a = prompt("Digite a senha atual:"); if(a !== localStorage.getItem("senha_" + usuarioAtual)) { alert("Senha atual incorreta"); return; } const n = prompt("Digite a nova senha:"); if(n && n.trim()) { localStorage.setItem("senha_" + usuarioAtual, n); alert("Senha alterada com sucesso!"); if(localStorage.getItem("login_lembrado_usuario") === usuarioAtual) salvarLoginLembrado(usuarioAtual, n); } else alert("Senha inválida"); };
+    window.apagarUsuario = function() { if(usuarioAtual && confirm(`ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}". Tem certeza?`)) { for(let i=0; i<localStorage.length; i++){ const k=localStorage.key(i); if(k && (k.startsWith(`lista_${usuarioAtual}`) || k===`listas_${usuarioAtual}` || k===`senha_${usuarioAtual}`)) localStorage.removeItem(k); } if(localStorage.getItem("login_lembrado_usuario")===usuarioAtual) limparLoginLembrado(); localStorage.removeItem("usuarioAtual"); alert("Usuário e dados removidos permanentemente."); location.reload(); } };
     
-    window.mudarSenha = function() {
-        if(!usuarioAtual) return;
-        const antiga = prompt("Digite a senha atual:");
-        const senhaSalva = localStorage.getItem("senha_" + usuarioAtual);
-        if(antiga !== senhaSalva) { alert("Senha atual incorreta"); return; }
-        const nova = prompt("Digite a nova senha:");
-        if(nova && nova.trim()) {
-            localStorage.setItem("senha_" + usuarioAtual, nova);
-            alert("Senha alterada com sucesso!");
-            const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
-            if (loginSalvoUsuario === usuarioAtual) {
-                salvarLoginLembrado(usuarioAtual, nova);
-            }
-        } else alert("Senha inválida");
-    };
-    
-    window.apagarUsuario = function() {
-        if(usuarioAtual && confirm(`ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}". Tem certeza?`)) {
-            localStorage.removeItem(`lista_data_${usuarioAtual}`);
-            localStorage.removeItem(`total_${usuarioAtual}`);
-            localStorage.removeItem(`senha_${usuarioAtual}`);
-            localStorage.removeItem("usuarioAtual");
-            const loginSalvoUsuario = localStorage.getItem("login_lembrado_usuario");
-            if (loginSalvoUsuario === usuarioAtual) {
-                limparLoginLembrado();
-            }
-            alert("Usuário e dados removidos permanentemente.");
-            location.reload();
-        }
-    };
-    
-    function abrirModalMenu() { 
-        document.getElementById("modalMenu").style.display = "flex"; 
-    }
-    function fecharModalMenu() { 
-        document.getElementById("modalMenu").style.display = "none"; 
-    }
+    function abrirModalMenu() { document.getElementById("modalMenu").style.display = "flex"; }
+    function fecharModalMenu() { document.getElementById("modalMenu").style.display = "none"; }
     
     window.onclick = function(event) {
         if (event.target === document.getElementById("modalMenu")) fecharModalMenu();
-        if (event.target === document.getElementById("modalSalvarLogin")) {
-            document.getElementById("modalSalvarLogin").style.display = "none";
-        }
-        if (event.target === document.getElementById("modalEdicao")) {
-            fecharModalEdicao();
-        }
+        if (event.target === document.getElementById("modalSalvarLogin")) document.getElementById("modalSalvarLogin").style.display = "none";
+        if (event.target === document.getElementById("modalNovaLista")) fecharModalNovaLista();
+        if (event.target === document.getElementById("modalRenomearLista")) fecharModalRenomearLista();
+        if (event.target === document.getElementById("modalEdicao")) fecharModalEdicao();
     };
     
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
@@ -1097,4 +991,4 @@
     };
 </script>
 </body>
-</html>
+    </html>
