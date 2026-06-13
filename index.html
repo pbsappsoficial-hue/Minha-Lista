@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Lista de Compras - com Exportação Segura</title>
+    <title>Lista de Compras - Backup Criptografado</title>
     <style>
         * {
             margin: 0;
@@ -227,7 +227,6 @@
             transform: scale(0.96);
         }
 
-        /* Seletor de listas em linha reta - com botão Nova Lista */
         .lista-section {
             margin: 1rem 0 1.5rem 0;
             padding: 0.75rem 1rem;
@@ -579,18 +578,6 @@
             justify-content: center;
             margin-top: 15px;
         }
-
-        /* Scrollbar */
-        body.dark ::-webkit-scrollbar {
-            width: 10px;
-        }
-        body.dark ::-webkit-scrollbar-track {
-            background: var(--scrollbar-track);
-        }
-        body.dark ::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border-radius: 5px;
-        }
     </style>
 </head>
 <body>
@@ -616,7 +603,6 @@
                 </div>
             </div>
             
-            <!-- Seletor de listas em linha reta com botão Nova Lista -->
             <div class="lista-section">
                 <div class="lista-selector">
                     <span class="lista-label">📁 Lista:</span>
@@ -647,8 +633,8 @@
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
             <button id="btnModoEscuro" onclick="toggleModoEscuro(); fecharModalMenu();"><span>🌙</span> Modo Escuro</button>
-            <button onclick="exportarDadosCriptografados(); fecharModalMenu();"><span>📤</span> Exportar Dados (Criptografado)</button>
-            <button onclick="mostrarModalImportar(); fecharModalMenu();"><span>📥</span> Importar Dados</button>
+            <button onclick="exportarBackupCriptografado(); fecharModalMenu();"><span>📤</span> Exportar Backup (Criptografado)</button>
+            <button onclick="importarBackupCriptografado(); fecharModalMenu();"><span>📥</span> Importar Backup</button>
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
             <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
             <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
@@ -657,14 +643,13 @@
     </div>
 </div>
 
-<!-- Modal para solicitar senha de importação/exportação -->
-<div id="modalSenhaCripto" class="modal-confirmacao">
+<div id="modalConfirmarSenha" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
-        <p id="modalCriptoTitulo">🔐 Senha de criptografia</p>
-        <input type="password" id="senhaCripto" placeholder="Digite a senha" autocomplete="off">
+        <p id="modalSenhaTitulo">🔐 Confirme sua senha</p>
+        <input type="password" id="senhaConfirmacao" placeholder="Digite sua senha" autocomplete="off">
         <div class="modal-confirmacao-botoes">
-            <button class="btn-confirmar" id="btnCriptoOk">Continuar</button>
-            <button class="btn-cancelar" onclick="fecharModalCripto()">Cancelar</button>
+            <button class="btn-confirmar" id="btnConfirmarSenha">Confirmar</button>
+            <button class="btn-cancelar" onclick="fecharModalConfirmacaoSenha()">Cancelar</button>
         </div>
     </div>
 </div>
@@ -726,14 +711,14 @@
     let swipeStartX = null;
     let swipeItemId = null;
     let editandoItemId = null;
-    let acaoCriptoAtual = null; // 'export' or 'import'
+    let acaoBackup = null; // 'export' or 'import'
     
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
     const listaSelect = document.getElementById("listaSelect");
 
-    // --- Funções auxiliares de criptografia (AES-GCM simulado com Web Crypto API) ---
-    async function gerarChave(senha, salt) {
+    // --- Funções de criptografia usando a senha do usuário ---
+    async function derivarChave(senha, salt) {
         const encoder = new TextEncoder();
         const material = await crypto.subtle.importKey("raw", encoder.encode(senha), "PBKDF2", false, ["deriveKey"]);
         return await crypto.subtle.deriveKey({
@@ -744,12 +729,12 @@
         }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
     }
 
-    async function criptografar(texto, senha) {
+    async function criptografarDados(dados, senha) {
         const encoder = new TextEncoder();
         const salt = crypto.getRandomValues(new Uint8Array(16));
         const iv = crypto.getRandomValues(new Uint8Array(12));
-        const chave = await gerarChave(senha, salt);
-        const dadosCripto = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, chave, encoder.encode(texto));
+        const chave = await derivarChave(senha, salt);
+        const dadosCripto = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, chave, encoder.encode(dados));
         const pacote = new Uint8Array(salt.length + iv.length + dadosCripto.byteLength);
         pacote.set(salt, 0);
         pacote.set(iv, salt.length);
@@ -757,12 +742,12 @@
         return btoa(String.fromCharCode.apply(null, pacote));
     }
 
-    async function descriptografar(base64, senha) {
+    async function descriptografarDados(base64, senha) {
         const dados = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
         const salt = dados.slice(0, 16);
         const iv = dados.slice(16, 28);
         const conteudo = dados.slice(28);
-        const chave = await gerarChave(senha, salt);
+        const chave = await derivarChave(senha, salt);
         const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, chave, conteudo);
         return new TextDecoder().decode(decrypted);
     }
@@ -1019,35 +1004,66 @@
     }
     
     window.sair = function() { if(confirm("Sair da sua conta?")) { localStorage.removeItem("usuarioAtual"); document.getElementById("app").style.display = "none"; document.getElementById("login").style.display = "block"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("usuario").value = ""; document.getElementById("senha").value = ""; fecharModalMenu(); } };
-    window.mudarSenha = function() { if(!usuarioAtual) return; const a = prompt("Digite a senha atual:"); if(a !== localStorage.getItem("senha_" + usuarioAtual)) { alert("Senha atual incorreta"); return; } const n = prompt("Digite a nova senha:"); if(n && n.trim()) { localStorage.setItem("senha_" + usuarioAtual, n); alert("Senha alterada com sucesso!"); if(localStorage.getItem("login_lembrado_usuario") === usuarioAtual) salvarLoginLembrado(usuarioAtual, n); } else alert("Senha inválida"); };
-    window.apagarUsuario = function() { if(usuarioAtual && confirm(`ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}". Tem certeza?`)) { for(let i=0; i<localStorage.length; i++){ const k=localStorage.key(i); if(k && (k.startsWith(`lista_${usuarioAtual}`) || k===`listas_${usuarioAtual}` || k===`senha_${usuarioAtual}`)) localStorage.removeItem(k); } if(localStorage.getItem("login_lembrado_usuario")===usuarioAtual) limparLoginLembrado(); localStorage.removeItem("usuarioAtual"); alert("Usuário e dados removidos permanentemente."); location.reload(); } };
+    
+    window.mudarSenha = function() { 
+        if(!usuarioAtual) return; 
+        const a = prompt("Digite a senha atual:"); 
+        if(a !== localStorage.getItem("senha_" + usuarioAtual)) { alert("Senha atual incorreta"); return; } 
+        const n = prompt("Digite a nova senha:"); 
+        if(n && n.trim()) { 
+            localStorage.setItem("senha_" + usuarioAtual, n); 
+            alert("Senha alterada com sucesso!"); 
+            if(localStorage.getItem("login_lembrado_usuario") === usuarioAtual) salvarLoginLembrado(usuarioAtual, n); 
+        } else alert("Senha inválida"); 
+    };
+    
+    window.apagarUsuario = function() { 
+        if(usuarioAtual && confirm(`ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}". Tem certeza?`)) { 
+            for(let i=0; i<localStorage.length; i++){ 
+                const k=localStorage.key(i); 
+                if(k && (k.startsWith(`lista_${usuarioAtual}`) || k===`listas_${usuarioAtual}` || k===`senha_${usuarioAtual}`)) localStorage.removeItem(k); 
+            } 
+            if(localStorage.getItem("login_lembrado_usuario")===usuarioAtual) limparLoginLembrado(); 
+            localStorage.removeItem("usuarioAtual"); 
+            alert("Usuário e dados removidos permanentemente."); 
+            location.reload(); 
+        } 
+    };
     
     function abrirModalMenu() { document.getElementById("modalMenu").style.display = "flex"; }
     function fecharModalMenu() { document.getElementById("modalMenu").style.display = "none"; }
     
-    // EXPORTAR com criptografia
-    async function exportarDadosCriptografados() {
+    // EXPORTAR BACKUP - solicita confirmação da senha do usuário
+    function exportarBackupCriptografado() {
         if (!usuarioAtual) return;
-        acaoCriptoAtual = 'export';
-        document.getElementById("modalCriptoTitulo").innerText = "🔐 Defina uma senha para criptografar o backup";
-        document.getElementById("senhaCripto").value = "";
-        document.getElementById("modalSenhaCripto").style.display = "flex";
+        acaoBackup = 'export';
+        document.getElementById("modalSenhaTitulo").innerText = "🔐 Confirme sua senha para exportar o backup";
+        document.getElementById("senhaConfirmacao").value = "";
+        document.getElementById("modalConfirmarSenha").style.display = "flex";
     }
     
-    // IMPORTAR
-    function mostrarModalImportar() {
+    // IMPORTAR BACKUP - solicita a senha do usuário para descriptografar
+    function importarBackupCriptografado() {
         if (!usuarioAtual) return;
-        acaoCriptoAtual = 'import';
-        document.getElementById("modalCriptoTitulo").innerText = "🔐 Digite a senha do backup para importar";
-        document.getElementById("senhaCripto").value = "";
-        document.getElementById("modalSenhaCripto").style.display = "flex";
+        acaoBackup = 'import';
+        document.getElementById("modalSenhaTitulo").innerText = "🔐 Digite sua senha para importar o backup";
+        document.getElementById("senhaConfirmacao").value = "";
+        document.getElementById("modalConfirmarSenha").style.display = "flex";
     }
     
-    async function executarAcaoCripto(senha) {
-        if (acaoCriptoAtual === 'export') {
+    async function executarBackup(senha) {
+        const senhaSalva = localStorage.getItem("senha_" + usuarioAtual);
+        if (senha !== senhaSalva) {
+            alert("❌ Senha incorreta!");
+            fecharModalConfirmacaoSenha();
+            return;
+        }
+        
+        if (acaoBackup === 'export') {
             try {
-                // Coletar todos os dados do usuário atual
+                // Coletar todos os dados do usuário
                 const dadosUsuario = {
+                    usuario: usuarioAtual,
                     listas: listas,
                     dadosListas: {}
                 };
@@ -1058,7 +1074,7 @@
                     else dadosUsuario.dadosListas[lista] = { itens: [], total: 0 };
                 }
                 const jsonString = JSON.stringify(dadosUsuario);
-                const cripto = await criptografar(jsonString, senha);
+                const cripto = await criptografarDados(jsonString, senha);
                 const blob = new Blob([cripto], {type: "application/octet-stream"});
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1071,7 +1087,7 @@
                 alert("✅ Backup criptografado exportado com sucesso!");
             } catch(e) { alert("Erro na exportação: " + e.message); }
         } 
-        else if (acaoCriptoAtual === 'import') {
+        else if (acaoBackup === 'import') {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.listaenc';
@@ -1082,31 +1098,46 @@
                 reader.onload = async (e) => {
                     try {
                         const conteudoBase64 = e.target.result;
-                        const jsonDecriptado = await descriptografar(conteudoBase64, senha);
+                        const jsonDecriptado = await descriptografarDados(conteudoBase64, senha);
                         const dadosImportados = JSON.parse(jsonDecriptado);
                         if (!dadosImportados.listas || !dadosImportados.dadosListas) throw new Error("Formato inválido");
+                        
+                        // Verificar se o usuário é o mesmo (opcional, pode ser outro)
+                        if (dadosImportados.usuario && dadosImportados.usuario !== usuarioAtual) {
+                            if (!confirm(`⚠️ Este backup pertence ao usuário "${dadosImportados.usuario}". Deseja importá-lo mesmo assim? Seus dados atuais serão substituídos.`)) {
+                                return;
+                            }
+                        }
+                        
                         // Apagar dados antigos do usuário atual
                         for(let i=0; i<localStorage.length; i++){
                             const k=localStorage.key(i);
                             if(k && (k.startsWith(`lista_${usuarioAtual}`) || k===`listas_${usuarioAtual}`)) localStorage.removeItem(k);
                         }
+                        
                         // Salvar novos dados
                         localStorage.setItem(`listas_${usuarioAtual}`, JSON.stringify(dadosImportados.listas));
                         for (let [lista, dados] of Object.entries(dadosImportados.dadosListas)) {
                             localStorage.setItem(`lista_${usuarioAtual}_${lista}`, JSON.stringify(dados));
                         }
+                        
                         alert("✅ Dados importados com sucesso! Recarregando...");
                         location.reload();
-                    } catch(err) { alert("Falha ao importar: senha incorreta ou arquivo corrompido."); }
+                    } catch(err) { 
+                        alert("❌ Falha ao importar: senha incorreta ou arquivo corrompido."); 
+                    }
                 };
                 reader.readAsText(file);
             };
             input.click();
         }
-        fecharModalCripto();
+        fecharModalConfirmacaoSenha();
     }
     
-    function fecharModalCripto() { document.getElementById("modalSenhaCripto").style.display = "none"; acaoCriptoAtual = null; }
+    function fecharModalConfirmacaoSenha() { 
+        document.getElementById("modalConfirmarSenha").style.display = "none"; 
+        acaoBackup = null;
+    }
     
     window.onclick = function(event) {
         if (event.target === document.getElementById("modalMenu")) fecharModalMenu();
@@ -1114,14 +1145,14 @@
         if (event.target === document.getElementById("modalNovaLista")) fecharModalNovaLista();
         if (event.target === document.getElementById("modalRenomearLista")) fecharModalRenomearLista();
         if (event.target === document.getElementById("modalEdicao")) fecharModalEdicao();
-        if (event.target === document.getElementById("modalSenhaCripto")) fecharModalCripto();
+        if (event.target === document.getElementById("modalConfirmarSenha")) fecharModalConfirmacaoSenha();
     };
     
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
-    document.getElementById("btnCriptoOk")?.addEventListener("click", () => {
-        const senha = document.getElementById("senhaCripto").value;
-        if (!senha) { alert("Digite uma senha."); return; }
-        executarAcaoCripto(senha);
+    document.getElementById("btnConfirmarSenha")?.addEventListener("click", () => {
+        const senha = document.getElementById("senhaConfirmacao").value;
+        if (!senha) { alert("Digite sua senha."); return; }
+        executarBackup(senha);
     });
     
     window.onload = () => {
