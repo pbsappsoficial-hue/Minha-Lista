@@ -497,6 +497,32 @@
         .btn-danger:hover {
             background: var(--danger-dark);
         }
+        
+        /* Modal de edição de campos */
+        .edit-modal-field {
+            margin-bottom: 16px;
+        }
+        .edit-modal-field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 6px;
+            text-align: left;
+        }
+        .edit-modal-field input, .edit-modal-field select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+        .edit-modal-field input:focus, .edit-modal-field select:focus {
+            outline: none;
+            border-color: var(--success);
+        }
     </style>
 </head>
 <body>
@@ -589,13 +615,37 @@
             <button onclick="exportarBackupCriptografado(); fecharModalMenu();"><span>📤</span> Exportar Backup</button>
             <button onclick="importarBackupCriptografado(); fecharModalMenu();"><span>📥</span> Importar Backup</button>
             <div class="menu-divider"></div>
-            <button onclick="mudarSenha(); fecharModalMenu();"><span>🔐</span> Alterar Senha</button>
+            <button onclick="abrirModalAlterarSenha(); fecharModalMenu();"><span>🔐</span> Alterar Senha</button>
             <div class="menu-divider"></div>
             <button onclick="abrirModalExcluirConta(); fecharModalMenu();" class="danger-item"><span>🗑️</span> Excluir Conta Permanentemente</button>
             <div class="menu-divider"></div>
             <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair da Conta</button>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
+    </div>
+</div>
+
+<!-- MODAL ALTERAR SENHA - IGUAL AO APP FINANCEIRO -->
+<div id="changePasswordModal" class="modal-confirmacao">
+    <div class="modal-confirmacao-conteudo">
+        <h3>🔐 Alterar Senha</h3>
+        <div class="edit-modal-field">
+            <label>Senha atual</label>
+            <input type="password" id="oldPassword" class="auth-input" placeholder="Senha atual">
+        </div>
+        <div class="edit-modal-field">
+            <label>Nova senha (4-6 números)</label>
+            <input type="password" id="newPassword" class="auth-input" placeholder="Nova senha">
+        </div>
+        <div class="edit-modal-field">
+            <label>Confirmar nova senha</label>
+            <input type="password" id="confirmNewPassword" class="auth-input" placeholder="Confirmar nova senha">
+        </div>
+        <div id="changePwdError" style="color:var(--danger); font-size:12px; margin-bottom:12px;"></div>
+        <div class="modal-confirmacao-botoes">
+            <button id="confirmChangePasswordBtn" class="auth-btn" style="background:var(--success);">Alterar Senha</button>
+            <button id="cancelChangePasswordBtn" class="btn-cancelar">Cancelar</button>
+        </div>
     </div>
 </div>
 
@@ -1147,20 +1197,60 @@
     
     window.sair = function() { if(confirm("Deseja sair da sua conta?")) { document.getElementById("mainApp").style.display = "none"; document.getElementById("loginScreen").style.display = "flex"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("loginNome").value = ""; document.getElementById("loginSenha").value = ""; fecharModalMenu(); } };
     
-    window.mudarSenha = function() { 
-        if(!usuarioAtual) return; 
-        const a = prompt("Digite a senha atual:"); 
+    // ==================== ALTERAR SENHA - MODAL IGUAL AO APP FINANCEIRO ====================
+    function abrirModalAlterarSenha() {
+        document.getElementById('oldPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+        document.getElementById('changePwdError').innerText = '';
+        document.getElementById('changePasswordModal').style.display = 'flex';
+    }
+
+    function fecharModalAlterarSenha() {
+        document.getElementById('changePasswordModal').style.display = 'none';
+    }
+
+    function confirmarAlterarSenha() {
+        const oldPassword = document.getElementById('oldPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmNewPassword').value;
+        
+        if(!oldPassword || !newPassword || !confirmPassword) {
+            document.getElementById('changePwdError').innerText = "Preencha todos os campos!";
+            return;
+        }
+        
         let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
-        if(!users[usuarioAtual] || users[usuarioAtual].senha !== a) { alert("Senha atual incorreta"); return; } 
-        const n = prompt("Digite a nova senha (4-6 números, sem repetições, sem sequências):"); 
-        if(n && n.trim()) { 
-            try {
-                atualizarSenhaUsuario(usuarioAtual, n);
-                alert("Senha alterada com sucesso!"); 
-                if(localStorage.getItem("login_lembrado_usuario") === usuarioAtual) salvarLoginLembrado(usuarioAtual, n);
-            } catch(e) { alert(e.message); }
-        } else alert("Senha inválida"); 
-    };
+        if(!users[usuarioAtual] || users[usuarioAtual].senha !== oldPassword) {
+            document.getElementById('changePwdError').innerText = "Senha atual incorreta!";
+            return;
+        }
+        
+        if(newPassword !== confirmPassword) {
+            document.getElementById('changePwdError').innerText = "As novas senhas não coincidem!";
+            return;
+        }
+        
+        try {
+            const errors = validatePasswordRequirements(newPassword);
+            if(errors.length > 0) {
+                document.getElementById('changePwdError').innerText = errors[0];
+                return;
+            }
+            
+            users[usuarioAtual].senha = newPassword;
+            localStorage.setItem("listaUsers", JSON.stringify(users));
+            
+            if(localStorage.getItem("login_lembrado_usuario") === usuarioAtual) {
+                localStorage.setItem("login_lembrado_senha", newPassword);
+            }
+            
+            fecharModalAlterarSenha();
+            alert("✅ Senha alterada com sucesso!");
+        } catch(e) {
+            document.getElementById('changePwdError').innerText = e.message;
+        }
+    }
     
     // ==================== EXCLUIR CONTA ====================
     function abrirModalExcluirConta() {
@@ -1380,6 +1470,8 @@
     document.getElementById("forceUpdateBtn")?.addEventListener("click", confirmForceUpdate);
     document.getElementById("confirmDeleteAccountBtn")?.addEventListener("click", confirmarExcluirConta);
     document.getElementById("cancelDeleteAccountBtn")?.addEventListener("click", fecharModalExcluirConta);
+    document.getElementById("confirmChangePasswordBtn")?.addEventListener("click", confirmarAlterarSenha);
+    document.getElementById("cancelChangePasswordBtn")?.addEventListener("click", fecharModalAlterarSenha);
     
     window.onload = () => {
         carregarModoEscuro();
