@@ -9,102 +9,62 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
 
+        /* Tema claro (PADRÃO) */
         :root {
-            --bg-body: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
-            --bg-container: rgba(255, 255, 255, 0.96);
-            --bg-painel: white;
-            --text-color: #1e293b;
-            --text-secondary: #334155;
-            --border-color: #e2e8f0;
-            --input-bg: #f8fafc;
-            --input-border: #e2e8f0;
-            --input-focus: #6366f1;
-            --btn-primary: linear-gradient(95deg, #4f46e5, #7c3aed);
-            --btn-primary-hover: rgba(79, 70, 229, 0.35);
-            --usuario-info-bg: #f1f5f9;
-            --btn-menu-bg: #f1f5f9;
-            --btn-menu-hover: #e2e8f0;
-            --modal-bg: white;
-            --modal-btn-bg: #f8fafc;
-            --modal-btn-border: #e2e8f0;
-            --modal-btn-hover: #eef2ff;
-            --form-bg: #f8fafd;
-            --form-border: #e2edff;
-            --header-bg: #eef2ff;
-            --item-bg: white;
-            --item-border: #edf2f7;
-            --item-shadow: rgba(0, 0, 0, 0.05);
-            --total-bg: #f1f5f9;
-            --total-color: #0f172a;
-            --separador-bg: #eef2ff;
-            --separador-color: #4f46e5;
-            --btn-add: #10b981;
-            --btn-add-hover: #059669;
-            --btn-acao: #f1f5f9;
-            --btn-acao-hover: #e2e8f0;
-            --comprado-bg: #f8fafc;
-            --selector-bg: #f1f5f9;
+            --bg-page: #f0f2f5;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-elevated: #f8f9fa;
+            --text-primary: #1a1a2e;
+            --text-secondary: #2d2d3a;
+            --text-muted: #6c757d;
+            --border: #dee2e6;
+            --success: #10b981;
+            --success-dark: #059669;
             --danger: #ef4444;
             --danger-dark: #dc2626;
+            --info: #3b82f6;
             --warning: #f59e0b;
+            --shadow: 0 8px 20px rgba(0,0,0,0.08);
+            --radius-card: 24px;
+            --radius-btn: 30px;
+            --hover-bg: #e9ecef;
         }
 
-        body.dark {
-            --bg-body: #000000;
-            --bg-container: #0a0a0a;
-            --bg-painel: #0a0a0a;
-            --text-color: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border-color: #1e1e1e;
-            --input-bg: #1a1a1a;
-            --input-border: #2a2a2a;
-            --input-focus: #818cf8;
-            --btn-primary: linear-gradient(95deg, #6366f1, #a78bfa);
-            --usuario-info-bg: #1a1a1a;
-            --btn-menu-bg: #1a1a1a;
-            --btn-menu-hover: #2a2a2a;
-            --modal-bg: #0a0a0a;
-            --modal-btn-bg: #1a1a1a;
-            --modal-btn-border: #2a2a2a;
-            --modal-btn-hover: #2a2a2a;
-            --form-bg: #0a0a0a;
-            --form-border: #1a1a1a;
-            --header-bg: #111111;
-            --item-bg: #0a0a0a;
-            --item-border: #1a1a1a;
-            --item-shadow: rgba(0, 0, 0, 0.5);
-            --total-bg: #111111;
-            --total-color: #f1f5f9;
-            --separador-bg: #111111;
-            --separador-color: #a78bfa;
-            --btn-add: #059669;
-            --btn-add-hover: #10b981;
-            --btn-acao: #1a1a1a;
-            --btn-acao-hover: #2a2a2a;
-            --comprado-bg: #0a0a0a;
-            --selector-bg: #0a0a0a;
+        /* Tema escuro */
+        body.dark-theme {
+            --bg-page: #000000;
+            --bg-surface: #0a0a0a;
+            --bg-card: #0d0d0d;
+            --bg-elevated: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-muted: #b0b0b0;
+            --border: #2a2a2a;
+            --shadow: 0 8px 20px rgba(0,0,0,0.8);
+            --hover-bg: #1f1f1f;
         }
 
         body {
-            background: var(--bg-body);
+            background-color: var(--bg-page);
             min-height: 100vh;
             padding: 30px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s ease;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         .container {
             max-width: 1100px;
             width: 100%;
             margin: auto;
-            background: var(--bg-container);
+            background: var(--bg-surface);
             border-radius: 2rem;
-            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow);
             overflow: hidden;
             transition: background 0.3s ease;
         }
@@ -113,73 +73,79 @@
             padding: 2rem;
         }
 
-        #login {
-            background: var(--bg-painel);
-            text-align: center;
-            transition: background 0.3s ease;
+        /* Tela de Login - IGUAL AO APP FINANCEIRO */
+        .auth-screen {
+            background: var(--bg-page);
         }
-
-        #login h2 {
-            font-size: 2rem;
-            color: var(--text-color);
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .campo {
-            width: 100%;
-            max-width: 320px;
-            margin: 0.75rem auto;
-        }
-
-        .campo input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid var(--input-border);
-            border-radius: 60px;
-            font-size: 1rem;
-            transition: all 0.2s;
-            background: var(--input-bg);
-            color: var(--text-color);
-        }
-
-        .campo input:focus {
-            outline: none;
-            border-color: var(--input-focus);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .campo input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .btn-principal {
-            background: var(--btn-primary);
-            border: none;
-            padding: 12px 28px;
-            font-size: 1rem;
-            font-weight: 600;
+        .auth-card {
+            background: var(--bg-card);
             border-radius: 40px;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 6px 14px rgba(79, 70, 229, 0.3);
-            margin-top: 10px;
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 340px;
+            margin: 0 auto;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
         }
-
-        .btn-principal:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 20px var(--btn-primary-hover);
+        .auth-card h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        .auth-card .sub {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            font-size: 14px;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--success);
+        }
+        .auth-btn {
+            width: 100%;
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .auth-link a {
+            color: var(--success);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         .password-requirements {
-            background: var(--modal-btn-bg);
+            background: var(--bg-elevated);
             border-radius: 16px;
             padding: 12px;
-            margin: 16px auto;
+            margin: 16px 0;
             font-size: 12px;
-            border-left: 3px solid var(--warning);
-            max-width: 320px;
+            border-left: 3px solid #f59e0b;
             text-align: left;
         }
         .password-requirements p {
@@ -195,7 +161,7 @@
             margin: 4px 0;
         }
         .password-requirements li.valid {
-            color: #10b981;
+            color: var(--success);
             text-decoration: line-through;
         }
 
@@ -216,12 +182,12 @@
             display: flex;
         }
         .force-update-card {
-            background: var(--modal-bg);
+            background: var(--bg-card);
             border-radius: 40px;
             padding: 28px;
             width: 100%;
             max-width: 340px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             text-align: center;
         }
         .force-update-card h3 {
@@ -229,25 +195,26 @@
             margin-bottom: 16px;
         }
 
+        /* APP */
         .topo-app {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             flex-wrap: wrap;
             margin-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 2px solid var(--border);
             padding-bottom: 0.75rem;
         }
         .titulo-app {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--text-color), #4f46e5);
+            background: linear-gradient(135deg, var(--text-primary), #4f46e5);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
         .usuario-info {
-            background: var(--usuario-info-bg);
+            background: var(--bg-elevated);
             padding: 6px 14px;
             border-radius: 40px;
             font-size: 0.85rem;
@@ -255,12 +222,13 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            color: var(--text-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
         }
 
         .btn-menu {
-            background: var(--btn-menu-bg);
-            border: none;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
             width: 42px;
             height: 42px;
             border-radius: 30px;
@@ -270,24 +238,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-color);
+            color: var(--text-primary);
         }
         .btn-menu:hover {
-            background: var(--btn-menu-hover);
+            background: var(--hover-bg);
             transform: scale(0.96);
         }
 
         .lista-section {
             margin: 1rem 0 1.5rem 0;
             padding: 0.75rem 1rem;
-            background: var(--selector-bg);
+            background: var(--bg-elevated);
             border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
         }
         .lista-selector {
             display: flex;
@@ -296,104 +264,34 @@
             flex-wrap: wrap;
         }
         .lista-selector select {
-            background: var(--input-bg);
-            color: var(--text-color);
-            border: 1px solid var(--input-border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
             padding: 8px 12px;
             border-radius: 40px;
             font-size: 0.9rem;
             cursor: pointer;
         }
         .btn-acao-lista {
-            background: var(--btn-acao);
-            border: none;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
             padding: 6px 12px;
             border-radius: 40px;
             font-size: 0.85rem;
             cursor: pointer;
-            color: var(--text-color);
+            color: var(--text-primary);
             transition: 0.1s;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
         .btn-acao-lista:hover {
-            background: var(--btn-acao-hover);
+            background: var(--hover-bg);
             transform: scale(0.95);
         }
 
-        .modal-menu, .modal-confirmacao, .modal-edicao {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal-menu-conteudo, .modal-confirmacao-conteudo, .modal-edicao-conteudo {
-            background: var(--modal-bg);
-            max-width: 400px;
-            width: 90%;
-            border-radius: 2rem;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-        .modal-menu-opcoes {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .modal-menu-opcoes button {
-            background: var(--modal-btn-bg);
-            border: 1px solid var(--modal-btn-border);
-            padding: 12px 16px;
-            border-radius: 60px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            justify-content: center;
-            color: var(--text-color);
-        }
-        .modal-menu-opcoes button:hover {
-            background: var(--modal-btn-hover);
-            transform: scale(0.98);
-        }
-        .modal-menu-opcoes .danger-item {
-            color: var(--danger);
-        }
-        .modal-menu-opcoes .danger-item:hover {
-            background: rgba(239, 68, 68, 0.1);
-        }
-        .menu-divider {
-            height: 1px;
-            background: var(--border-color);
-            margin: 4px 0;
-        }
-        .btn-fechar-modal {
-            background: var(--modal-btn-bg);
-            border: 1px solid var(--modal-btn-border);
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 10px;
-            color: var(--text-color);
-        }
-
         .form-add {
-            background: var(--form-bg);
+            background: var(--bg-elevated);
             padding: 1.2rem;
             border-radius: 1.2rem;
             margin: 1.5rem 0 1.8rem 0;
@@ -401,7 +299,7 @@
             flex-wrap: wrap;
             gap: 12px;
             align-items: flex-end;
-            border: 1px solid var(--form-border);
+            border: 1px solid var(--border);
         }
         .campo-add {
             flex: 1;
@@ -418,14 +316,14 @@
         .campo-add input {
             width: 100%;
             padding: 12px 12px;
-            border: 1px solid var(--input-border);
+            border: 1px solid var(--border);
             border-radius: 60px;
             font-size: 0.9rem;
-            background: var(--input-bg);
-            color: var(--text-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
         }
         .btn-add {
-            background: var(--btn-add);
+            background: var(--success);
             border: none;
             padding: 12px 24px;
             border-radius: 60px;
@@ -434,7 +332,7 @@
             cursor: pointer;
             margin-top: 22px;
         }
-        .btn-add:hover { background: var(--btn-add-hover); }
+        .btn-add:hover { background: var(--success-dark); }
 
         .tabela-lista {
             width: 100%;
@@ -445,50 +343,121 @@
         .lista-header {
             display: grid;
             grid-template-columns: 3fr 1fr 1.2fr 1.2fr 1.8fr;
-            background: var(--header-bg);
+            background: var(--bg-elevated);
             padding: 14px 12px;
             border-radius: 1rem;
             font-weight: 700;
             margin-bottom: 8px;
-            color: var(--text-color);
+            color: var(--text-primary);
         }
         .item-row {
             display: grid;
             grid-template-columns: 3fr 1fr 1.2fr 1.2fr 1.8fr;
             align-items: center;
-            background: var(--item-bg);
+            background: var(--bg-card);
             padding: 12px 12px;
             margin: 6px 0;
             border-radius: 1rem;
-            box-shadow: 0 1px 3px var(--item-shadow);
-            border: 1px solid var(--item-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
             transition: all 0.2s ease;
             cursor: grab;
-            color: var(--text-color);
+            color: var(--text-primary);
         }
         .item-row.dragging { opacity: 0.3; cursor: grabbing; }
-        .item-row.drag-over { border-top: 3px solid var(--input-focus); margin-top: -3px; }
-        .item-row.editing-swipe { background: var(--input-focus); color: white; transition: background 0.1s ease; cursor: ew-resize; }
+        .item-row.drag-over { border-top: 3px solid var(--success); margin-top: -3px; }
+        .item-row.editing-swipe { background: var(--success); color: white; transition: background 0.1s ease; cursor: ew-resize; }
         .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.7; }
-        .comprado { background: var(--comprado-bg); opacity: 0.85; cursor: not-allowed !important; }
+        .comprado { background: var(--bg-elevated); opacity: 0.85; cursor: not-allowed !important; }
         .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-acao { background: var(--btn-acao); border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; color: var(--text-color); }
-        .btn-acao:hover { background: var(--btn-acao-hover); transform: scale(0.95); }
+        .btn-acao { background: var(--bg-elevated); border: 1px solid var(--border); font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; color: var(--text-primary); }
+        .btn-acao:hover { background: var(--hover-bg); transform: scale(0.95); }
         .total-area {
             text-align: right;
             font-size: 1.7rem;
             font-weight: 800;
             margin-top: 1rem;
             padding: 15px 20px;
-            background: var(--total-bg);
+            background: var(--bg-elevated);
             border-radius: 1.5rem;
-            color: var(--total-color);
+            color: var(--text-primary);
         }
         @media (max-width: 700px) {
             .painel { padding: 1.2rem; }
             .lista-header, .item-row { grid-template-columns: 2fr 0.8fr 1fr 1fr 1.5fr; font-size: 0.75rem; gap: 6px; }
             .lista-section { flex-direction: column; align-items: stretch; }
             .lista-selector { justify-content: space-between; }
+        }
+
+        /* Modais */
+        .modal-menu, .modal-confirmacao, .modal-edicao {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-menu-conteudo, .modal-confirmacao-conteudo, .modal-edicao-conteudo {
+            background: var(--bg-card);
+            max-width: 400px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+        .modal-menu-opcoes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .modal-menu-opcoes button {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+            color: var(--text-primary);
+        }
+        .modal-menu-opcoes button:hover {
+            background: var(--hover-bg);
+            transform: scale(0.98);
+        }
+        .modal-menu-opcoes .danger-item {
+            color: var(--danger);
+        }
+        .modal-menu-opcoes .danger-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        .menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+        .btn-fechar-modal {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+            color: var(--text-primary);
         }
 
         .modal-confirmacao-botoes, .modal-edicao-botoes {
@@ -498,7 +467,7 @@
             margin-top: 20px;
         }
         .btn-confirmar {
-            background: #4f46e5;
+            background: var(--success);
             color: white;
             border: none;
             padding: 10px 24px;
@@ -507,9 +476,9 @@
             cursor: pointer;
         }
         .btn-cancelar {
-            background: var(--modal-btn-bg);
-            color: var(--text-color);
-            border: 1px solid var(--modal-btn-border);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
             padding: 10px 24px;
             border-radius: 40px;
             font-weight: 500;
@@ -522,76 +491,120 @@
             background: var(--danger-dark);
         }
 
+        /* Estilos específicos do modal de exclusão */
         .delete-account-warning {
             color: var(--danger);
             font-size: 14px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             font-weight: 600;
         }
         .delete-account-text {
             font-size: 13px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        .delete-account-input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .delete-account-input:focus {
+            outline: none;
+            border-color: var(--danger);
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div id="login" class="painel">
-        <h2>🛒 Minha Lista</h2>
-        <div class="campo">
-            <input type="text" id="usuario" placeholder="Seu nome" autocomplete="off">
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="painel auth-screen" style="display: flex;">
+        <div class="auth-card">
+            <h2>🛒 Lista de Compras</h2>
+            <div class="sub">Organize suas compras com segurança</div>
+            <div id="loginErrorMsg" style="color:#ef4444; font-size:13px; margin-bottom:12px;"></div>
+            <input type="text" id="loginNome" class="auth-input" placeholder="Nome do usuário">
+            <input type="password" id="loginSenha" class="auth-input" placeholder="Senha (4-6 números)">
+            <div class="password-requirements" id="passwordReqs" style="display: none;">
+                <p>🔒 Requisitos da senha:</p>
+                <ul>
+                    <li id="reqLength">✓ 4 a 6 caracteres</li>
+                    <li id="reqOnlyNumbers">✓ Apenas números (0-9)</li>
+                    <li id="reqNoRepeat">✓ Sem números repetidos (ex: 11, 22, 111)</li>
+                    <li id="reqNoSequence">✓ Sem sequências (ex: 123, 321, 234)</li>
+                </ul>
+            </div>
+            <button id="loginBtn" class="auth-btn">🔐 Entrar / Criar conta</button>
+            <div class="auth-link">Não tem conta? <a id="showRegLink">Criar nova conta</a></div>
         </div>
-        <div class="campo">
-            <input type="password" id="senha" placeholder="Senha (4-6 números)">
-        </div>
-        <div class="password-requirements" id="passwordReqs" style="display: none;">
-            <p>🔒 Requisitos da senha:</p>
-            <ul>
-                <li id="reqLength">✓ 4 a 6 caracteres</li>
-                <li id="reqOnlyNumbers">✓ Apenas números (0-9)</li>
-                <li id="reqNoRepeat">✓ Sem números repetidos (ex: 11, 22, 111)</li>
-                <li id="reqNoSequence">✓ Sem sequências (ex: 123, 321, 234)</li>
-            </ul>
-        </div>
-        <button class="btn-principal" onclick="entrar()">🔐 Entrar / Criar conta</button>
     </div>
 
-    <div id="app" style="display: none;">
-        <div class="painel">
-            <div class="topo-app">
-                <h1 class="titulo-app">📋 Lista de Compras</h1>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <span class="usuario-info">👤 <strong id="nomeUsuario"></strong></span>
-                    <button class="btn-menu" id="menuBtn" aria-label="Menu">⋮</button>
-                </div>
+    <!-- Tela de Registro -->
+    <div id="regScreen" class="painel auth-screen" style="display: none;">
+        <div class="auth-card">
+            <h2>📝 Criar Conta</h2>
+            <div class="sub">Comece a organizar suas compras</div>
+            <div id="regErrorMsg" style="color:#ef4444; font-size:13px; margin-bottom:12px;"></div>
+            <input type="text" id="regNome" class="auth-input" placeholder="Nome do usuário">
+            <input type="password" id="regSenha" class="auth-input" placeholder="Senha (4-6 números)">
+            <input type="password" id="regConfirm" class="auth-input" placeholder="Confirmar senha">
+            <div class="password-requirements">
+                <p>🔒 Requisitos da senha:</p>
+                <ul>
+                    <li id="regReqLength">✓ 4 a 6 caracteres</li>
+                    <li id="regReqOnlyNumbers">✓ Apenas números (0-9)</li>
+                    <li id="regReqNoRepeat">✓ Sem números repetidos (ex: 11, 22, 111)</li>
+                    <li id="regReqNoSequence">✓ Sem sequências (ex: 123, 321, 234)</li>
+                </ul>
             </div>
-            
-            <div class="lista-section">
-                <div class="lista-selector">
-                    <span class="lista-label">📁 Lista:</span>
-                    <select id="listaSelect" onchange="trocarLista()"></select>
-                    <button class="btn-acao-lista" onclick="mostrarModalNovaLista()">➕ Nova</button>
-                    <button class="btn-acao-lista" onclick="renomearListaAtual()">✏️ Renomear</button>
-                    <button class="btn-acao-lista" onclick="excluirListaAtual()">🗑️ Excluir</button>
-                </div>
-            </div>
-            
-            <div class="form-add">
-                <div class="campo-add" style="flex:2"><label>🏷️ Produto</label><input type="text" id="produto" placeholder="Ex: Arroz"></div>
-                <div class="campo-add"><label>📦 Qtd</label><input type="number" id="quantidade" value="1" min="1"></div>
-                <div class="campo-add"><label>💰 Preço (R$)</label><input type="number" id="preco" step="0.01" placeholder="0,00"></div>
-                <button class="btn-add" onclick="adicionarItem()">➕ Adicionar</button>
-            </div>
-            <div class="tabela-lista">
-                <div class="lista-header"><span>Produto</span><span>Quant.</span><span>Preço</span><span>Subtotal</span><span>Ações</span></div>
-                <div id="listaContainer"></div>
-            </div>
-            <div class="total-area">🧾 TOTAL: R$ <span id="total">0.00</span></div>
+            <button id="registerBtn" class="auth-btn">Criar Conta</button>
+            <div class="auth-link">Já tem conta? <a id="showLoginLink">Fazer login</a></div>
         </div>
+    </div>
+
+    <!-- App Principal -->
+    <div id="mainApp" class="painel" style="display: none;">
+        <div class="topo-app">
+            <h1 class="titulo-app">📋 Lista de Compras</h1>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span class="usuario-info">👤 <strong id="nomeUsuario"></strong></span>
+                <button class="btn-menu" id="menuBtn" aria-label="Menu">⋮</button>
+            </div>
+        </div>
+        
+        <div class="lista-section">
+            <div class="lista-selector">
+                <span class="lista-label">📁 Lista:</span>
+                <select id="listaSelect" onchange="trocarLista()"></select>
+                <button class="btn-acao-lista" onclick="mostrarModalNovaLista()">➕ Nova</button>
+                <button class="btn-acao-lista" onclick="renomearListaAtual()">✏️ Renomear</button>
+                <button class="btn-acao-lista" onclick="excluirListaAtual()">🗑️ Excluir</button>
+            </div>
+        </div>
+        
+        <div class="form-add">
+            <div class="campo-add" style="flex:2"><label>🏷️ Produto</label><input type="text" id="produto" placeholder="Ex: Arroz"></div>
+            <div class="campo-add"><label>📦 Qtd</label><input type="number" id="quantidade" value="1" min="1"></div>
+            <div class="campo-add"><label>💰 Preço (R$)</label><input type="number" id="preco" step="0.01" placeholder="0,00"></div>
+            <button class="btn-add" onclick="adicionarItem()">➕ Adicionar</button>
+        </div>
+        <div class="tabela-lista">
+            <div class="lista-header"><span>Produto</span><span>Quant.</span><span>Preço</span><span>Subtotal</span><span>Ações</span></div>
+            <div id="listaContainer"></div>
+        </div>
+        <div class="total-area">🧾 TOTAL: R$ <span id="total">0.00</span></div>
     </div>
 </div>
 
+<!-- MODAL MENU -->
 <div id="modalMenu" class="modal-menu">
     <div class="modal-menu-conteudo">
         <h3>⚙️ Opções</h3>
@@ -609,14 +622,14 @@
     </div>
 </div>
 
-<!-- MODAL EXCLUIR CONTA - IGUAL AO APP FINANCEIRO -->
+<!-- MODAL EXCLUIR CONTA - COM INPUT ARREDONDADO E FRASE COMPLETA -->
 <div id="deleteAccountModal" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <h3 style="color: var(--danger);">⚠️ EXCLUIR CONTA</h3>
         <p class="delete-account-warning">⚠️ ATENÇÃO! Esta ação é IRREVERSÍVEL!</p>
-        <p class="delete-account-text">Todos os seus dados (listas, itens, configurações) serão perdidos permanentemente.</p>
-        <p class="delete-account-text" style="margin-bottom: 16px;">Digite sua senha para confirmar a exclusão da conta <strong id="deleteAccountName"></strong>:</p>
-        <input type="password" id="deleteConfirmPassword" class="campo input" style="width:100%; margin-bottom:16px;" placeholder="Sua senha">
+        <p class="delete-account-text">Todos os seus dados serão perdidos permanentemente.</p>
+        <p class="delete-account-text" style="margin-bottom: 8px;">Digite sua senha para confirmar:</p>
+        <input type="password" id="deleteConfirmPassword" class="delete-account-input" placeholder="••••••">
         <div class="modal-confirmacao-botoes">
             <button id="confirmDeleteAccountBtn" class="btn-confirmar" style="background: var(--danger);">Excluir Conta</button>
             <button id="cancelDeleteAccountBtn" class="btn-cancelar">Cancelar</button>
@@ -624,10 +637,11 @@
     </div>
 </div>
 
+<!-- MODAL CONFIRMAR SENHA PARA BACKUP -->
 <div id="modalConfirmarSenha" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p id="modalSenhaTitulo">🔐 Confirme sua senha</p>
-        <input type="password" id="senhaConfirmacao" placeholder="Digite sua senha" autocomplete="off">
+        <input type="password" id="senhaConfirmacao" class="auth-input" placeholder="Digite sua senha">
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" id="btnConfirmarSenha">Confirmar</button>
             <button class="btn-cancelar" onclick="fecharModalConfirmacaoSenha()">Cancelar</button>
@@ -635,6 +649,7 @@
     </div>
 </div>
 
+<!-- MODAL SALVAR LOGIN -->
 <div id="modalSalvarLogin" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>🔐 Deseja salvar seu login?</p>
@@ -646,10 +661,11 @@
     </div>
 </div>
 
+<!-- MODAL NOVA LISTA -->
 <div id="modalNovaLista" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>📝 Criar nova lista</p>
-        <input type="text" id="novaListaNome" placeholder="Nome da lista">
+        <input type="text" id="novaListaNome" class="auth-input" placeholder="Nome da lista">
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" onclick="criarNovaLista()">Criar</button>
             <button class="btn-cancelar" onclick="fecharModalNovaLista()">Cancelar</button>
@@ -657,10 +673,11 @@
     </div>
 </div>
 
+<!-- MODAL RENOMEAR LISTA -->
 <div id="modalRenomearLista" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>✏️ Renomear lista</p>
-        <input type="text" id="renomearListaNome" placeholder="Novo nome">
+        <input type="text" id="renomearListaNome" class="auth-input" placeholder="Novo nome">
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" onclick="confirmarRenomearLista()">Salvar</button>
             <button class="btn-cancelar" onclick="fecharModalRenomearLista()">Cancelar</button>
@@ -668,12 +685,13 @@
     </div>
 </div>
 
+<!-- MODAL EDIÇÃO ITEM -->
 <div id="modalEdicao" class="modal-edicao">
     <div class="modal-edicao-conteudo">
         <h3>✏️ Editar Item</h3>
-        <input type="text" id="editNome" placeholder="Nome do produto">
-        <input type="number" id="editQuantidade" placeholder="Quantidade" min="1">
-        <input type="number" id="editPreco" step="0.01" placeholder="Preço">
+        <input type="text" id="editNome" class="auth-input" placeholder="Nome do produto">
+        <input type="number" id="editQuantidade" class="auth-input" placeholder="Quantidade" min="1">
+        <input type="number" id="editPreco" step="0.01" class="auth-input" placeholder="Preço">
         <div class="modal-edicao-botoes">
             <button class="btn-confirmar" onclick="salvarEdicao()">💾 Salvar</button>
             <button class="btn-cancelar" onclick="fecharModalEdicao()">Cancelar</button>
@@ -681,14 +699,15 @@
     </div>
 </div>
 
+<!-- MODAL FORÇAR TROCA DE SENHA -->
 <div id="forceUpdateModal" class="force-update-modal">
     <div class="force-update-card">
         <h3>⚠️ SENHA FRACA DETECTADA</h3>
         <p>Sua senha atual não atende aos requisitos de segurança. Por segurança, você precisa criar uma nova senha forte.</p>
         <p style="font-size:12px; margin-bottom:16px;">Requisitos: 4 a 6 números, sem repetições, sem sequências (ex: 123, 321, 11, 22, 111)</p>
-        <input type="password" id="forceNewPassword" class="campo input" style="width:100%; margin-bottom:12px; padding:12px;" placeholder="Nova senha (4-6 números)">
-        <input type="password" id="forceConfirmPassword" class="campo input" style="width:100%; margin-bottom:12px; padding:12px;" placeholder="Confirmar nova senha">
-        <button id="forceUpdateBtn" class="btn-confirmar" style="background:var(--danger);">Atualizar Senha</button>
+        <input type="password" id="forceNewPassword" class="auth-input" style="width:100%; margin-bottom:12px;" placeholder="Nova senha (4-6 números)">
+        <input type="password" id="forceConfirmPassword" class="auth-input" style="width:100%; margin-bottom:12px;" placeholder="Confirmar nova senha">
+        <button id="forceUpdateBtn" class="auth-btn" style="background:var(--danger);">Atualizar Senha</button>
         <div id="forceErrorMsg" style="color:var(--danger); font-size:12px; margin-top:12px;"></div>
     </div>
 </div>
@@ -705,6 +724,10 @@
     let swipeItemId = null;
     let editandoItemId = null;
     let acaoBackup = null;
+
+    const listaContainer = document.getElementById("listaContainer");
+    const totalSpan = document.getElementById("total");
+    const listaSelect = document.getElementById("listaSelect");
 
     // ==================== VALIDAÇÃO DE SENHA FORTE ====================
     function isStrongPassword(password) {
@@ -732,8 +755,8 @@
         return errors;
     }
 
-    function updatePasswordReqs() {
-        const senha = document.getElementById('senha').value;
+    function updateLoginPasswordReqs() {
+        const senha = document.getElementById('loginSenha').value;
         const reqsDiv = document.getElementById('passwordReqs');
         if (!senha) { reqsDiv.style.display = 'none'; return; }
         reqsDiv.style.display = 'block';
@@ -756,7 +779,28 @@
         reqNoSequence.classList.toggle('valid', noSequenceOk);
     }
 
-    // ==================== FUNÇÕES DE USUÁRIO COM SEGURANÇA ====================
+    function updateRegPasswordReqs() {
+        const senha = document.getElementById('regSenha').value;
+        const reqLength = document.getElementById('regReqLength');
+        const reqOnlyNumbers = document.getElementById('regReqOnlyNumbers');
+        const reqNoRepeat = document.getElementById('regReqNoRepeat');
+        const reqNoSequence = document.getElementById('regReqNoSequence');
+        if(!reqLength) return;
+        const lengthOk = senha.length >= 4 && senha.length <= 6;
+        const onlyNumbersOk = /^\d*$/.test(senha);
+        const noRepeatOk = !/(\d)\1/.test(senha);
+        let noSequenceOk = true;
+        const sequences = ['123','234','345','456','567','678','789','012','1234','2345','3456','4567','5678','6789'];
+        const reverseSequences = ['321','432','543','654','765','876','987','3210','4321','5432','6543','7654','8765','9876'];
+        for (let seq of sequences) if (senha.includes(seq)) { noSequenceOk = false; break; }
+        for (let seq of reverseSequences) if (senha.includes(seq)) { noSequenceOk = false; break; }
+        reqLength.classList.toggle('valid', lengthOk);
+        reqOnlyNumbers.classList.toggle('valid', onlyNumbersOk);
+        reqNoRepeat.classList.toggle('valid', noRepeatOk);
+        reqNoSequence.classList.toggle('valid', noSequenceOk);
+    }
+
+    // ==================== FUNÇÕES DE USUÁRIO ====================
     function loadDeletedUsers() { return JSON.parse(localStorage.getItem("deletedUsersLista") || "{}"); }
     function saveDeletedUsers(deleted) { localStorage.setItem("deletedUsersLista", JSON.stringify(deleted)); }
 
@@ -929,13 +973,15 @@
     }
 
     function toggleModoEscuro() {
-        document.body.classList.toggle('dark');
-        const isDark = document.body.classList.contains('dark');
+        document.body.classList.toggle('dark-theme');
+        const isDark = document.body.classList.contains('dark-theme');
         localStorage.setItem('modo_escuro_lista', isDark ? 'true' : 'false');
+        const btn = document.getElementById('btnModoEscuro');
+        if (btn) btn.innerHTML = isDark ? '<span>☀️</span> Modo Claro' : '<span>🌙</span> Modo Escuro';
     }
-    function carregarModoEscuro() { if (localStorage.getItem('modo_escuro_lista') === 'true') document.body.classList.add('dark'); }
+    function carregarModoEscuro() { if (localStorage.getItem('modo_escuro_lista') === 'true') { document.body.classList.add('dark-theme'); const btn = document.getElementById('btnModoEscuro'); if (btn) btn.innerHTML = '<span>☀️</span> Modo Claro'; } }
     
-    function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
+    function atualizarTotalUI() { if(totalSpan) totalSpan.innerText = totalGeral.toFixed(2); }
     function recalcularTotal() { totalGeral = currentListItems.reduce((s, i) => s + (i.quantidade * i.preco), 0); }
     function salvarEstadoCompleto() { salvarListaAtual(); }
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
@@ -994,7 +1040,7 @@
         if (!listaContainer) return;
         separarLista();
         listaContainer.innerHTML = "";
-        if (currentListItems.length === 0) { listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-secondary);">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>'; atualizarTotalUI(); return; }
+        if (currentListItems.length === 0) { listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-muted);">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>'; atualizarTotalUI(); return; }
         const pcIndex = currentListItems.findIndex(i => i.comprado), hasComp = pcIndex !== -1;
         for (let i = 0; i < currentListItems.length; i++) {
             const item = currentListItems[i], sub = item.quantidade * item.preco;
@@ -1013,7 +1059,7 @@
             row.addEventListener('touchend', handleSwipeEnd);
             if (item.comprado && i === pcIndex && hasComp && pcIndex > 0) {
                 const sep = document.createElement("div");
-                sep.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: var(--separador-bg); border-radius: 20px; font-size: 0.8rem; color: var(--separador-color); font-weight: 600;";
+                sep.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: var(--bg-elevated); border-radius: 20px; font-size: 0.8rem; color: #4f46e5; font-weight: 600;";
                 sep.innerText = "✓ ITENS JÁ ADQUIRIDOS ✓";
                 listaContainer.appendChild(sep);
             }
@@ -1059,7 +1105,7 @@
     
     function salvarLoginLembrado(usuario, senha) { localStorage.setItem("login_lembrado_usuario", usuario); localStorage.setItem("login_lembrado_senha", senha); }
     function limparLoginLembrado() { localStorage.removeItem("login_lembrado_usuario"); localStorage.removeItem("login_lembrado_senha"); }
-    function carregarLoginLembrado() { const u = localStorage.getItem("login_lembrado_usuario"), s = localStorage.getItem("login_lembrado_senha"); if (u && s) { document.getElementById("usuario").value = u; document.getElementById("senha").value = s; setTimeout(() => entrar(), 100); } }
+    function carregarLoginLembrado() { const u = localStorage.getItem("login_lembrado_usuario"), s = localStorage.getItem("login_lembrado_senha"); if (u && s) { document.getElementById("loginNome").value = u; document.getElementById("loginSenha").value = s; } }
     function confirmarSalvarLogin() { if (loginPendente.usuario && loginPendente.senha) salvarLoginLembrado(loginPendente.usuario, loginPendente.senha); loginPendente = {}; document.getElementById("modalSalvarLogin").style.display = "none"; }
     function cancelarSalvarLogin() { limparLoginLembrado(); loginPendente = {}; document.getElementById("modalSalvarLogin").style.display = "none"; }
     function mostrarDialogoSalvarLogin(usuario, senha) { loginPendente = { usuario, senha }; document.getElementById("modalSalvarLogin").style.display = "flex"; }
@@ -1069,7 +1115,7 @@
         document.getElementById('forceConfirmPassword').value = '';
         document.getElementById('forceErrorMsg').innerText = '';
         document.getElementById('forceUpdateModal').classList.add('active');
-        document.getElementById('app').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'none';
     }
 
     function confirmForceUpdate() {
@@ -1091,7 +1137,7 @@
             }
             atualizarSenhaUsuario(usuarioAtual, newPassword);
             document.getElementById('forceUpdateModal').classList.remove('active');
-            document.getElementById('app').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'block';
             alert("✅ Senha atualizada com sucesso!");
         } catch(e) {
             document.getElementById('forceErrorMsg').innerText = e.message;
@@ -1099,9 +1145,9 @@
     }
     
     function entrar() {
-        const usuario = document.getElementById("usuario").value.trim();
-        const senha = document.getElementById("senha").value;
-        if (!usuario || !senha) { alert("Preencha usuário e senha"); return; }
+        const usuario = document.getElementById("loginNome").value.trim();
+        const senha = document.getElementById("loginSenha").value;
+        if (!usuario || !senha) { document.getElementById("loginErrorMsg").innerText = "Preencha todos os campos!"; return; }
         try {
             const result = loginUsuario(usuario, senha);
             if(result && result.needStrongPassword) {
@@ -1111,19 +1157,19 @@
                 return;
             }
             usuarioAtual = usuario;
-            document.getElementById("login").style.display = "none";
-            document.getElementById("app").style.display = "block";
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
             document.getElementById("nomeUsuario").innerText = usuarioAtual;
             carregarDadosUsuario();
-            document.getElementById("senha").value = "";
+            document.getElementById("loginSenha").value = "";
             const lu = localStorage.getItem("login_lembrado_usuario"), ls = localStorage.getItem("login_lembrado_senha");
             if (!lu || lu !== usuario || ls !== senha) mostrarDialogoSalvarLogin(usuario, senha);
         } catch(e) {
-            alert("Erro: " + e.message);
+            document.getElementById("loginErrorMsg").innerText = e.message;
         }
     }
     
-    window.sair = function() { if(confirm("Sair da sua conta?")) { localStorage.removeItem("usuarioAtualLista"); document.getElementById("app").style.display = "none"; document.getElementById("login").style.display = "block"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("usuario").value = ""; document.getElementById("senha").value = ""; fecharModalMenu(); } };
+    window.sair = function() { if(confirm("Sair da sua conta?")) { document.getElementById("mainApp").style.display = "none"; document.getElementById("loginScreen").style.display = "flex"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("loginNome").value = ""; document.getElementById("loginSenha").value = ""; fecharModalMenu(); } };
     
     window.mudarSenha = function() { 
         if(!usuarioAtual) return; 
@@ -1135,11 +1181,12 @@
             try {
                 atualizarSenhaUsuario(usuarioAtual, n);
                 alert("Senha alterada com sucesso!"); 
+                if(localStorage.getItem("login_lembrado_usuario") === usuarioAtual) salvarLoginLembrado(usuarioAtual, n);
             } catch(e) { alert(e.message); }
         } else alert("Senha inválida"); 
     };
     
-    // ==================== EXCLUIR CONTA COM MODAL IGUAL AO APP FINANCEIRO ====================
+    // ==================== EXCLUIR CONTA ====================
     function abrirModalExcluirConta() {
         document.getElementById('deleteAccountName').innerText = usuarioAtual;
         document.getElementById('deleteConfirmPassword').value = '';
@@ -1160,11 +1207,11 @@
         if(excluirUsuario(usuarioAtual, password)) {
             alert("✅ Conta excluída permanentemente! Você não poderá criar uma nova conta com o mesmo nome por 7 dias.");
             fecharModalExcluirConta();
-            document.getElementById('app').style.display = 'none';
-            document.getElementById('login').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
             usuarioAtual = "";
-            document.getElementById('usuario').value = "";
-            document.getElementById('senha').value = "";
+            document.getElementById('loginNome').value = "";
+            document.getElementById('loginSenha').value = "";
         } else {
             alert("❌ Senha incorreta! A conta NÃO foi excluída.");
         }
@@ -1173,7 +1220,7 @@
     function abrirModalMenu() { document.getElementById("modalMenu").style.display = "flex"; }
     function fecharModalMenu() { document.getElementById("modalMenu").style.display = "none"; }
     
-    // Backup functions
+    // ==================== BACKUP FUNCTIONS ====================
     async function derivarChave(senha, salt) {
         const encoder = new TextEncoder();
         const material = await crypto.subtle.importKey("raw", encoder.encode(senha), "PBKDF2", false, ["deriveKey"]);
@@ -1302,19 +1349,51 @@
         acaoBackup = null;
     }
     
-    document.getElementById("senha")?.addEventListener("input", updatePasswordReqs);
-    document.getElementById("senha")?.addEventListener("keyup", updatePasswordReqs);
+    // ==================== EVENTOS ====================
+    document.getElementById("loginSenha")?.addEventListener("input", updateLoginPasswordReqs);
+    document.getElementById("regSenha")?.addEventListener("input", updateRegPasswordReqs);
     
-    window.onclick = function(event) {
-        if (event.target === document.getElementById("modalMenu")) fecharModalMenu();
-        if (event.target === document.getElementById("modalSalvarLogin")) document.getElementById("modalSalvarLogin").style.display = "none";
-        if (event.target === document.getElementById("modalNovaLista")) fecharModalNovaLista();
-        if (event.target === document.getElementById("modalRenomearLista")) fecharModalRenomearLista();
-        if (event.target === document.getElementById("modalEdicao")) fecharModalEdicao();
-        if (event.target === document.getElementById("modalConfirmarSenha")) fecharModalConfirmacaoSenha();
-        if (event.target === document.getElementById("forceUpdateModal")) document.getElementById("forceUpdateModal").classList.remove("active");
-        if (event.target === document.getElementById("deleteAccountModal")) fecharModalExcluirConta();
-    };
+    document.getElementById("showRegLink")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("regScreen").style.display = "flex";
+        document.getElementById("loginErrorMsg").innerText = "";
+    });
+    
+    document.getElementById("showLoginLink")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("regScreen").style.display = "none";
+        document.getElementById("loginScreen").style.display = "flex";
+        document.getElementById("regErrorMsg").innerText = "";
+    });
+    
+    document.getElementById("loginBtn")?.addEventListener("click", entrar);
+    
+    document.getElementById("registerBtn")?.addEventListener("click", () => {
+        const nome = document.getElementById("regNome").value.trim();
+        const senha = document.getElementById("regSenha").value;
+        const confirm = document.getElementById("regConfirm").value;
+        if(!nome || !senha || !confirm) {
+            document.getElementById("regErrorMsg").innerText = "Preencha todos os campos!";
+            return;
+        }
+        if(senha !== confirm) {
+            document.getElementById("regErrorMsg").innerText = "As senhas não coincidem!";
+            return;
+        }
+        try {
+            registrarUsuario(nome, senha);
+            alert("Conta criada com sucesso! Faça login.");
+            document.getElementById("regScreen").style.display = "none";
+            document.getElementById("loginScreen").style.display = "flex";
+            document.getElementById("regNome").value = "";
+            document.getElementById("regSenha").value = "";
+            document.getElementById("regConfirm").value = "";
+            document.getElementById("regErrorMsg").innerText = "";
+        } catch(e) {
+            document.getElementById("regErrorMsg").innerText = e.message;
+        }
+    });
     
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
     document.getElementById("btnConfirmarSenha")?.addEventListener("click", () => {
@@ -1329,8 +1408,6 @@
     window.onload = () => {
         carregarModoEscuro();
         carregarLoginLembrado();
-        const menuBtn = document.getElementById("menuBtn");
-        if (menuBtn) menuBtn.onclick = abrirModalMenu;
     };
 </script>
 </body>
