@@ -145,7 +145,7 @@
             padding: 12px;
             margin: 16px 0;
             font-size: 12px;
-            border-left: 3px solid #f59e0b;
+            border-left: 3px solid var(--warning);
             text-align: left;
         }
         .password-requirements p {
@@ -194,8 +194,13 @@
             color: var(--danger);
             margin-bottom: 16px;
         }
+        .force-update-card p {
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
 
-        /* APP */
+        /* APP - Lista de Compras */
         .topo-app {
             display: flex;
             justify-content: space-between;
@@ -208,7 +213,7 @@
         .titulo-app {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--text-primary), #4f46e5);
+            background: linear-gradient(135deg, var(--text-primary), #10b981);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
@@ -349,6 +354,7 @@
             font-weight: 700;
             margin-bottom: 8px;
             color: var(--text-primary);
+            border: 1px solid var(--border);
         }
         .item-row {
             display: grid;
@@ -381,6 +387,7 @@
             background: var(--bg-elevated);
             border-radius: 1.5rem;
             color: var(--text-primary);
+            border: 1px solid var(--border);
         }
         @media (max-width: 700px) {
             .painel { padding: 1.2rem; }
@@ -490,42 +497,11 @@
         .btn-danger:hover {
             background: var(--danger-dark);
         }
-
-        /* Estilos específicos do modal de exclusão */
-        .delete-account-warning {
-            color: var(--danger);
-            font-size: 14px;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-        .delete-account-text {
-            font-size: 13px;
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-        .delete-account-input {
-            width: 100%;
-            padding: 14px 16px;
-            margin-bottom: 20px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text-primary);
-            font-size: 15px;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        .delete-account-input:focus {
-            outline: none;
-            border-color: var(--danger);
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-        }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Tela de Login -->
+    <!-- Tela de Login - IGUAL AO APP FINANCEIRO -->
     <div id="loginScreen" class="painel auth-screen" style="display: flex;">
         <div class="auth-card">
             <h2>🛒 Lista de Compras</h2>
@@ -542,12 +518,12 @@
                     <li id="reqNoSequence">✓ Sem sequências (ex: 123, 321, 234)</li>
                 </ul>
             </div>
-            <button id="loginBtn" class="auth-btn">🔐 Entrar / Criar conta</button>
+            <button id="loginBtn" class="auth-btn">Entrar</button>
             <div class="auth-link">Não tem conta? <a id="showRegLink">Criar nova conta</a></div>
         </div>
     </div>
 
-    <!-- Tela de Registro -->
+    <!-- Tela de Registro - IGUAL AO APP FINANCEIRO -->
     <div id="regScreen" class="painel auth-screen" style="display: none;">
         <div class="auth-card">
             <h2>📝 Criar Conta</h2>
@@ -609,29 +585,29 @@
     <div class="modal-menu-conteudo">
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
-            <button id="btnModoEscuro" onclick="toggleModoEscuro(); fecharModalMenu();"><span>🌙</span> Modo Escuro</button>
+            <button id="btnModoEscuro" onclick="toggleModoEscuro(); fecharModalMenu();"><span>🌙</span> Alternar Tema</button>
             <button onclick="exportarBackupCriptografado(); fecharModalMenu();"><span>📤</span> Exportar Backup</button>
             <button onclick="importarBackupCriptografado(); fecharModalMenu();"><span>📥</span> Importar Backup</button>
             <div class="menu-divider"></div>
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔐</span> Alterar Senha</button>
             <div class="menu-divider"></div>
             <button onclick="abrirModalExcluirConta(); fecharModalMenu();" class="danger-item"><span>🗑️</span> Excluir Conta Permanentemente</button>
-            <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
+            <div class="menu-divider"></div>
+            <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair da Conta</button>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
     </div>
 </div>
 
-<!-- MODAL EXCLUIR CONTA - COM INPUT ARREDONDADO E FRASE COMPLETA -->
+<!-- MODAL EXCLUIR CONTA - IGUAL AO APP FINANCEIRO -->
 <div id="deleteAccountModal" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <h3 style="color: var(--danger);">⚠️ EXCLUIR CONTA</h3>
-        <p class="delete-account-warning">⚠️ ATENÇÃO! Esta ação é IRREVERSÍVEL!</p>
-        <p class="delete-account-text">Todos os seus dados serão perdidos permanentemente.</p>
-        <p class="delete-account-text" style="margin-bottom: 8px;">Digite sua senha para confirmar:</p>
-        <input type="password" id="deleteConfirmPassword" class="delete-account-input" placeholder="••••••">
+        <p style="font-size: 14px; margin-bottom: 16px;">Esta ação é <strong>IRREVERSÍVEL</strong>. Todos os seus dados serão perdidos permanentemente.</p>
+        <p style="font-size: 13px; margin-bottom: 16px;">Digite sua senha para confirmar a exclusão da conta <strong id="deleteAccountName"></strong>:</p>
+        <input type="password" id="deleteConfirmPassword" class="auth-input" placeholder="Sua senha">
         <div class="modal-confirmacao-botoes">
-            <button id="confirmDeleteAccountBtn" class="btn-confirmar" style="background: var(--danger);">Excluir Conta</button>
+            <button id="confirmDeleteAccountBtn" class="auth-btn" style="background:var(--danger);">Excluir Conta</button>
             <button id="cancelDeleteAccountBtn" class="btn-cancelar">Cancelar</button>
         </div>
     </div>
@@ -1169,7 +1145,7 @@
         }
     }
     
-    window.sair = function() { if(confirm("Sair da sua conta?")) { document.getElementById("mainApp").style.display = "none"; document.getElementById("loginScreen").style.display = "flex"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("loginNome").value = ""; document.getElementById("loginSenha").value = ""; fecharModalMenu(); } };
+    window.sair = function() { if(confirm("Deseja sair da sua conta?")) { document.getElementById("mainApp").style.display = "none"; document.getElementById("loginScreen").style.display = "flex"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("loginNome").value = ""; document.getElementById("loginSenha").value = ""; fecharModalMenu(); } };
     
     window.mudarSenha = function() { 
         if(!usuarioAtual) return; 
