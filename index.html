@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Lista de Compras - Backup Criptografado</title>
+    <title>Lista de Compras - Segurança Avançada</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,6 @@
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
 
-        /* Modo Claro (padrão) */
         :root {
             --bg-body: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
             --bg-container: rgba(255, 255, 255, 0.96);
@@ -50,9 +49,10 @@
             --scrollbar-thumb: #cbd5e1;
             --comprado-bg: #f8fafc;
             --selector-bg: #f1f5f9;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
         }
 
-        /* Modo Escuro Super Escuro */
         body.dark {
             --bg-body: #000000;
             --bg-container: #0a0a0a;
@@ -108,7 +108,7 @@
             margin: auto;
             background: var(--bg-container);
             border-radius: 2rem;
-            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             transition: background 0.3s ease;
         }
@@ -151,7 +151,6 @@
             outline: none;
             border-color: var(--input-focus);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            background: var(--input-bg);
         }
 
         .campo input::placeholder {
@@ -175,6 +174,63 @@
         .btn-principal:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 20px var(--btn-primary-hover);
+        }
+
+        .password-requirements {
+            background: var(--modal-btn-bg);
+            border-radius: 16px;
+            padding: 12px;
+            margin: 16px auto;
+            font-size: 12px;
+            border-left: 3px solid #f59e0b;
+            max-width: 320px;
+            text-align: left;
+        }
+        .password-requirements p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        .password-requirements ul {
+            margin-left: 20px;
+            color: var(--text-secondary);
+        }
+        .password-requirements li {
+            margin: 4px 0;
+        }
+        .password-requirements li.valid {
+            color: #10b981;
+            text-decoration: line-through;
+        }
+
+        .force-update-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .force-update-modal.active {
+            display: flex;
+        }
+        .force-update-card {
+            background: var(--modal-bg);
+            border-radius: 40px;
+            padding: 28px;
+            width: 100%;
+            max-width: 340px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .force-update-card h3 {
+            color: var(--danger);
+            margin-bottom: 16px;
         }
 
         .topo-app {
@@ -213,14 +269,12 @@
             height: 42px;
             border-radius: 30px;
             font-size: 1.6rem;
-            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-color);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
         .btn-menu:hover {
             background: var(--btn-menu-hover);
@@ -238,7 +292,6 @@
             flex-wrap: wrap;
             gap: 10px;
             border: 1px solid var(--border-color);
-            transition: background 0.3s ease;
         }
         .lista-selector {
             display: flex;
@@ -254,12 +307,6 @@
             border-radius: 40px;
             font-size: 0.9rem;
             cursor: pointer;
-            outline: none;
-        }
-        .lista-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-weight: 500;
         }
         .btn-acao-lista {
             background: var(--btn-acao);
@@ -279,7 +326,7 @@
             transform: scale(0.95);
         }
 
-        .modal-menu {
+        .modal-menu, .modal-confirmacao, .modal-edicao {
             display: none;
             position: fixed;
             top: 0;
@@ -292,25 +339,16 @@
             justify-content: center;
             z-index: 1000;
         }
-        .modal-menu-conteudo {
+        .modal-menu-conteudo, .modal-confirmacao-conteudo, .modal-edicao-conteudo {
             background: var(--modal-bg);
-            max-width: 500px;
+            max-width: 400px;
             width: 90%;
             border-radius: 2rem;
             padding: 1.5rem;
             text-align: center;
             box-shadow: 0 30px 40px rgba(0,0,0,0.3);
-            animation: fadeInUp 0.2s ease;
-            max-height: 80vh;
-            overflow-y: auto;
             border: 1px solid var(--border-color);
-        }
-        .modal-menu-conteudo h3 {
             color: var(--text-color);
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         .modal-menu-opcoes {
             display: flex;
@@ -326,7 +364,6 @@
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: 0.1s;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -336,6 +373,12 @@
         .modal-menu-opcoes button:hover {
             background: var(--modal-btn-hover);
             transform: scale(0.98);
+        }
+        .modal-menu-opcoes .danger-item {
+            color: var(--danger);
+        }
+        .modal-menu-opcoes .danger-item:hover {
+            background: rgba(239, 68, 68, 0.1);
         }
         .btn-fechar-modal {
             background: var(--modal-btn-bg);
@@ -380,9 +423,6 @@
             background: var(--input-bg);
             color: var(--text-color);
         }
-        .campo-add input::placeholder {
-            color: var(--text-secondary);
-        }
         .btn-add {
             background: var(--btn-add);
             border: none;
@@ -394,6 +434,7 @@
             margin-top: 22px;
         }
         .btn-add:hover { background: var(--btn-add-hover); }
+
         .tabela-lista {
             width: 100%;
             border-radius: 1.2rem;
@@ -423,37 +464,14 @@
             transition: all 0.2s ease;
             cursor: grab;
             color: var(--text-color);
-            position: relative;
         }
-        .item-row:active {
-            cursor: grabbing;
-        }
-        .item-row.dragging {
-            opacity: 0.3;
-            cursor: grabbing;
-        }
-        .item-row.drag-over {
-            border-top: 3px solid var(--input-focus);
-            margin-top: -3px;
-        }
-        .item-row.editing-swipe {
-            background: var(--input-focus);
-            color: white;
-            transition: background 0.1s ease;
-            cursor: ew-resize;
-        }
-        .produto-nome { font-weight: 600; word-break: break-word; }
+        .item-row.dragging { opacity: 0.3; cursor: grabbing; }
+        .item-row.drag-over { border-top: 3px solid var(--input-focus); margin-top: -3px; }
+        .item-row.editing-swipe { background: var(--input-focus); color: white; transition: background 0.1s ease; cursor: ew-resize; }
         .comprado .produto-nome { text-decoration: line-through; color: #22c55e; opacity: 0.7; }
-        .comprado {
-            background: var(--comprado-bg);
-            opacity: 0.85;
-            cursor: not-allowed !important;
-        }
-        .comprado:active {
-            cursor: not-allowed !important;
-        }
+        .comprado { background: var(--comprado-bg); opacity: 0.85; cursor: not-allowed !important; }
         .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-acao { background: var(--btn-acao); border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; transition: 0.1s; color: var(--text-color); }
+        .btn-acao { background: var(--btn-acao); border: none; font-size: 1.1rem; padding: 6px 10px; border-radius: 40px; cursor: pointer; font-weight: bold; color: var(--text-color); }
         .btn-acao:hover { background: var(--btn-acao-hover); transform: scale(0.95); }
         .total-area {
             text-align: right;
@@ -472,44 +490,7 @@
             .lista-selector { justify-content: space-between; }
         }
 
-        .modal-confirmacao {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-        }
-        .modal-confirmacao-conteudo {
-            background: var(--modal-bg);
-            max-width: 400px;
-            width: 90%;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-        .modal-confirmacao-conteudo p {
-            margin: 15px 0;
-            font-size: 1.1rem;
-        }
-        .modal-confirmacao-conteudo input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid var(--input-border);
-            border-radius: 40px;
-            background: var(--input-bg);
-            color: var(--text-color);
-        }
-        .modal-confirmacao-botoes {
+        .modal-confirmacao-botoes, .modal-edicao-botoes {
             display: flex;
             gap: 12px;
             justify-content: center;
@@ -533,50 +514,11 @@
             font-weight: 500;
             cursor: pointer;
         }
-        
-        .modal-edicao {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1002;
+        .btn-danger {
+            background: var(--danger);
         }
-        .modal-edicao-conteudo {
-            background: var(--modal-bg);
-            max-width: 400px;
-            width: 90%;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-        .modal-edicao-conteudo input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid var(--input-border);
-            border-radius: 40px;
-            background: var(--input-bg);
-            color: var(--text-color);
-            font-size: 1rem;
-        }
-        .modal-edicao-conteudo input:focus {
-            outline: none;
-            border-color: var(--input-focus);
-        }
-        .modal-edicao-botoes {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 15px;
+        .btn-danger:hover {
+            background: var(--danger-dark);
         }
     </style>
 </head>
@@ -588,7 +530,16 @@
             <input type="text" id="usuario" placeholder="Seu nome" autocomplete="off">
         </div>
         <div class="campo">
-            <input type="password" id="senha" placeholder="Digite sua senha">
+            <input type="password" id="senha" placeholder="Senha (4-6 números)">
+        </div>
+        <div class="password-requirements" id="passwordReqs" style="display: none;">
+            <p>🔒 Requisitos da senha:</p>
+            <ul>
+                <li id="reqLength">✓ 4 a 6 caracteres</li>
+                <li id="reqOnlyNumbers">✓ Apenas números (0-9)</li>
+                <li id="reqNoRepeat">✓ Sem números repetidos (ex: 11, 22, 111)</li>
+                <li id="reqNoSequence">✓ Sem sequências (ex: 123, 321, 234)</li>
+            </ul>
         </div>
         <button class="btn-principal" onclick="entrar()">🔐 Entrar / Criar conta</button>
     </div>
@@ -607,9 +558,9 @@
                 <div class="lista-selector">
                     <span class="lista-label">📁 Lista:</span>
                     <select id="listaSelect" onchange="trocarLista()"></select>
-                    <button class="btn-acao-lista" onclick="mostrarModalNovaLista()" title="Nova lista">➕ Nova</button>
-                    <button class="btn-acao-lista" onclick="renomearListaAtual()" title="Renomear lista">✏️ Renomear</button>
-                    <button class="btn-acao-lista" onclick="excluirListaAtual()" title="Excluir lista">🗑️ Excluir</button>
+                    <button class="btn-acao-lista" onclick="mostrarModalNovaLista()">➕ Nova</button>
+                    <button class="btn-acao-lista" onclick="renomearListaAtual()">✏️ Renomear</button>
+                    <button class="btn-acao-lista" onclick="excluirListaAtual()">🗑️ Excluir</button>
                 </div>
             </div>
             
@@ -633,10 +584,12 @@
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
             <button id="btnModoEscuro" onclick="toggleModoEscuro(); fecharModalMenu();"><span>🌙</span> Modo Escuro</button>
-            <button onclick="exportarBackupCriptografado(); fecharModalMenu();"><span>📤</span> Exportar Backup (Criptografado)</button>
+            <button onclick="exportarBackupCriptografado(); fecharModalMenu();"><span>📤</span> Exportar Backup</button>
             <button onclick="importarBackupCriptografado(); fecharModalMenu();"><span>📥</span> Importar Backup</button>
-            <button onclick="mudarSenha(); fecharModalMenu();"><span>🔑</span> Alterar Senha</button>
-            <button onclick="apagarUsuario(); fecharModalMenu();"><span>🗑️</span> Apagar Meus Dados</button>
+            <div class="menu-divider" style="height:1px; background:var(--border-color); margin:4px 0;"></div>
+            <button onclick="mudarSenha(); fecharModalMenu();"><span>🔐</span> Alterar Senha</button>
+            <div class="menu-divider" style="height:1px; background:var(--border-color); margin:4px 0;"></div>
+            <button onclick="apagarUsuario(); fecharModalMenu();" class="danger-item"><span>🗑️</span> Excluir Conta Permanentemente</button>
             <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
@@ -657,7 +610,7 @@
 <div id="modalSalvarLogin" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>🔐 Deseja salvar seu login?</p>
-        <p style="font-size: 0.9rem; color: var(--text-secondary);">Na próxima vez você não precisará digitar a senha.</p>
+        <p style="font-size: 0.9rem;">Na próxima vez você não precisará digitar a senha.</p>
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" onclick="confirmarSalvarLogin()">✅ Sim, salvar</button>
             <button class="btn-cancelar" onclick="cancelarSalvarLogin()">❌ Não</button>
@@ -668,7 +621,7 @@
 <div id="modalNovaLista" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>📝 Criar nova lista</p>
-        <input type="text" id="novaListaNome" placeholder="Nome da lista" autocomplete="off">
+        <input type="text" id="novaListaNome" placeholder="Nome da lista">
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" onclick="criarNovaLista()">Criar</button>
             <button class="btn-cancelar" onclick="fecharModalNovaLista()">Cancelar</button>
@@ -679,7 +632,7 @@
 <div id="modalRenomearLista" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p>✏️ Renomear lista</p>
-        <input type="text" id="renomearListaNome" placeholder="Novo nome" autocomplete="off">
+        <input type="text" id="renomearListaNome" placeholder="Novo nome">
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" onclick="confirmarRenomearLista()">Salvar</button>
             <button class="btn-cancelar" onclick="fecharModalRenomearLista()">Cancelar</button>
@@ -700,6 +653,18 @@
     </div>
 </div>
 
+<div id="forceUpdateModal" class="force-update-modal">
+    <div class="force-update-card">
+        <h3>⚠️ SENHA FRACA DETECTADA</h3>
+        <p>Sua senha atual não atende aos requisitos de segurança. Por segurança, você precisa criar uma nova senha forte.</p>
+        <p style="font-size:12px; margin-bottom:16px;">Requisitos: 4 a 6 números, sem repetições, sem sequências (ex: 123, 321, 11, 22, 111)</p>
+        <input type="password" id="forceNewPassword" class="campo input" style="width:100%; margin-bottom:12px;" placeholder="Nova senha (4-6 números)">
+        <input type="password" id="forceConfirmPassword" class="campo input" style="width:100%; margin-bottom:12px;" placeholder="Confirmar nova senha">
+        <button id="forceUpdateBtn" class="btn-confirmar" style="background:var(--danger);">Atualizar Senha</button>
+        <div id="forceErrorMsg" style="color:var(--danger); font-size:12px; margin-top:12px;"></div>
+    </div>
+</div>
+
 <script>
     let usuarioAtual = "";
     let currentListItems = [];
@@ -711,48 +676,138 @@
     let swipeStartX = null;
     let swipeItemId = null;
     let editandoItemId = null;
-    let acaoBackup = null; // 'export' or 'import'
-    
-    const listaContainer = document.getElementById("listaContainer");
-    const totalSpan = document.getElementById("total");
-    const listaSelect = document.getElementById("listaSelect");
+    let acaoBackup = null;
+    let precisaTrocarSenha = false;
 
-    // --- Funções de criptografia usando a senha do usuário ---
-    async function derivarChave(senha, salt) {
-        const encoder = new TextEncoder();
-        const material = await crypto.subtle.importKey("raw", encoder.encode(senha), "PBKDF2", false, ["deriveKey"]);
-        return await crypto.subtle.deriveKey({
-            name: "PBKDF2",
-            salt: salt,
-            iterations: 100000,
-            hash: "SHA-256"
-        }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    // ==================== VALIDAÇÃO DE SENHA FORTE ====================
+    function isStrongPassword(password) {
+        const str = String(password);
+        if (!/^\d+$/.test(str)) return false;
+        if (str.length < 4 || str.length > 6) return false;
+        if (/(\d)\1/.test(str)) return false;
+        const sequences = ['123', '234', '345', '456', '567', '678', '789', '012', '1234', '2345', '3456', '4567', '5678', '6789'];
+        for (let seq of sequences) if (str.includes(seq)) return false;
+        const reverseSequences = ['321', '432', '543', '654', '765', '876', '987', '3210', '4321', '5432', '6543', '7654', '8765', '9876'];
+        for (let seq of reverseSequences) if (str.includes(seq)) return false;
+        return true;
     }
 
-    async function criptografarDados(dados, senha) {
-        const encoder = new TextEncoder();
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const chave = await derivarChave(senha, salt);
-        const dadosCripto = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, chave, encoder.encode(dados));
-        const pacote = new Uint8Array(salt.length + iv.length + dadosCripto.byteLength);
-        pacote.set(salt, 0);
-        pacote.set(iv, salt.length);
-        pacote.set(new Uint8Array(dadosCripto), salt.length + iv.length);
-        return btoa(String.fromCharCode.apply(null, pacote));
+    function validatePasswordRequirements(password) {
+        const errors = [];
+        const str = String(password);
+        if (str.length < 4 || str.length > 6) errors.push("A senha deve ter entre 4 e 6 dígitos");
+        if (!/^\d+$/.test(str)) errors.push("A senha deve conter apenas números");
+        if (/(\d)\1/.test(str)) errors.push("A senha não pode ter números repetidos");
+        const sequences = ['123', '234', '345', '456', '567', '678', '789', '012', '1234', '2345', '3456', '4567', '5678', '6789'];
+        for (let seq of sequences) if (str.includes(seq)) errors.push("A senha não pode ter sequências crescentes");
+        const reverseSequences = ['321', '432', '543', '654', '765', '876', '987', '3210', '4321', '5432', '6543', '7654', '8765', '9876'];
+        for (let seq of reverseSequences) if (str.includes(seq)) errors.push("A senha não pode ter sequências decrescentes");
+        return errors;
     }
 
-    async function descriptografarDados(base64, senha) {
-        const dados = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-        const salt = dados.slice(0, 16);
-        const iv = dados.slice(16, 28);
-        const conteudo = dados.slice(28);
-        const chave = await derivarChave(senha, salt);
-        const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, chave, conteudo);
-        return new TextDecoder().decode(decrypted);
+    function updatePasswordReqs() {
+        const senha = document.getElementById('senha').value;
+        const reqsDiv = document.getElementById('passwordReqs');
+        if (!senha) { reqsDiv.style.display = 'none'; return; }
+        reqsDiv.style.display = 'block';
+        const reqLength = document.getElementById('reqLength');
+        const reqOnlyNumbers = document.getElementById('reqOnlyNumbers');
+        const reqNoRepeat = document.getElementById('reqNoRepeat');
+        const reqNoSequence = document.getElementById('reqNoSequence');
+        if(!reqLength) return;
+        const lengthOk = senha.length >= 4 && senha.length <= 6;
+        const onlyNumbersOk = /^\d*$/.test(senha);
+        const noRepeatOk = !/(\d)\1/.test(senha);
+        let noSequenceOk = true;
+        const sequences = ['123','234','345','456','567','678','789','012','1234','2345','3456','4567','5678','6789'];
+        const reverseSequences = ['321','432','543','654','765','876','987','3210','4321','5432','6543','7654','8765','9876'];
+        for (let seq of sequences) if (senha.includes(seq)) { noSequenceOk = false; break; }
+        for (let seq of reverseSequences) if (senha.includes(seq)) { noSequenceOk = false; break; }
+        reqLength.classList.toggle('valid', lengthOk);
+        reqOnlyNumbers.classList.toggle('valid', onlyNumbersOk);
+        reqNoRepeat.classList.toggle('valid', noRepeatOk);
+        reqNoSequence.classList.toggle('valid', noSequenceOk);
     }
-    // ---------------------------------
 
+    // ==================== FUNÇÕES DE USUÁRIO COM SEGURANÇA ====================
+    function loadDeletedUsers() { return JSON.parse(localStorage.getItem("deletedUsersLista") || "{}"); }
+    function saveDeletedUsers(deleted) { localStorage.setItem("deletedUsersLista", JSON.stringify(deleted)); }
+
+    function registrarUsuario(nome, senha) {
+        let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
+        let deletedUsers = loadDeletedUsers();
+        
+        if(deletedUsers[nome]) {
+            const deletionTime = deletedUsers[nome].deletedAt;
+            const now = Date.now();
+            const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+            const timeLeft = sevenDaysInMs - (now - deletionTime);
+            if(timeLeft > 0) {
+                const daysLeft = Math.ceil(timeLeft / (24 * 60 * 60 * 1000));
+                throw new Error(`Este nome foi excluído há menos de 7 dias. Aguarde ${daysLeft} dia(s).`);
+            } else {
+                delete deletedUsers[nome];
+                saveDeletedUsers(deletedUsers);
+            }
+        }
+        
+        if(users[nome]) throw new Error("Usuário já existe!");
+        const passwordErrors = validatePasswordRequirements(senha);
+        if(passwordErrors.length > 0) throw new Error(passwordErrors[0]);
+        
+        users[nome] = { senha, listas: ["default"], dados: {} };
+        localStorage.setItem("listaUsers", JSON.stringify(users));
+        return true;
+    }
+
+    function loginUsuario(nome, senha) {
+        let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
+        if(!users[nome]) {
+            registrarUsuario(nome, senha);
+            return { success: true, isNew: true };
+        }
+        if(users[nome].senha !== senha) throw new Error("Senha incorreta!");
+        if(!isStrongPassword(users[nome].senha)) {
+            return { success: false, needStrongPassword: true };
+        }
+        return { success: true };
+    }
+
+    function atualizarSenhaUsuario(nome, novaSenha) {
+        let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
+        if(!users[nome]) return false;
+        const errors = validatePasswordRequirements(novaSenha);
+        if(errors.length > 0) throw new Error(errors[0]);
+        users[nome].senha = novaSenha;
+        localStorage.setItem("listaUsers", JSON.stringify(users));
+        if(localStorage.getItem("login_lembrado_usuario") === nome) {
+            localStorage.setItem("login_lembrado_senha", novaSenha);
+        }
+        return true;
+    }
+
+    function excluirUsuario(nome, senha) {
+        let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
+        if(!users[nome] || users[nome].senha !== senha) return false;
+        
+        let deletedUsers = loadDeletedUsers();
+        deletedUsers[nome] = { deletedAt: Date.now(), originalName: nome };
+        saveDeletedUsers(deletedUsers);
+        
+        for(let i=0; i<localStorage.length; i++){
+            const k = localStorage.key(i);
+            if(k && (k.startsWith(`lista_${nome}`) || k === `listas_${nome}` || k === `senha_${nome}`)) localStorage.removeItem(k);
+        }
+        delete users[nome];
+        localStorage.setItem("listaUsers", JSON.stringify(users));
+        if(localStorage.getItem("login_lembrado_usuario") === nome) {
+            localStorage.removeItem("login_lembrado_usuario");
+            localStorage.removeItem("login_lembrado_senha");
+        }
+        return true;
+    }
+
+    // ==================== FUNÇÕES DO APP ====================
     function carregarListasDoUsuario() {
         const listasSalvas = localStorage.getItem(`listas_${usuarioAtual}`);
         if (listasSalvas) listas = JSON.parse(listasSalvas);
@@ -849,11 +904,9 @@
     function toggleModoEscuro() {
         document.body.classList.toggle('dark');
         const isDark = document.body.classList.contains('dark');
-        localStorage.setItem('modo_escuro', isDark ? 'true' : 'false');
-        const btn = document.getElementById('btnModoEscuro');
-        if (btn) btn.innerHTML = isDark ? '<span>☀️</span> Modo Claro' : '<span>🌙</span> Modo Escuro';
+        localStorage.setItem('modo_escuro_lista', isDark ? 'true' : 'false');
     }
-    function carregarModoEscuro() { if (localStorage.getItem('modo_escuro') === 'true') { document.body.classList.add('dark'); const btn = document.getElementById('btnModoEscuro'); if (btn) btn.innerHTML = '<span>☀️</span> Modo Claro'; } }
+    function carregarModoEscuro() { if (localStorage.getItem('modo_escuro_lista') === 'true') document.body.classList.add('dark'); }
     
     function atualizarTotalUI() { totalSpan.innerText = totalGeral.toFixed(2); }
     function recalcularTotal() { totalGeral = currentListItems.reduce((s, i) => s + (i.quantidade * i.preco), 0); }
@@ -963,13 +1016,7 @@
     
     window.toggleComprado = function(id) {
         let item = currentListItems.find(i => i.id === id);
-        if(item) { 
-            item.comprado = !item.comprado; 
-            recalcularTotal();
-            salvarEstadoCompleto(); 
-            separarLista();
-            renderizarLista();
-        }
+        if(item) { item.comprado = !item.comprado; recalcularTotal(); salvarEstadoCompleto(); separarLista(); renderizarLista(); }
     };
     
     window.removerItemComConfirmacao = function(id) {
@@ -977,9 +1024,7 @@
         if(item && confirm(`Remover "${item.nome}" permanentemente?`)) {
             totalGeral -= (item.quantidade * item.preco);
             currentListItems = currentListItems.filter(i => i.id !== id);
-            salvarEstadoCompleto(); 
-            separarLista();
-            renderizarLista();
+            salvarEstadoCompleto(); separarLista(); renderizarLista();
         }
     };
     
@@ -992,48 +1037,137 @@
     function cancelarSalvarLogin() { limparLoginLembrado(); loginPendente = {}; document.getElementById("modalSalvarLogin").style.display = "none"; }
     function mostrarDialogoSalvarLogin(usuario, senha) { loginPendente = { usuario, senha }; document.getElementById("modalSalvarLogin").style.display = "flex"; }
     
-    function entrar() {
-        const usuario = document.getElementById("usuario").value.trim(), senha = document.getElementById("senha").value;
-        if (!usuario || !senha) { alert("Preencha usuário e senha"); return; }
-        const senhaSalva = localStorage.getItem("senha_" + usuario);
-        if (!senhaSalva) { localStorage.setItem("senha_" + usuario, senha); alert("✅ Conta criada com sucesso! Bem-vindo(a)."); mostrarDialogoSalvarLogin(usuario, senha); }
-        else { if (senha !== senhaSalva) { alert("Senha incorreta"); return; } const lu = localStorage.getItem("login_lembrado_usuario"), ls = localStorage.getItem("login_lembrado_senha"); if (!lu || lu !== usuario || ls !== senha) mostrarDialogoSalvarLogin(usuario, senha); }
-        usuarioAtual = usuario; localStorage.setItem("usuarioAtual", usuarioAtual);
-        document.getElementById("login").style.display = "none"; document.getElementById("app").style.display = "block";
-        document.getElementById("nomeUsuario").innerText = usuarioAtual; carregarDadosUsuario(); document.getElementById("senha").value = "";
+    function showForceUpdateModal() {
+        document.getElementById('forceNewPassword').value = '';
+        document.getElementById('forceConfirmPassword').value = '';
+        document.getElementById('forceErrorMsg').innerText = '';
+        document.getElementById('forceUpdateModal').classList.add('active');
+        document.getElementById('app').style.display = 'none';
+    }
+
+    function confirmForceUpdate() {
+        const newPassword = document.getElementById('forceNewPassword').value;
+        const confirmPassword = document.getElementById('forceConfirmPassword').value;
+        if(!newPassword || !confirmPassword) {
+            document.getElementById('forceErrorMsg').innerText = "Preencha todos os campos!";
+            return;
+        }
+        if(newPassword !== confirmPassword) {
+            document.getElementById('forceErrorMsg').innerText = "As senhas não coincidem!";
+            return;
+        }
+        try {
+            const errors = validatePasswordRequirements(newPassword);
+            if(errors.length > 0) {
+                document.getElementById('forceErrorMsg').innerText = errors[0];
+                return;
+            }
+            atualizarSenhaUsuario(usuarioAtual, newPassword);
+            document.getElementById('forceUpdateModal').classList.remove('active');
+            document.getElementById('app').style.display = 'block';
+            alert("✅ Senha atualizada com sucesso!");
+        } catch(e) {
+            document.getElementById('forceErrorMsg').innerText = e.message;
+        }
     }
     
-    window.sair = function() { if(confirm("Sair da sua conta?")) { localStorage.removeItem("usuarioAtual"); document.getElementById("app").style.display = "none"; document.getElementById("login").style.display = "block"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("usuario").value = ""; document.getElementById("senha").value = ""; fecharModalMenu(); } };
+    function entrar() {
+        const usuario = document.getElementById("usuario").value.trim();
+        const senha = document.getElementById("senha").value;
+        if (!usuario || !senha) { alert("Preencha usuário e senha"); return; }
+        try {
+            const result = loginUsuario(usuario, senha);
+            if(result && result.needStrongPassword) {
+                usuarioAtual = usuario;
+                carregarDadosUsuario();
+                showForceUpdateModal();
+                return;
+            }
+            usuarioAtual = usuario;
+            document.getElementById("login").style.display = "none";
+            document.getElementById("app").style.display = "block";
+            document.getElementById("nomeUsuario").innerText = usuarioAtual;
+            carregarDadosUsuario();
+            document.getElementById("senha").value = "";
+            const lu = localStorage.getItem("login_lembrado_usuario"), ls = localStorage.getItem("login_lembrado_senha");
+            if (!lu || lu !== usuario || ls !== senha) mostrarDialogoSalvarLogin(usuario, senha);
+        } catch(e) {
+            alert("Erro: " + e.message);
+        }
+    }
+    
+    window.sair = function() { if(confirm("Sair da sua conta?")) { localStorage.removeItem("usuarioAtualLista"); document.getElementById("app").style.display = "none"; document.getElementById("login").style.display = "block"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("usuario").value = ""; document.getElementById("senha").value = ""; fecharModalMenu(); } };
     
     window.mudarSenha = function() { 
         if(!usuarioAtual) return; 
         const a = prompt("Digite a senha atual:"); 
-        if(a !== localStorage.getItem("senha_" + usuarioAtual)) { alert("Senha atual incorreta"); return; } 
-        const n = prompt("Digite a nova senha:"); 
+        let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
+        if(!users[usuarioAtual] || users[usuarioAtual].senha !== a) { alert("Senha atual incorreta"); return; } 
+        const n = prompt("Digite a nova senha (4-6 números, sem repetições, sem sequências):"); 
         if(n && n.trim()) { 
-            localStorage.setItem("senha_" + usuarioAtual, n); 
-            alert("Senha alterada com sucesso!"); 
-            if(localStorage.getItem("login_lembrado_usuario") === usuarioAtual) salvarLoginLembrado(usuarioAtual, n); 
+            try {
+                atualizarSenhaUsuario(usuarioAtual, n);
+                alert("Senha alterada com sucesso!"); 
+            } catch(e) { alert(e.message); }
         } else alert("Senha inválida"); 
     };
     
     window.apagarUsuario = function() { 
-        if(usuarioAtual && confirm(`ATENÇÃO: Isso apagará TODOS os dados do usuário "${usuarioAtual}". Tem certeza?`)) { 
-            for(let i=0; i<localStorage.length; i++){ 
-                const k=localStorage.key(i); 
-                if(k && (k.startsWith(`lista_${usuarioAtual}`) || k===`listas_${usuarioAtual}` || k===`senha_${usuarioAtual}`)) localStorage.removeItem(k); 
-            } 
-            if(localStorage.getItem("login_lembrado_usuario")===usuarioAtual) limparLoginLembrado(); 
-            localStorage.removeItem("usuarioAtual"); 
-            alert("Usuário e dados removidos permanentemente."); 
-            location.reload(); 
-        } 
+        if(usuarioAtual) {
+            const senha = prompt("Digite sua senha para confirmar a exclusão da conta:");
+            if(!senha) { alert("Senha não fornecida."); return; }
+            if(excluirUsuario(usuarioAtual, senha)) {
+                alert("✅ Conta excluída permanentemente! Você não poderá criar uma nova conta com o mesmo nome por 7 dias.");
+                localStorage.removeItem("usuarioAtualLista");
+                document.getElementById("app").style.display = "none";
+                document.getElementById("login").style.display = "block";
+                usuarioAtual = "";
+                document.getElementById("usuario").value = "";
+                document.getElementById("senha").value = "";
+            } else {
+                alert("❌ Senha incorreta! A conta NÃO foi excluída.");
+            }
+        }
     };
     
     function abrirModalMenu() { document.getElementById("modalMenu").style.display = "flex"; }
     function fecharModalMenu() { document.getElementById("modalMenu").style.display = "none"; }
     
-    // EXPORTAR BACKUP - solicita confirmação da senha do usuário
+    // Backup functions
+    async function derivarChave(senha, salt) {
+        const encoder = new TextEncoder();
+        const material = await crypto.subtle.importKey("raw", encoder.encode(senha), "PBKDF2", false, ["deriveKey"]);
+        return await crypto.subtle.deriveKey({
+            name: "PBKDF2",
+            salt: salt,
+            iterations: 100000,
+            hash: "SHA-256"
+        }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    }
+
+    async function criptografarDados(dados, senha) {
+        const encoder = new TextEncoder();
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const chave = await derivarChave(senha, salt);
+        const dadosCripto = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, chave, encoder.encode(dados));
+        const pacote = new Uint8Array(salt.length + iv.length + dadosCripto.byteLength);
+        pacote.set(salt, 0);
+        pacote.set(iv, salt.length);
+        pacote.set(new Uint8Array(dadosCripto), salt.length + iv.length);
+        return btoa(String.fromCharCode.apply(null, pacote));
+    }
+
+    async function descriptografarDados(base64, senha) {
+        const dados = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const salt = dados.slice(0, 16);
+        const iv = dados.slice(16, 28);
+        const conteudo = dados.slice(28);
+        const chave = await derivarChave(senha, salt);
+        const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, chave, conteudo);
+        return new TextDecoder().decode(decrypted);
+    }
+    
     function exportarBackupCriptografado() {
         if (!usuarioAtual) return;
         acaoBackup = 'export';
@@ -1042,7 +1176,6 @@
         document.getElementById("modalConfirmarSenha").style.display = "flex";
     }
     
-    // IMPORTAR BACKUP - solicita a senha do usuário para descriptografar
     function importarBackupCriptografado() {
         if (!usuarioAtual) return;
         acaoBackup = 'import';
@@ -1052,8 +1185,8 @@
     }
     
     async function executarBackup(senha) {
-        const senhaSalva = localStorage.getItem("senha_" + usuarioAtual);
-        if (senha !== senhaSalva) {
+        let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
+        if (!users[usuarioAtual] || users[usuarioAtual].senha !== senha) {
             alert("❌ Senha incorreta!");
             fecharModalConfirmacaoSenha();
             return;
@@ -1061,7 +1194,6 @@
         
         if (acaoBackup === 'export') {
             try {
-                // Coletar todos os dados do usuário
                 const dadosUsuario = {
                     usuario: usuarioAtual,
                     listas: listas,
@@ -1079,12 +1211,12 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `backup_${usuarioAtual}_${new Date().toISOString().slice(0,19)}.listaenc`;
+                a.download = `backup_lista_${usuarioAtual}_${new Date().toISOString().slice(0,19)}.listaenc`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                alert("✅ Backup criptografado exportado com sucesso!");
+                alert("✅ Backup exportado com sucesso!");
             } catch(e) { alert("Erro na exportação: " + e.message); }
         } 
         else if (acaoBackup === 'import') {
@@ -1102,20 +1234,11 @@
                         const dadosImportados = JSON.parse(jsonDecriptado);
                         if (!dadosImportados.listas || !dadosImportados.dadosListas) throw new Error("Formato inválido");
                         
-                        // Verificar se o usuário é o mesmo (opcional, pode ser outro)
-                        if (dadosImportados.usuario && dadosImportados.usuario !== usuarioAtual) {
-                            if (!confirm(`⚠️ Este backup pertence ao usuário "${dadosImportados.usuario}". Deseja importá-lo mesmo assim? Seus dados atuais serão substituídos.`)) {
-                                return;
-                            }
-                        }
-                        
-                        // Apagar dados antigos do usuário atual
                         for(let i=0; i<localStorage.length; i++){
                             const k=localStorage.key(i);
                             if(k && (k.startsWith(`lista_${usuarioAtual}`) || k===`listas_${usuarioAtual}`)) localStorage.removeItem(k);
                         }
                         
-                        // Salvar novos dados
                         localStorage.setItem(`listas_${usuarioAtual}`, JSON.stringify(dadosImportados.listas));
                         for (let [lista, dados] of Object.entries(dadosImportados.dadosListas)) {
                             localStorage.setItem(`lista_${usuarioAtual}_${lista}`, JSON.stringify(dados));
@@ -1139,6 +1262,9 @@
         acaoBackup = null;
     }
     
+    document.getElementById("senha")?.addEventListener("input", updatePasswordReqs);
+    document.getElementById("senha")?.addEventListener("keyup", updatePasswordReqs);
+    
     window.onclick = function(event) {
         if (event.target === document.getElementById("modalMenu")) fecharModalMenu();
         if (event.target === document.getElementById("modalSalvarLogin")) document.getElementById("modalSalvarLogin").style.display = "none";
@@ -1146,6 +1272,7 @@
         if (event.target === document.getElementById("modalRenomearLista")) fecharModalRenomearLista();
         if (event.target === document.getElementById("modalEdicao")) fecharModalEdicao();
         if (event.target === document.getElementById("modalConfirmarSenha")) fecharModalConfirmacaoSenha();
+        if (event.target === document.getElementById("forceUpdateModal")) document.getElementById("forceUpdateModal").classList.remove("active");
     };
     
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
@@ -1154,6 +1281,7 @@
         if (!senha) { alert("Digite sua senha."); return; }
         executarBackup(senha);
     });
+    document.getElementById("forceUpdateBtn")?.addEventListener("click", confirmForceUpdate);
     
     window.onload = () => {
         carregarModoEscuro();
