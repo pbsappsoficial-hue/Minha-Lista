@@ -45,12 +45,11 @@
             --btn-add-hover: #059669;
             --btn-acao: #f1f5f9;
             --btn-acao-hover: #e2e8f0;
-            --scrollbar-track: #f1f1f1;
-            --scrollbar-thumb: #cbd5e1;
             --comprado-bg: #f8fafc;
             --selector-bg: #f1f5f9;
             --danger: #ef4444;
             --danger-dark: #dc2626;
+            --warning: #f59e0b;
         }
 
         body.dark {
@@ -64,7 +63,6 @@
             --input-border: #2a2a2a;
             --input-focus: #818cf8;
             --btn-primary: linear-gradient(95deg, #6366f1, #a78bfa);
-            --btn-primary-hover: rgba(99, 102, 241, 0.4);
             --usuario-info-bg: #1a1a1a;
             --btn-menu-bg: #1a1a1a;
             --btn-menu-hover: #2a2a2a;
@@ -86,8 +84,6 @@
             --btn-add-hover: #10b981;
             --btn-acao: #1a1a1a;
             --btn-acao-hover: #2a2a2a;
-            --scrollbar-track: #1a1a1a;
-            --scrollbar-thumb: #2a2a2a;
             --comprado-bg: #0a0a0a;
             --selector-bg: #0a0a0a;
         }
@@ -182,7 +178,7 @@
             padding: 12px;
             margin: 16px auto;
             font-size: 12px;
-            border-left: 3px solid #f59e0b;
+            border-left: 3px solid var(--warning);
             max-width: 320px;
             text-align: left;
         }
@@ -380,6 +376,11 @@
         .modal-menu-opcoes .danger-item:hover {
             background: rgba(239, 68, 68, 0.1);
         }
+        .menu-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 0;
+        }
         .btn-fechar-modal {
             background: var(--modal-btn-bg);
             border: 1px solid var(--modal-btn-border);
@@ -520,6 +521,18 @@
         .btn-danger:hover {
             background: var(--danger-dark);
         }
+
+        .delete-account-warning {
+            color: var(--danger);
+            font-size: 14px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .delete-account-text {
+            font-size: 13px;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -586,13 +599,28 @@
             <button id="btnModoEscuro" onclick="toggleModoEscuro(); fecharModalMenu();"><span>🌙</span> Modo Escuro</button>
             <button onclick="exportarBackupCriptografado(); fecharModalMenu();"><span>📤</span> Exportar Backup</button>
             <button onclick="importarBackupCriptografado(); fecharModalMenu();"><span>📥</span> Importar Backup</button>
-            <div class="menu-divider" style="height:1px; background:var(--border-color); margin:4px 0;"></div>
+            <div class="menu-divider"></div>
             <button onclick="mudarSenha(); fecharModalMenu();"><span>🔐</span> Alterar Senha</button>
-            <div class="menu-divider" style="height:1px; background:var(--border-color); margin:4px 0;"></div>
-            <button onclick="apagarUsuario(); fecharModalMenu();" class="danger-item"><span>🗑️</span> Excluir Conta Permanentemente</button>
+            <div class="menu-divider"></div>
+            <button onclick="abrirModalExcluirConta(); fecharModalMenu();" class="danger-item"><span>🗑️</span> Excluir Conta Permanentemente</button>
             <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
+    </div>
+</div>
+
+<!-- MODAL EXCLUIR CONTA - IGUAL AO APP FINANCEIRO -->
+<div id="deleteAccountModal" class="modal-confirmacao">
+    <div class="modal-confirmacao-conteudo">
+        <h3 style="color: var(--danger);">⚠️ EXCLUIR CONTA</h3>
+        <p class="delete-account-warning">⚠️ ATENÇÃO! Esta ação é IRREVERSÍVEL!</p>
+        <p class="delete-account-text">Todos os seus dados (listas, itens, configurações) serão perdidos permanentemente.</p>
+        <p class="delete-account-text" style="margin-bottom: 16px;">Digite sua senha para confirmar a exclusão da conta <strong id="deleteAccountName"></strong>:</p>
+        <input type="password" id="deleteConfirmPassword" class="campo input" style="width:100%; margin-bottom:16px;" placeholder="Sua senha">
+        <div class="modal-confirmacao-botoes">
+            <button id="confirmDeleteAccountBtn" class="btn-confirmar" style="background: var(--danger);">Excluir Conta</button>
+            <button id="cancelDeleteAccountBtn" class="btn-cancelar">Cancelar</button>
+        </div>
     </div>
 </div>
 
@@ -658,8 +686,8 @@
         <h3>⚠️ SENHA FRACA DETECTADA</h3>
         <p>Sua senha atual não atende aos requisitos de segurança. Por segurança, você precisa criar uma nova senha forte.</p>
         <p style="font-size:12px; margin-bottom:16px;">Requisitos: 4 a 6 números, sem repetições, sem sequências (ex: 123, 321, 11, 22, 111)</p>
-        <input type="password" id="forceNewPassword" class="campo input" style="width:100%; margin-bottom:12px;" placeholder="Nova senha (4-6 números)">
-        <input type="password" id="forceConfirmPassword" class="campo input" style="width:100%; margin-bottom:12px;" placeholder="Confirmar nova senha">
+        <input type="password" id="forceNewPassword" class="campo input" style="width:100%; margin-bottom:12px; padding:12px;" placeholder="Nova senha (4-6 números)">
+        <input type="password" id="forceConfirmPassword" class="campo input" style="width:100%; margin-bottom:12px; padding:12px;" placeholder="Confirmar nova senha">
         <button id="forceUpdateBtn" class="btn-confirmar" style="background:var(--danger);">Atualizar Senha</button>
         <div id="forceErrorMsg" style="color:var(--danger); font-size:12px; margin-top:12px;"></div>
     </div>
@@ -677,7 +705,6 @@
     let swipeItemId = null;
     let editandoItemId = null;
     let acaoBackup = null;
-    let precisaTrocarSenha = false;
 
     // ==================== VALIDAÇÃO DE SENHA FORTE ====================
     function isStrongPassword(password) {
@@ -697,11 +724,11 @@
         const str = String(password);
         if (str.length < 4 || str.length > 6) errors.push("A senha deve ter entre 4 e 6 dígitos");
         if (!/^\d+$/.test(str)) errors.push("A senha deve conter apenas números");
-        if (/(\d)\1/.test(str)) errors.push("A senha não pode ter números repetidos");
+        if (/(\d)\1/.test(str)) errors.push("A senha não pode ter números repetidos (ex: 11, 22, 111)");
         const sequences = ['123', '234', '345', '456', '567', '678', '789', '012', '1234', '2345', '3456', '4567', '5678', '6789'];
-        for (let seq of sequences) if (str.includes(seq)) errors.push("A senha não pode ter sequências crescentes");
+        for (let seq of sequences) if (str.includes(seq)) errors.push("A senha não pode ter sequências crescentes (ex: 123, 234)");
         const reverseSequences = ['321', '432', '543', '654', '765', '876', '987', '3210', '4321', '5432', '6543', '7654', '8765', '9876'];
-        for (let seq of reverseSequences) if (str.includes(seq)) errors.push("A senha não pode ter sequências decrescentes");
+        for (let seq of reverseSequences) if (str.includes(seq)) errors.push("A senha não pode ter sequências decrescentes (ex: 321, 432)");
         return errors;
     }
 
@@ -744,7 +771,7 @@
             const timeLeft = sevenDaysInMs - (now - deletionTime);
             if(timeLeft > 0) {
                 const daysLeft = Math.ceil(timeLeft / (24 * 60 * 60 * 1000));
-                throw new Error(`Este nome foi excluído há menos de 7 dias. Aguarde ${daysLeft} dia(s).`);
+                throw new Error(`Este nome de usuário foi excluído há menos de 7 dias. Aguarde ${daysLeft} dia(s) para criar uma nova conta com este nome.`);
             } else {
                 delete deletedUsers[nome];
                 saveDeletedUsers(deletedUsers);
@@ -796,7 +823,7 @@
         
         for(let i=0; i<localStorage.length; i++){
             const k = localStorage.key(i);
-            if(k && (k.startsWith(`lista_${nome}`) || k === `listas_${nome}` || k === `senha_${nome}`)) localStorage.removeItem(k);
+            if(k && (k.startsWith(`lista_${nome}`) || k === `listas_${nome}`)) localStorage.removeItem(k);
         }
         delete users[nome];
         localStorage.setItem("listaUsers", JSON.stringify(users));
@@ -1112,23 +1139,36 @@
         } else alert("Senha inválida"); 
     };
     
-    window.apagarUsuario = function() { 
-        if(usuarioAtual) {
-            const senha = prompt("Digite sua senha para confirmar a exclusão da conta:");
-            if(!senha) { alert("Senha não fornecida."); return; }
-            if(excluirUsuario(usuarioAtual, senha)) {
-                alert("✅ Conta excluída permanentemente! Você não poderá criar uma nova conta com o mesmo nome por 7 dias.");
-                localStorage.removeItem("usuarioAtualLista");
-                document.getElementById("app").style.display = "none";
-                document.getElementById("login").style.display = "block";
-                usuarioAtual = "";
-                document.getElementById("usuario").value = "";
-                document.getElementById("senha").value = "";
-            } else {
-                alert("❌ Senha incorreta! A conta NÃO foi excluída.");
-            }
+    // ==================== EXCLUIR CONTA COM MODAL IGUAL AO APP FINANCEIRO ====================
+    function abrirModalExcluirConta() {
+        document.getElementById('deleteAccountName').innerText = usuarioAtual;
+        document.getElementById('deleteConfirmPassword').value = '';
+        document.getElementById('deleteAccountModal').style.display = 'flex';
+    }
+
+    function fecharModalExcluirConta() {
+        document.getElementById('deleteAccountModal').style.display = 'none';
+    }
+
+    function confirmarExcluirConta() {
+        const password = document.getElementById('deleteConfirmPassword').value;
+        if(!password) {
+            alert("Digite sua senha para confirmar a exclusão da conta.");
+            return;
         }
-    };
+        
+        if(excluirUsuario(usuarioAtual, password)) {
+            alert("✅ Conta excluída permanentemente! Você não poderá criar uma nova conta com o mesmo nome por 7 dias.");
+            fecharModalExcluirConta();
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+            usuarioAtual = "";
+            document.getElementById('usuario').value = "";
+            document.getElementById('senha').value = "";
+        } else {
+            alert("❌ Senha incorreta! A conta NÃO foi excluída.");
+        }
+    }
     
     function abrirModalMenu() { document.getElementById("modalMenu").style.display = "flex"; }
     function fecharModalMenu() { document.getElementById("modalMenu").style.display = "none"; }
@@ -1273,6 +1313,7 @@
         if (event.target === document.getElementById("modalEdicao")) fecharModalEdicao();
         if (event.target === document.getElementById("modalConfirmarSenha")) fecharModalConfirmacaoSenha();
         if (event.target === document.getElementById("forceUpdateModal")) document.getElementById("forceUpdateModal").classList.remove("active");
+        if (event.target === document.getElementById("deleteAccountModal")) fecharModalExcluirConta();
     };
     
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
@@ -1282,6 +1323,8 @@
         executarBackup(senha);
     });
     document.getElementById("forceUpdateBtn")?.addEventListener("click", confirmForceUpdate);
+    document.getElementById("confirmDeleteAccountBtn")?.addEventListener("click", confirmarExcluirConta);
+    document.getElementById("cancelDeleteAccountBtn")?.addEventListener("click", fecharModalExcluirConta);
     
     window.onload = () => {
         carregarModoEscuro();
