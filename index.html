@@ -73,7 +73,7 @@
             padding: 2rem;
         }
 
-        /* Tela de Login - IGUAL AO APP FINANCEIRO */
+        /* Tela de Login */
         .auth-screen {
             background: var(--bg-page);
         }
@@ -114,6 +114,7 @@
             outline: none;
             border-color: var(--success);
         }
+
         .auth-btn {
             width: 100%;
             background: var(--success);
@@ -125,6 +126,10 @@
             font-size: 16px;
             cursor: pointer;
             margin-top: 8px;
+        }
+        .auth-btn:hover {
+            background: var(--success-dark);
+            transform: scale(0.98);
         }
         .auth-link {
             text-align: center;
@@ -523,11 +528,92 @@
             outline: none;
             border-color: var(--success);
         }
+
+        /* Modal Salvar Login */
+        .modal-salvar-login {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+        }
+        .modal-salvar-login.active {
+            display: flex;
+        }
+        .modal-salvar-login-conteudo {
+            background: var(--bg-card);
+            max-width: 350px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .modal-salvar-login-conteudo .emoji {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .modal-salvar-login-conteudo h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .modal-salvar-login-conteudo p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .modal-salvar-login-botoes {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .modal-salvar-login-botoes button {
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+        .btn-salvar-login {
+            background: var(--success);
+            color: white;
+        }
+        .btn-salvar-login:hover {
+            background: var(--success-dark);
+            transform: scale(0.96);
+        }
+        .btn-nao-salvar {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border) !important;
+        }
+        .btn-nao-salvar:hover {
+            background: var(--hover-bg);
+            transform: scale(0.96);
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Tela de Login - IGUAL AO APP FINANCEIRO -->
+    <!-- Tela de Login -->
     <div id="loginScreen" class="painel auth-screen" style="display: flex;">
         <div class="auth-card">
             <h2>🛒 Lista de Compras</h2>
@@ -535,6 +621,7 @@
             <div id="loginErrorMsg" style="color:#ef4444; font-size:13px; margin-bottom:12px;"></div>
             <input type="text" id="loginNome" class="auth-input" placeholder="Nome do usuário">
             <input type="password" id="loginSenha" class="auth-input" placeholder="Senha (4-6 números)">
+            
             <div class="password-requirements" id="passwordReqs" style="display: none;">
                 <p>🔒 Requisitos da senha:</p>
                 <ul>
@@ -549,7 +636,7 @@
         </div>
     </div>
 
-    <!-- Tela de Registro - IGUAL AO APP FINANCEIRO -->
+    <!-- Tela de Registro -->
     <div id="regScreen" class="painel auth-screen" style="display: none;">
         <div class="auth-card">
             <h2>📝 Criar Conta</h2>
@@ -625,7 +712,20 @@
     </div>
 </div>
 
-<!-- MODAL ALTERAR SENHA - IGUAL AO APP FINANCEIRO -->
+<!-- MODAL SALVAR LOGIN -->
+<div id="modalSalvarLogin" class="modal-salvar-login">
+    <div class="modal-salvar-login-conteudo">
+        <div class="emoji">🔐</div>
+        <h3>Salvar login?</h3>
+        <p>Deseja salvar suas credenciais para não precisar digitar novamente?</p>
+        <div class="modal-salvar-login-botoes">
+            <button class="btn-salvar-login" onclick="confirmarSalvarLogin()">✅ Sim, salvar</button>
+            <button class="btn-nao-salvar" onclick="cancelarSalvarLogin()">❌ Não</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ALTERAR SENHA -->
 <div id="changePasswordModal" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <h3>🔐 Alterar Senha</h3>
@@ -649,7 +749,7 @@
     </div>
 </div>
 
-<!-- MODAL EXCLUIR CONTA - IGUAL AO APP FINANCEIRO -->
+<!-- MODAL EXCLUIR CONTA -->
 <div id="deleteAccountModal" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <h3 style="color: var(--danger);">⚠️ EXCLUIR CONTA</h3>
@@ -671,18 +771,6 @@
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" id="btnConfirmarSenha">Confirmar</button>
             <button class="btn-cancelar" onclick="fecharModalConfirmacaoSenha()">Cancelar</button>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL SALVAR LOGIN -->
-<div id="modalSalvarLogin" class="modal-confirmacao">
-    <div class="modal-confirmacao-conteudo">
-        <p>🔐 Deseja salvar seu login?</p>
-        <p style="font-size: 0.9rem;">Na próxima vez você não precisará digitar a senha.</p>
-        <div class="modal-confirmacao-botoes">
-            <button class="btn-confirmar" onclick="confirmarSalvarLogin()">✅ Sim, salvar</button>
-            <button class="btn-cancelar" onclick="cancelarSalvarLogin()">❌ Não</button>
         </div>
     </div>
 </div>
@@ -902,6 +990,28 @@
             localStorage.removeItem("login_lembrado_senha");
         }
         return true;
+    }
+
+    // ==================== FUNÇÕES DE LOGIN SALVO ====================
+    function salvarLoginLembrado(usuario, senha) {
+        localStorage.setItem("login_lembrado_usuario", usuario);
+        localStorage.setItem("login_lembrado_senha", senha);
+    }
+    
+    function limparLoginLembrado() {
+        localStorage.removeItem("login_lembrado_usuario");
+        localStorage.removeItem("login_lembrado_senha");
+    }
+    
+    function carregarLoginLembrado() {
+        const u = localStorage.getItem("login_lembrado_usuario");
+        const s = localStorage.getItem("login_lembrado_senha");
+        if (u && s) {
+            document.getElementById("loginNome").value = u;
+            document.getElementById("loginSenha").value = s;
+            return true;
+        }
+        return false;
     }
 
     // ==================== FUNÇÕES DO APP ====================
@@ -1129,13 +1239,26 @@
     
     function carregarDadosUsuario() { carregarListasDoUsuario(); carregarListaAtual(); }
     
-    function salvarLoginLembrado(usuario, senha) { localStorage.setItem("login_lembrado_usuario", usuario); localStorage.setItem("login_lembrado_senha", senha); }
-    function limparLoginLembrado() { localStorage.removeItem("login_lembrado_usuario"); localStorage.removeItem("login_lembrado_senha"); }
-    function carregarLoginLembrado() { const u = localStorage.getItem("login_lembrado_usuario"), s = localStorage.getItem("login_lembrado_senha"); if (u && s) { document.getElementById("loginNome").value = u; document.getElementById("loginSenha").value = s; } }
-    function confirmarSalvarLogin() { if (loginPendente.usuario && loginPendente.senha) salvarLoginLembrado(loginPendente.usuario, loginPendente.senha); loginPendente = {}; document.getElementById("modalSalvarLogin").style.display = "none"; }
-    function cancelarSalvarLogin() { limparLoginLembrado(); loginPendente = {}; document.getElementById("modalSalvarLogin").style.display = "none"; }
-    function mostrarDialogoSalvarLogin(usuario, senha) { loginPendente = { usuario, senha }; document.getElementById("modalSalvarLogin").style.display = "flex"; }
-    
+    // ==================== FUNÇÕES DE LOGIN ====================
+    function mostrarDialogoSalvarLogin(usuario, senha) {
+        loginPendente = { usuario, senha };
+        document.getElementById("modalSalvarLogin").classList.add("active");
+    }
+
+    function confirmarSalvarLogin() {
+        if (loginPendente.usuario && loginPendente.senha) {
+            salvarLoginLembrado(loginPendente.usuario, loginPendente.senha);
+        }
+        loginPendente = {};
+        document.getElementById("modalSalvarLogin").classList.remove("active");
+    }
+
+    function cancelarSalvarLogin() {
+        limparLoginLembrado();
+        loginPendente = {};
+        document.getElementById("modalSalvarLogin").classList.remove("active");
+    }
+
     function showForceUpdateModal() {
         document.getElementById('forceNewPassword').value = '';
         document.getElementById('forceConfirmPassword').value = '';
@@ -1173,31 +1296,97 @@
     function entrar() {
         const usuario = document.getElementById("loginNome").value.trim();
         const senha = document.getElementById("loginSenha").value;
-        if (!usuario || !senha) { document.getElementById("loginErrorMsg").innerText = "Preencha todos os campos!"; return; }
+        
+        if (!usuario || !senha) { 
+            document.getElementById("loginErrorMsg").innerText = "Preencha todos os campos!"; 
+            return; 
+        }
+        
         try {
             const result = loginUsuario(usuario, senha);
+            
             if(result && result.needStrongPassword) {
                 usuarioAtual = usuario;
                 carregarDadosUsuario();
                 showForceUpdateModal();
                 return;
             }
+            
             usuarioAtual = usuario;
             document.getElementById("loginScreen").style.display = "none";
             document.getElementById("mainApp").style.display = "block";
             document.getElementById("nomeUsuario").innerText = usuarioAtual;
             carregarDadosUsuario();
             document.getElementById("loginSenha").value = "";
-            const lu = localStorage.getItem("login_lembrado_usuario"), ls = localStorage.getItem("login_lembrado_senha");
-            if (!lu || lu !== usuario || ls !== senha) mostrarDialogoSalvarLogin(usuario, senha);
+            
+            // Verifica se já existe login salvo
+            const u = localStorage.getItem("login_lembrado_usuario");
+            const s = localStorage.getItem("login_lembrado_senha");
+            
+            // Se não tiver login salvo ou for diferente, pergunta se quer salvar
+            if (!u || u !== usuario || s !== senha) {
+                mostrarDialogoSalvarLogin(usuario, senha);
+            }
+            
+            document.getElementById("loginErrorMsg").innerText = "";
+            
         } catch(e) {
             document.getElementById("loginErrorMsg").innerText = e.message;
         }
     }
     
-    window.sair = function() { if(confirm("Deseja sair da sua conta?")) { document.getElementById("mainApp").style.display = "none"; document.getElementById("loginScreen").style.display = "flex"; usuarioAtual = ""; currentListItems = []; renderizarLista(); document.getElementById("loginNome").value = ""; document.getElementById("loginSenha").value = ""; fecharModalMenu(); } };
+    // ==================== LOGIN AUTOMÁTICO ====================
+    function tentarLoginAutomatico() {
+        const usuarioSalvo = localStorage.getItem("login_lembrado_usuario");
+        const senhaSalva = localStorage.getItem("login_lembrado_senha");
+        
+        if (usuarioSalvo && senhaSalva) {
+            try {
+                const result = loginUsuario(usuarioSalvo, senhaSalva);
+                
+                if (result && result.needStrongPassword) {
+                    usuarioAtual = usuarioSalvo;
+                    document.getElementById("loginNome").value = usuarioSalvo;
+                    document.getElementById("loginSenha").value = senhaSalva;
+                    carregarDadosUsuario();
+                    showForceUpdateModal();
+                    return true;
+                }
+                
+                usuarioAtual = usuarioSalvo;
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("mainApp").style.display = "block";
+                document.getElementById("nomeUsuario").innerText = usuarioAtual;
+                carregarDadosUsuario();
+                document.getElementById("loginSenha").value = "";
+                return true;
+            } catch(e) {
+                // Se falhar, mostra a tela de login
+                limparLoginLembrado();
+                document.getElementById("loginNome").value = usuarioSalvo;
+                document.getElementById("loginSenha").value = "";
+                return false;
+            }
+        }
+        return false;
+    }
     
-    // ==================== ALTERAR SENHA - MODAL IGUAL AO APP FINANCEIRO ====================
+    window.sair = function() { 
+        if(confirm("Deseja sair da sua conta?")) { 
+            // Ao sair, mantém as credenciais salvas se existirem
+            document.getElementById("mainApp").style.display = "none"; 
+            document.getElementById("loginScreen").style.display = "flex"; 
+            usuarioAtual = ""; 
+            currentListItems = []; 
+            renderizarLista(); 
+            // Carrega o login salvo nos campos
+            carregarLoginLembrado();
+            document.getElementById("loginErrorMsg").innerText = "";
+            fecharModalMenu(); 
+        } 
+    };
+    
+    // ==================== ALTERAR SENHA ====================
     function abrirModalAlterarSenha() {
         document.getElementById('oldPassword').value = '';
         document.getElementById('newPassword').value = '';
@@ -1273,6 +1462,7 @@
         if(excluirUsuario(usuarioAtual, password)) {
             alert("✅ Conta excluída permanentemente! Você não poderá criar uma nova conta com o mesmo nome por 7 dias.");
             fecharModalExcluirConta();
+            limparLoginLembrado();
             document.getElementById('mainApp').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'flex';
             usuarioAtual = "";
@@ -1435,6 +1625,14 @@
     
     document.getElementById("loginBtn")?.addEventListener("click", entrar);
     
+    // Adiciona evento Enter para login
+    document.getElementById("loginSenha")?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") entrar();
+    });
+    document.getElementById("loginNome")?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") document.getElementById("loginSenha").focus();
+    });
+    
     document.getElementById("registerBtn")?.addEventListener("click", () => {
         const nome = document.getElementById("regNome").value.trim();
         const senha = document.getElementById("regSenha").value;
@@ -1456,6 +1654,8 @@
             document.getElementById("regSenha").value = "";
             document.getElementById("regConfirm").value = "";
             document.getElementById("regErrorMsg").innerText = "";
+            document.getElementById("loginNome").value = nome;
+            document.getElementById("loginSenha").value = "";
         } catch(e) {
             document.getElementById("regErrorMsg").innerText = e.message;
         }
@@ -1473,9 +1673,19 @@
     document.getElementById("confirmChangePasswordBtn")?.addEventListener("click", confirmarAlterarSenha);
     document.getElementById("cancelChangePasswordBtn")?.addEventListener("click", fecharModalAlterarSenha);
     
+    // ==================== INIT ====================
     window.onload = () => {
         carregarModoEscuro();
-        carregarLoginLembrado();
+        
+        // Tenta fazer login automático
+        const loginAutomatico = tentarLoginAutomatico();
+        
+        // Se não conseguiu login automático, carrega os campos salvos
+        if (!loginAutomatico) {
+            carregarLoginLembrado();
+            document.getElementById("loginScreen").style.display = "flex";
+            document.getElementById("mainApp").style.display = "none";
+        }
     };
 </script>
 </body>
