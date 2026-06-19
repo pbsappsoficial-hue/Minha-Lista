@@ -277,7 +277,10 @@
             margin-top: 22px;
             transition: all 0.2s;
         }
-        .btn-add:hover { background: var(--success-dark); transform: scale(0.98); }
+        .btn-add:hover { 
+            background: var(--success-dark);
+            transform: scale(0.98);
+        }
 
         .tabela-lista {
             width: 100%;
@@ -422,34 +425,60 @@
             background: var(--success);
             color: white;
             border: none;
-            padding: 10px 24px;
+            padding: 12px 30px;
             border-radius: 40px;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.2s;
+            min-width: 120px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-confirmar:hover {
             background: var(--success-dark);
-            transform: scale(0.98);
+            transform: scale(0.96);
         }
         .btn-cancelar {
             background: var(--bg-elevated);
             color: var(--text-primary);
             border: 1px solid var(--border);
-            padding: 10px 24px;
+            padding: 12px 30px;
             border-radius: 40px;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.2s;
+            min-width: 120px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-cancelar:hover {
             background: var(--hover-bg);
+            transform: scale(0.96);
         }
+        
+        /* Botão Excluir - Formato Redondo */
         .btn-danger {
             background: var(--danger);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 120px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-danger:hover {
             background: var(--danger-dark);
+            transform: scale(0.96);
         }
         
         .edit-modal-field {
@@ -565,10 +594,10 @@
     <div id="loginScreen" class="painel auth-screen" style="display: flex;">
         <div class="auth-card">
             <h2>🛒 Lista de Compras</h2>
-            <div class="sub">Organize suas compras com segurança</div>
+            <div class="sub">Organize suas compras</div>
             <div id="loginErrorMsg" style="color:#ef4444; font-size:13px; margin-bottom:12px;"></div>
             <input type="text" id="loginNome" class="auth-input" placeholder="Nome do usuário">
-            <input type="password" id="loginSenha" class="auth-input" placeholder="Senha (apenas números)" inputmode="numeric">
+            <input type="password" id="loginSenha" class="auth-input" placeholder="Senha (apenas números)" inputmode="numeric" pattern="[0-9]*">
             <button id="loginBtn" class="auth-btn">Entrar</button>
             <div class="auth-link">Não tem conta? <a id="showRegLink">Criar nova conta</a></div>
         </div>
@@ -581,8 +610,8 @@
             <div class="sub">Comece a organizar suas compras</div>
             <div id="regErrorMsg" style="color:#ef4444; font-size:13px; margin-bottom:12px;"></div>
             <input type="text" id="regNome" class="auth-input" placeholder="Nome do usuário">
-            <input type="password" id="regSenha" class="auth-input" placeholder="Senha (apenas números)" inputmode="numeric">
-            <input type="password" id="regConfirm" class="auth-input" placeholder="Confirmar senha" inputmode="numeric">
+            <input type="password" id="regSenha" class="auth-input" placeholder="Senha (apenas números)" inputmode="numeric" pattern="[0-9]*">
+            <input type="password" id="regConfirm" class="auth-input" placeholder="Confirmar senha" inputmode="numeric" pattern="[0-9]*">
             <button id="registerBtn" class="auth-btn">Criar Conta</button>
             <div class="auth-link">Já tem conta? <a id="showLoginLink">Fazer login</a></div>
         </div>
@@ -601,7 +630,7 @@
         <div class="lista-section">
             <div class="lista-selector">
                 <span class="lista-label">📁 Lista:</span>
-                <select id="listaSelect"></select>
+                <select id="listaSelect" onchange="trocarLista()"></select>
                 <button class="btn-acao-lista" onclick="mostrarModalNovaLista()">➕ Nova</button>
                 <button class="btn-acao-lista" onclick="renomearListaAtual()">✏️ Renomear</button>
                 <button class="btn-acao-lista" onclick="excluirListaAtual()">🗑️ Excluir</button>
@@ -629,7 +658,7 @@
         <h3>Salvar login?</h3>
         <p>Deseja salvar suas credenciais para não precisar digitar novamente?</p>
         <div class="modal-salvar-login-botoes">
-            <button class="btn-salvar-login" onclick="confirmarSalvarLogin()">✅ Sim, salvar</button>
+            <button class="btn-salvar-login" onclick="confirmarSalvarLogin()">✅ Sim</button>
             <button class="btn-nao-salvar" onclick="cancelarSalvarLogin()">❌ Não</button>
         </div>
     </div>
@@ -646,9 +675,9 @@
             <div class="menu-divider"></div>
             <button onclick="abrirModalAlterarSenha(); fecharModalMenu();"><span>🔐</span> Alterar Senha</button>
             <div class="menu-divider"></div>
-            <button onclick="abrirModalExcluirConta(); fecharModalMenu();" class="danger-item"><span>🗑️</span> Excluir Conta Permanentemente</button>
+            <button onclick="abrirModalExcluirConta(); fecharModalMenu();" class="danger-item"><span>🗑️</span> Excluir Conta</button>
             <div class="menu-divider"></div>
-            <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair da Conta</button>
+            <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
     </div>
@@ -660,31 +689,31 @@
         <h3>🔐 Alterar Senha</h3>
         <div class="edit-modal-field">
             <label>Senha atual</label>
-            <input type="password" id="oldPassword" class="auth-input" placeholder="Senha atual" inputmode="numeric">
+            <input type="password" id="oldPassword" class="auth-input" placeholder="Senha atual" inputmode="numeric" pattern="[0-9]*">
         </div>
         <div class="edit-modal-field">
             <label>Nova senha (apenas números)</label>
-            <input type="password" id="newPassword" class="auth-input" placeholder="Nova senha" inputmode="numeric">
+            <input type="password" id="newPassword" class="auth-input" placeholder="Nova senha" inputmode="numeric" pattern="[0-9]*">
         </div>
         <div class="edit-modal-field">
             <label>Confirmar nova senha</label>
-            <input type="password" id="confirmNewPassword" class="auth-input" placeholder="Confirmar nova senha" inputmode="numeric">
+            <input type="password" id="confirmNewPassword" class="auth-input" placeholder="Confirmar nova senha" inputmode="numeric" pattern="[0-9]*">
         </div>
         <div id="changePwdError" style="color:var(--danger); font-size:12px; margin-bottom:12px;"></div>
         <div class="modal-confirmacao-botoes">
-            <button id="confirmChangePasswordBtn" class="btn-confirmar">Alterar Senha</button>
+            <button id="confirmChangePasswordBtn" class="btn-confirmar">Alterar</button>
             <button id="cancelChangePasswordBtn" class="btn-cancelar">Cancelar</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL EXCLUIR CONTA -->
+<!-- MODAL EXCLUIR CONTA - Botão Redondo -->
 <div id="deleteAccountModal" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <h3 style="color: var(--danger);">⚠️ EXCLUIR CONTA</h3>
         <p style="font-size: 14px; margin-bottom: 16px;">Esta ação é <strong>IRREVERSÍVEL</strong>. Todos os seus dados serão perdidos permanentemente.</p>
         <p style="font-size: 13px; margin-bottom: 16px;">Digite sua senha para confirmar a exclusão da conta <strong id="deleteAccountName"></strong>:</p>
-        <input type="password" id="deleteConfirmPassword" class="auth-input" placeholder="Sua senha" inputmode="numeric">
+        <input type="password" id="deleteConfirmPassword" class="auth-input" placeholder="Sua senha" inputmode="numeric" pattern="[0-9]*">
         <div class="modal-confirmacao-botoes">
             <button id="confirmDeleteAccountBtn" class="btn-danger">Excluir Conta</button>
             <button id="cancelDeleteAccountBtn" class="btn-cancelar">Cancelar</button>
@@ -696,7 +725,7 @@
 <div id="modalConfirmarSenha" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <p id="modalSenhaTitulo">🔐 Confirme sua senha</p>
-        <input type="password" id="senhaConfirmacao" class="auth-input" placeholder="Digite sua senha" inputmode="numeric">
+        <input type="password" id="senhaConfirmacao" class="auth-input" placeholder="Digite sua senha" inputmode="numeric" pattern="[0-9]*">
         <div class="modal-confirmacao-botoes">
             <button class="btn-confirmar" id="btnConfirmarSenha">Confirmar</button>
             <button class="btn-cancelar" onclick="fecharModalConfirmacaoSenha()">Cancelar</button>
@@ -791,7 +820,6 @@
         }
         
         if(users[nome]) throw new Error("Usuário já existe!");
-        
         if(!/^\d+$/.test(senha)) throw new Error("A senha deve conter apenas números!");
         
         users[nome] = { senha, listas: ["default"], dados: {} };
@@ -887,6 +915,7 @@
     }
     
     function atualizarSelectListas() {
+        if (!listaSelect) return;
         listaSelect.innerHTML = "";
         listas.forEach(lista => {
             const option = document.createElement("option");
@@ -1159,7 +1188,7 @@
         separarLista();
         listaContainer.innerHTML = "";
         if (currentListItems.length === 0) { 
-            listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-muted);">✨ Nenhum item adicionado. Adicione produtos acima ✨</div>'; 
+            listaContainer.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-muted);">✨ Nenhum item adicionado ✨</div>'; 
             atualizarTotalUI(); 
             return; 
         }
@@ -1190,7 +1219,7 @@
             if (item.comprado && i === pcIndex && hasComp && pcIndex > 0) {
                 const sep = document.createElement("div");
                 sep.style.cssText = "grid-column: 1/-1; text-align: center; padding: 8px; margin: 8px 0 4px 0; background: var(--bg-elevated); border-radius: 20px; font-size: 0.8rem; color: #4f46e5; font-weight: 600;";
-                sep.innerText = "✓ ITENS JÁ ADQUIRIDOS ✓";
+                sep.innerText = "✓ ITENS ADQUIRIDOS ✓";
                 listaContainer.appendChild(sep);
             }
             row.innerHTML = `<div class="produto-nome">${escapeHtml(item.nome)}</div><span>${item.quantidade}</span><span>R$ ${item.preco.toFixed(2)}</span><span>R$ ${sub.toFixed(2)}</span><div class="acoes"><button class="btn-acao btn-check" onclick="toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button><button class="btn-acao btn-del" onclick="removerItemComConfirmacao('${item.id}')">🗑️</button></div>`;
@@ -1473,7 +1502,7 @@
     function exportarBackupCriptografado() {
         if (!usuarioAtual) return;
         acaoBackup = 'export';
-        document.getElementById("modalSenhaTitulo").innerText = "🔐 Confirme sua senha para exportar o backup";
+        document.getElementById("modalSenhaTitulo").innerText = "🔐 Confirme sua senha";
         document.getElementById("senhaConfirmacao").value = "";
         document.getElementById("modalConfirmarSenha").style.display = "flex";
     }
@@ -1481,7 +1510,7 @@
     function importarBackupCriptografado() {
         if (!usuarioAtual) return;
         acaoBackup = 'import';
-        document.getElementById("modalSenhaTitulo").innerText = "🔐 Digite sua senha para importar o backup";
+        document.getElementById("modalSenhaTitulo").innerText = "🔐 Digite sua senha";
         document.getElementById("senhaConfirmacao").value = "";
         document.getElementById("modalConfirmarSenha").style.display = "flex";
     }
@@ -1518,8 +1547,8 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                alert("✅ Backup exportado com sucesso!");
-            } catch(e) { alert("Erro na exportação: " + e.message); }
+                alert("✅ Backup exportado!");
+            } catch(e) { alert("Erro: " + e.message); }
         } 
         else if (acaoBackup === 'import') {
             const input = document.createElement('input');
@@ -1546,7 +1575,7 @@
                             localStorage.setItem(`lista_${usuarioAtual}_${lista}`, JSON.stringify(dados));
                         }
                         
-                        alert("✅ Dados importados com sucesso! Recarregando...");
+                        alert("✅ Dados importados! Recarregando...");
                         location.reload();
                     } catch(err) { 
                         alert("❌ Falha ao importar: senha incorreta ou arquivo corrompido."); 
@@ -1565,14 +1594,14 @@
     }
     
     // ==================== EVENTOS ====================
-    document.getElementById("showRegLink")?.addEventListener("click", (e) => {
+    document.getElementById("showRegLink")?.addEventListener("click", function(e) {
         e.preventDefault();
         document.getElementById("loginScreen").style.display = "none";
         document.getElementById("regScreen").style.display = "flex";
         document.getElementById("loginErrorMsg").innerText = "";
     });
     
-    document.getElementById("showLoginLink")?.addEventListener("click", (e) => {
+    document.getElementById("showLoginLink")?.addEventListener("click", function(e) {
         e.preventDefault();
         document.getElementById("regScreen").style.display = "none";
         document.getElementById("loginScreen").style.display = "flex";
@@ -1581,15 +1610,15 @@
     
     document.getElementById("loginBtn")?.addEventListener("click", entrar);
     
-    document.getElementById("loginSenha")?.addEventListener("keypress", (e) => {
+    document.getElementById("loginSenha")?.addEventListener("keypress", function(e) {
         if (e.key === "Enter") entrar();
     });
     
-    document.getElementById("loginNome")?.addEventListener("keypress", (e) => {
+    document.getElementById("loginNome")?.addEventListener("keypress", function(e) {
         if (e.key === "Enter") document.getElementById("loginSenha").focus();
     });
     
-    document.getElementById("registerBtn")?.addEventListener("click", () => {
+    document.getElementById("registerBtn")?.addEventListener("click", function() {
         const nome = document.getElementById("regNome").value.trim();
         const senha = document.getElementById("regSenha").value;
         const confirm = document.getElementById("regConfirm").value;
@@ -1607,7 +1636,7 @@
         }
         try {
             registrarUsuario(nome, senha);
-            alert("Conta criada com sucesso! Faça login.");
+            alert("Conta criada com sucesso!");
             document.getElementById("regScreen").style.display = "none";
             document.getElementById("loginScreen").style.display = "flex";
             document.getElementById("regNome").value = "";
@@ -1623,7 +1652,7 @@
     
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
     
-    document.getElementById("btnConfirmarSenha")?.addEventListener("click", () => {
+    document.getElementById("btnConfirmarSenha")?.addEventListener("click", function() {
         const senha = document.getElementById("senhaConfirmacao").value;
         if (!senha) { alert("Digite sua senha."); return; }
         executarBackup(senha);
@@ -1638,10 +1667,16 @@
     window.onload = function() {
         carregarModoEscuro();
         
-        const loginAutomatico = tentarLoginAutomatico();
-        
-        if (!loginAutomatico) {
-            carregarLoginLembrado();
+        try {
+            const loginAutomatico = tentarLoginAutomatico();
+            
+            if (!loginAutomatico) {
+                carregarLoginLembrado();
+                document.getElementById("loginScreen").style.display = "flex";
+                document.getElementById("mainApp").style.display = "none";
+            }
+        } catch(e) {
+            console.error("Erro no carregamento:", e);
             document.getElementById("loginScreen").style.display = "flex";
             document.getElementById("mainApp").style.display = "none";
         }
