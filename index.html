@@ -460,7 +460,6 @@
             transform: scale(0.96);
         }
         
-        /* Botão Excluir - Formato Redondo */
         .btn-danger {
             background: var(--danger);
             color: white;
@@ -506,7 +505,6 @@
             border-color: var(--success);
         }
 
-        /* Modal Salvar Login */
         .modal-salvar-login {
             display: none;
             position: fixed;
@@ -585,6 +583,63 @@
         .btn-nao-salvar:hover {
             background: var(--hover-bg);
             transform: scale(0.96);
+        }
+
+        /* ===== MODAL DE CÓDIGO ===== */
+        .code-modal textarea {
+            width: 100%;
+            min-height: 200px;
+            max-height: 350px;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+            line-height: 1.6;
+        }
+        .code-modal textarea:focus {
+            outline: none;
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+        }
+        .code-modal textarea::placeholder {
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+        }
+        .code-modal .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .code-modal .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .code-modal .btn-primary {
+            background: var(--success);
+            color: white;
+        }
+        .code-modal .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+        }
+        .code-modal .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+        .code-modal .btn-secondary:hover {
+            background: var(--hover-bg);
         }
     </style>
 </head>
@@ -670,8 +725,8 @@
         <h3>⚙️ Opções</h3>
         <div class="modal-menu-opcoes">
             <button id="btnModoEscuro" onclick="toggleModoEscuro(); fecharModalMenu();"><span>🌙</span> Alternar Tema</button>
-            <button onclick="exportarBackupCriptografado(); fecharModalMenu();"><span>📤</span> Exportar Backup</button>
-            <button onclick="importarBackupCriptografado(); fecharModalMenu();"><span>📥</span> Importar Backup</button>
+            <button onclick="abrirModalExportarCodigo(); fecharModalMenu();"><span>📤</span> Exportar Código</button>
+            <button onclick="abrirModalImportarCodigo(); fecharModalMenu();"><span>📥</span> Importar Código</button>
             <div class="menu-divider"></div>
             <button onclick="abrirModalAlterarSenha(); fecharModalMenu();"><span>🔐</span> Alterar Senha</button>
             <div class="menu-divider"></div>
@@ -680,6 +735,19 @@
             <button onclick="sair(); fecharModalMenu();"><span>🚪</span> Sair</button>
         </div>
         <button class="btn-fechar-modal" onclick="fecharModalMenu()">Fechar</button>
+    </div>
+</div>
+
+<!-- MODAL DE EXPORTAR/IMPORTAR CÓDIGO -->
+<div id="codeModal" class="modal-confirmacao code-modal">
+    <div class="modal-confirmacao-conteudo">
+        <h3 id="codeModalTitle">📤 Exportar Código</h3>
+        <p class="sub" id="codeModalSub" style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Copie o código abaixo para fazer backup dos seus dados</p>
+        <textarea id="codeTextarea" placeholder="Cole aqui o código de backup..."></textarea>
+        <div class="modal-actions">
+            <button id="codeModalCancel" class="btn-secondary">Cancelar</button>
+            <button id="codeModalAction" class="btn-primary">📋 Copiar</button>
+        </div>
     </div>
 </div>
 
@@ -707,7 +775,7 @@
     </div>
 </div>
 
-<!-- MODAL EXCLUIR CONTA - Botão Redondo -->
+<!-- MODAL EXCLUIR CONTA -->
 <div id="deleteAccountModal" class="modal-confirmacao">
     <div class="modal-confirmacao-conteudo">
         <h3 style="color: var(--danger);">⚠️ EXCLUIR CONTA</h3>
@@ -717,18 +785,6 @@
         <div class="modal-confirmacao-botoes">
             <button id="confirmDeleteAccountBtn" class="btn-danger">Excluir Conta</button>
             <button id="cancelDeleteAccountBtn" class="btn-cancelar">Cancelar</button>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL CONFIRMAR SENHA PARA BACKUP -->
-<div id="modalConfirmarSenha" class="modal-confirmacao">
-    <div class="modal-confirmacao-conteudo">
-        <p id="modalSenhaTitulo">🔐 Confirme sua senha</p>
-        <input type="password" id="senhaConfirmacao" class="auth-input" placeholder="Digite sua senha" inputmode="numeric" pattern="[0-9]*">
-        <div class="modal-confirmacao-botoes">
-            <button class="btn-confirmar" id="btnConfirmarSenha">Confirmar</button>
-            <button class="btn-cancelar" onclick="fecharModalConfirmacaoSenha()">Cancelar</button>
         </div>
     </div>
 </div>
@@ -782,7 +838,6 @@
     let swipeStartX = null;
     let swipeItemId = null;
     let editandoItemId = null;
-    let acaoBackup = null;
 
     const listaContainer = document.getElementById("listaContainer");
     const totalSpan = document.getElementById("total");
@@ -1464,133 +1519,185 @@
         document.getElementById("modalMenu").style.display = "none"; 
     }
     
-    // ==================== BACKUP FUNCTIONS ====================
-    async function derivarChave(senha, salt) {
-        const encoder = new TextEncoder();
-        const material = await crypto.subtle.importKey("raw", encoder.encode(senha), "PBKDF2", false, ["deriveKey"]);
-        return await crypto.subtle.deriveKey({
-            name: "PBKDF2",
-            salt: salt,
-            iterations: 100000,
-            hash: "SHA-256"
-        }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
-    }
-
-    async function criptografarDados(dados, senha) {
-        const encoder = new TextEncoder();
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const chave = await derivarChave(senha, salt);
-        const dadosCripto = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, chave, encoder.encode(dados));
-        const pacote = new Uint8Array(salt.length + iv.length + dadosCripto.byteLength);
-        pacote.set(salt, 0);
-        pacote.set(iv, salt.length);
-        pacote.set(new Uint8Array(dadosCripto), salt.length + iv.length);
-        return btoa(String.fromCharCode.apply(null, pacote));
-    }
-
-    async function descriptografarDados(base64, senha) {
-        const dados = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-        const salt = dados.slice(0, 16);
-        const iv = dados.slice(16, 28);
-        const conteudo = dados.slice(28);
-        const chave = await derivarChave(senha, salt);
-        const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, chave, conteudo);
-        return new TextDecoder().decode(decrypted);
-    }
-    
-    function exportarBackupCriptografado() {
-        if (!usuarioAtual) return;
-        acaoBackup = 'export';
-        document.getElementById("modalSenhaTitulo").innerText = "🔐 Confirme sua senha";
-        document.getElementById("senhaConfirmacao").value = "";
-        document.getElementById("modalConfirmarSenha").style.display = "flex";
-    }
-    
-    function importarBackupCriptografado() {
-        if (!usuarioAtual) return;
-        acaoBackup = 'import';
-        document.getElementById("modalSenhaTitulo").innerText = "🔐 Digite sua senha";
-        document.getElementById("senhaConfirmacao").value = "";
-        document.getElementById("modalConfirmarSenha").style.display = "flex";
-    }
-    
-    async function executarBackup(senha) {
-        let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
-        if (!users[usuarioAtual] || users[usuarioAtual].senha !== senha) {
-            alert("❌ Senha incorreta!");
-            fecharModalConfirmacaoSenha();
-            return;
+    // ==================== EXPORTAR E IMPORTAR CÓDIGO ====================
+    function exportarDados() {
+        const dados = {
+            versao: '1.0',
+            usuario: usuarioAtual,
+            dataExportacao: new Date().toISOString(),
+            listas: listas,
+            dadosListas: {}
+        };
+        
+        for (let lista of listas) {
+            const chave = `lista_${usuarioAtual}_${lista}`;
+            const dadosLista = localStorage.getItem(chave);
+            if (dadosLista) {
+                dados.dadosListas[lista] = JSON.parse(dadosLista);
+            } else {
+                dados.dadosListas[lista] = { itens: [], total: 0 };
+            }
         }
         
-        if (acaoBackup === 'export') {
-            try {
-                const dadosUsuario = {
-                    usuario: usuarioAtual,
-                    listas: listas,
-                    dadosListas: {}
-                };
-                for (let lista of listas) {
-                    const chave = `lista_${usuarioAtual}_${lista}`;
-                    const dadosLista = localStorage.getItem(chave);
-                    if (dadosLista) dadosUsuario.dadosListas[lista] = JSON.parse(dadosLista);
-                    else dadosUsuario.dadosListas[lista] = { itens: [], total: 0 };
-                }
-                const jsonString = JSON.stringify(dadosUsuario);
-                const cripto = await criptografarDados(jsonString, senha);
-                const blob = new Blob([cripto], {type: "application/octet-stream"});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `backup_lista_${usuarioAtual}_${new Date().toISOString().slice(0,19)}.listaenc`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert("✅ Backup exportado!");
-            } catch(e) { alert("Erro: " + e.message); }
-        } 
-        else if (acaoBackup === 'import') {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.listaenc';
-            input.onchange = async (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        const conteudoBase64 = e.target.result;
-                        const jsonDecriptado = await descriptografarDados(conteudoBase64, senha);
-                        const dadosImportados = JSON.parse(jsonDecriptado);
-                        if (!dadosImportados.listas || !dadosImportados.dadosListas) throw new Error("Formato inválido");
-                        
-                        for(let i=0; i<localStorage.length; i++){
-                            const k=localStorage.key(i);
-                            if(k && (k.startsWith(`lista_${usuarioAtual}`) || k===`listas_${usuarioAtual}`)) localStorage.removeItem(k);
-                        }
-                        
-                        localStorage.setItem(`listas_${usuarioAtual}`, JSON.stringify(dadosImportados.listas));
-                        for (let [lista, dados] of Object.entries(dadosImportados.dadosListas)) {
-                            localStorage.setItem(`lista_${usuarioAtual}_${lista}`, JSON.stringify(dados));
-                        }
-                        
-                        alert("✅ Dados importados! Recarregando...");
-                        location.reload();
-                    } catch(err) { 
-                        alert("❌ Falha ao importar: senha incorreta ou arquivo corrompido."); 
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
-        }
-        fecharModalConfirmacaoSenha();
+        return JSON.stringify(dados, null, 2);
     }
-    
-    function fecharModalConfirmacaoSenha() { 
-        document.getElementById("modalConfirmarSenha").style.display = "none"; 
-        acaoBackup = null;
+
+    function importarDados(json) {
+        try {
+            const dados = JSON.parse(json);
+            
+            if (!dados.versao) {
+                throw new Error('Código não reconhecido. Certifique-se de que é um backup válido.');
+            }
+            
+            if (!dados.listas || !Array.isArray(dados.listas)) {
+                throw new Error('Dados inválidos: listas não encontradas');
+            }
+            
+            if (!dados.dadosListas || typeof dados.dadosListas !== 'object') {
+                throw new Error('Dados inválidos: dados das listas não encontrados');
+            }
+            
+            // Validar dados das listas
+            for (let [lista, dadosLista] of Object.entries(dados.dadosListas)) {
+                if (!dadosLista.itens || !Array.isArray(dadosLista.itens)) {
+                    throw new Error(`Lista "${lista}" inválida: itens não encontrados`);
+                }
+                dadosLista.itens.forEach((item, index) => {
+                    if (!item.id || !item.nome || item.quantidade === undefined || item.preco === undefined) {
+                        throw new Error(`Item ${index + 1} da lista "${lista}" inválido`);
+                    }
+                });
+            }
+            
+            const msg = `⚠️ Importar dados:\n\n` +
+                       `📋 ${dados.listas.length} listas\n` +
+                       `📦 ${Object.values(dados.dadosListas).reduce((sum, l) => sum + l.itens.length, 0)} itens\n\n` +
+                       `Isso substituirá todos os dados atuais. Continuar?`;
+            
+            if (!confirm(msg)) {
+                return false;
+            }
+            
+            // Remover dados antigos
+            for(let i=0; i<localStorage.length; i++){
+                const k = localStorage.key(i);
+                if(k && (k.startsWith(`lista_${usuarioAtual}`) || k === `listas_${usuarioAtual}`)) {
+                    localStorage.removeItem(k);
+                }
+            }
+            
+            // Salvar novos dados
+            localStorage.setItem(`listas_${usuarioAtual}`, JSON.stringify(dados.listas));
+            for (let [lista, dadosLista] of Object.entries(dados.dadosListas)) {
+                localStorage.setItem(`lista_${usuarioAtual}_${lista}`, JSON.stringify(dadosLista));
+            }
+            
+            alert('✅ Dados importados com sucesso!\n\n' +
+                  `📋 ${dados.listas.length} listas carregadas\n` +
+                  `📦 ${Object.values(dados.dadosListas).reduce((sum, l) => sum + l.itens.length, 0)} itens importados`);
+            
+            // Recarregar dados
+            listas = dados.listas;
+            listaAtual = listas[0];
+            carregarListaAtual();
+            atualizarSelectListas();
+            
+            return true;
+        } catch (error) {
+            alert('❌ Erro ao importar:\n\n' + error.message);
+            return false;
+        }
+    }
+
+    function abrirModalExportarCodigo() {
+        const modal = document.getElementById('codeModal');
+        const title = document.getElementById('codeModalTitle');
+        const sub = document.getElementById('codeModalSub');
+        const textarea = document.getElementById('codeTextarea');
+        const actionBtn = document.getElementById('codeModalAction');
+        const cancelBtn = document.getElementById('codeModalCancel');
+        
+        title.textContent = '📤 Exportar Código';
+        sub.textContent = '📋 Copie o código abaixo para fazer backup dos seus dados';
+        textarea.value = exportarDados();
+        textarea.readOnly = true;
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 350) + 'px';
+        actionBtn.textContent = '📋 Copiar';
+        actionBtn.className = 'btn-primary';
+        
+        actionBtn.onclick = () => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textarea.value).then(() => {
+                    alert('✅ Código copiado para a área de transferência!');
+                    modal.style.display = 'none';
+                }).catch(() => {
+                    textarea.select();
+                    document.execCommand('copy');
+                    alert('✅ Código copiado para a área de transferência!');
+                    modal.style.display = 'none';
+                });
+            } else {
+                textarea.select();
+                document.execCommand('copy');
+                alert('✅ Código copiado para a área de transferência!');
+                modal.style.display = 'none';
+            }
+        };
+        
+        cancelBtn.onclick = () => {
+            modal.style.display = 'none';
+        };
+        
+        modal.style.display = 'flex';
+    }
+
+    function abrirModalImportarCodigo() {
+        const modal = document.getElementById('codeModal');
+        const title = document.getElementById('codeModalTitle');
+        const sub = document.getElementById('codeModalSub');
+        const textarea = document.getElementById('codeTextarea');
+        const actionBtn = document.getElementById('codeModalAction');
+        const cancelBtn = document.getElementById('codeModalCancel');
+        
+        title.textContent = '📥 Importar Código';
+        sub.textContent = '📝 Cole o código gerado pela exportação para restaurar seus dados';
+        textarea.value = '';
+        textarea.readOnly = false;
+        textarea.placeholder = 'Cole aqui o código de backup...';
+        textarea.style.height = '200px';
+        actionBtn.textContent = '📥 Importar';
+        actionBtn.className = 'btn-primary';
+        
+        actionBtn.onclick = () => {
+            const code = textarea.value.trim();
+            if (!code) {
+                alert('❌ Por favor, cole o código para importar!');
+                textarea.focus();
+                return;
+            }
+            
+            try {
+                JSON.parse(code);
+            } catch (e) {
+                alert('❌ Código inválido!\n\nCertifique-se de que o código é um JSON válido gerado pela exportação.');
+                textarea.focus();
+                textarea.select();
+                return;
+            }
+            
+            if (importarDados(code)) {
+                modal.style.display = 'none';
+            }
+        };
+        
+        cancelBtn.onclick = () => {
+            modal.style.display = 'none';
+        };
+        
+        modal.style.display = 'flex';
+        setTimeout(() => textarea.focus(), 100);
     }
     
     // ==================== EVENTOS ====================
@@ -1652,16 +1759,17 @@
     
     document.getElementById("menuBtn")?.addEventListener("click", abrirModalMenu);
     
-    document.getElementById("btnConfirmarSenha")?.addEventListener("click", function() {
-        const senha = document.getElementById("senhaConfirmacao").value;
-        if (!senha) { alert("Digite sua senha."); return; }
-        executarBackup(senha);
-    });
-    
     document.getElementById("confirmDeleteAccountBtn")?.addEventListener("click", confirmarExcluirConta);
     document.getElementById("cancelDeleteAccountBtn")?.addEventListener("click", fecharModalExcluirConta);
     document.getElementById("confirmChangePasswordBtn")?.addEventListener("click", confirmarAlterarSenha);
     document.getElementById("cancelChangePasswordBtn")?.addEventListener("click", fecharModalAlterarSenha);
+    
+    // Fechar modal de código clicando fora
+    document.getElementById("codeModal")?.addEventListener("click", function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
     
     // ==================== INIT ====================
     window.onload = function() {
