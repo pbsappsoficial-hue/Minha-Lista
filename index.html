@@ -136,20 +136,11 @@
         /* ===== TELA INICIAL – LISTAS ===== */
         .lista-inicial-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             margin-bottom: 1.8rem;
             flex-wrap: wrap;
             gap: 12px;
-        }
-
-        .lista-inicial-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .btn-criar-lista {
@@ -786,6 +777,23 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        /* botão back (voltar) no canto superior da tela de detalhe */
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.2rem;
+        }
+        .back-header .voltar-btn {
+            margin-bottom: 0;
+        }
+        .back-header h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -836,7 +844,6 @@
             <!-- ===== TELA INICIAL – GRADE DE LISTAS ===== -->
             <div id="telaInicialListas">
                 <div class="lista-inicial-header">
-                    <h2>📋 Suas listas</h2>
                     <button class="btn-criar-lista" onclick="mostrarModalNovaLista()">➕ Criar nova lista</button>
                 </div>
                 <div id="gradeListas" class="grade-listas"></div>
@@ -844,8 +851,10 @@
 
             <!-- ===== TELA DE DETALHE DA LISTA ===== -->
             <div id="telaDetalheLista" class="tela-lista-detalhe">
-                <button class="voltar-btn" onclick="voltarParaListas()">← Voltar</button>
-                <h3 id="nomeListaDetalhe" style="font-size:1.6rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;"></h3>
+                <div class="back-header">
+                    <button class="voltar-btn" onclick="voltarParaListas()">← Voltar</button>
+                    <h3 id="nomeListaDetalhe"></h3>
+                </div>
 
                 <div class="form-add">
                     <div class="campo-add" style="flex:2"><label>🏷️ Produto</label><input type="text" id="produto" placeholder="Ex: Arroz"></div>
@@ -1440,7 +1449,6 @@
         }
 
         // ==================== MODAL EDIÇÃO HTML (já existe) ====================
-        // (o modal de edição já está no HTML, mas vamos garantir que ele funcione)
         document.getElementById("modalEdicao")?.querySelector('.btn-confirmar')?.addEventListener('click', salvarEdicao);
         document.getElementById("modalEdicao")?.querySelector('.btn-cancelar')?.addEventListener('click', fecharModalEdicao);
 
@@ -1706,7 +1714,6 @@
                 document.getElementById("nomeUsuario").innerText = usuarioAtual;
                 carregarListasDoUsuario();
                 renderizarGradeListas();
-                // se já tinha uma lista aberta, volta para a grade
                 telaDetalhe.classList.remove("ativa");
                 telaDetalhe.style.display = "none";
                 telaInicial.style.display = "block";
@@ -1809,6 +1816,14 @@
         document.getElementById("codeModal")?.addEventListener("click", function(e) { if (e.target === this) this.style
                 .display = 'none'; });
 
+        // ==================== BOTÃO VOLTAR (BACK) DO CELULAR ====================
+        window.addEventListener('popstate', function(event) {
+            if (telaDetalhe.classList.contains('ativa')) {
+                voltarParaListas();
+                event.preventDefault();
+            }
+        });
+
         // ==================== INIT ====================
         window.onload = function() {
             carregarModoEscuro();
@@ -1818,6 +1833,8 @@
                     carregarLoginLembrado();
                     document.getElementById("loginScreen").style.display = "flex";
                     document.getElementById("mainApp").style.display = "none";
+                } else {
+                    history.pushState({ page: 'main' }, '');
                 }
             } catch (e) {
                 console.error("Erro no carregamento:", e);
@@ -1827,4 +1844,4 @@
         };
     </script>
 </body>
-                </html>
+</html>
