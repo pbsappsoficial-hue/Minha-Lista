@@ -65,7 +65,6 @@
             transition: background 0.3s;
         }
 
-        /* topo */
         .topo-app {
             display: flex;
             justify-content: space-between;
@@ -133,7 +132,6 @@
             transform: scale(0.96);
         }
 
-        /* ===== TELA INICIAL – LISTAS ===== */
         .lista-inicial-header {
             display: flex;
             justify-content: flex-end;
@@ -255,7 +253,6 @@
             margin-bottom: 12px;
         }
 
-        /* ===== TELA DA LISTA (detalhe) ===== */
         .tela-lista-detalhe {
             display: none;
             animation: fadeUp 0.25s ease;
@@ -371,6 +368,10 @@
             transition: all 0.2s ease;
             cursor: grab;
             color: var(--text-primary);
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
         }
         .item-row.dragging {
             opacity: 0.3;
@@ -422,6 +423,161 @@
             border: 1px solid var(--border);
         }
 
+        /* Double click indicator */
+        .item-row.double-tap-ready {
+            background: var(--hover-bg);
+            border-color: var(--info);
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+            transition: all 0.15s ease;
+        }
+
+        .item-row .double-tap-hint {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--info);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            animation: pulse 0.8s ease;
+        }
+
+        .item-row.double-tap-ready .double-tap-hint {
+            display: flex;
+            animation: pulse 0.8s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .item-action-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .item-action-menu.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .item-action-menu-content {
+            background: var(--bg-card);
+            border-radius: 2rem;
+            padding: 2rem;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .item-action-menu-content h3 {
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .item-action-menu-content .item-name-display {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .item-action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item-action-buttons button {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .item-action-buttons button:hover {
+            background: var(--hover-bg);
+            transform: scale(0.97);
+        }
+
+        .item-action-buttons .btn-danger-action {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .item-action-buttons .btn-danger-action:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .item-action-buttons .btn-success-action {
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        .item-action-buttons .btn-success-action:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .item-action-buttons .btn-info-action {
+            color: var(--info);
+            border-color: var(--info);
+        }
+
+        .item-action-buttons .btn-info-action:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .item-action-close {
+            margin-top: 16px;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .item-action-close:hover {
+            color: var(--text-primary);
+        }
+
         @media (max-width: 700px) {
             .container {
                 padding: 1rem;
@@ -442,9 +598,15 @@
                 width: 40px;
                 height: 40px;
             }
+            .item-row .double-tap-hint {
+                width: 24px;
+                height: 24px;
+                font-size: 11px;
+                top: -6px;
+                right: -6px;
+            }
         }
 
-        /* MODAIS (reutilizados) */
         .modal-confirmacao,
         .modal-edicao,
         .modal-menu {
@@ -592,7 +754,6 @@
             background: var(--hover-bg);
         }
 
-        /* MODAL SALVAR LOGIN */
         .modal-salvar-login {
             display: none;
             position: fixed;
@@ -669,7 +830,6 @@
             transform: scale(0.96);
         }
 
-        /* MODAL CÓDIGO */
         .code-modal textarea {
             width: 100%;
             min-height: 200px;
@@ -719,7 +879,6 @@
             background: var(--hover-bg);
         }
 
-        /* tela de login/registro */
         .auth-screen {
             background: var(--bg-page);
             display: flex;
@@ -778,7 +937,6 @@
             cursor: pointer;
         }
 
-        /* botão back (voltar) no canto superior da tela de detalhe */
         .back-header {
             display: flex;
             align-items: center;
@@ -872,6 +1030,20 @@
 
         </div><!-- /mainApp -->
     </div><!-- /container -->
+
+    <!-- FLOATING ACTION MENU FOR ITEM (Double Tap) -->
+    <div id="itemActionMenu" class="item-action-menu">
+        <div class="item-action-menu-content">
+            <h3>📌 Opções do Item</h3>
+            <div class="item-name-display" id="actionItemName">Item</div>
+            <div class="item-action-buttons">
+                <button class="btn-info-action" onclick="actionEditarItem()">✏️ Editar</button>
+                <button class="btn-success-action" onclick="actionAlternarComprado()">✔️ Marcar/Desmarcar</button>
+                <button class="btn-danger-action" onclick="actionExcluirItem()">🗑️ Excluir</button>
+            </div>
+            <button class="item-action-close" onclick="fecharItemActionMenu()">✕ Fechar</button>
+        </div>
+    </div>
 
     <!-- MODAIS -->
     <div id="modalNovaLista" class="modal-confirmacao">
@@ -968,6 +1140,29 @@
         </div>
     </div>
 
+    <!-- MODAL EDIÇÃO -->
+    <div id="modalEdicao" class="modal-edicao">
+        <div class="modal-edicao-conteudo">
+            <p style="font-size:1.2rem; font-weight:600;">✏️ Editar Item</p>
+            <div class="edit-modal-field" style="margin:12px 0;">
+                <label>Produto</label>
+                <input type="text" id="editNome" class="auth-input" placeholder="Nome">
+            </div>
+            <div class="edit-modal-field" style="margin:12px 0;">
+                <label>Quantidade</label>
+                <input type="number" id="editQuantidade" class="auth-input" value="1" min="1">
+            </div>
+            <div class="edit-modal-field" style="margin:12px 0;">
+                <label>Preço (R$)</label>
+                <input type="number" id="editPreco" class="auth-input" step="0.01" placeholder="0,00">
+            </div>
+            <div class="modal-edicao-botoes">
+                <button class="btn-confirmar" onclick="salvarEdicao()">Salvar</button>
+                <button class="btn-cancelar" onclick="fecharModalEdicao()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==================== ESTADO GLOBAL ====================
         let usuarioAtual = "";
@@ -977,10 +1172,15 @@
         let totalGeral = 0;
         let loginPendente = { usuario: null, senha: null };
         let draggedItemId = null;
-        let swipeStartX = null;
-        let swipeItemId = null;
         let editandoItemId = null;
+        let actionItemId = null;
 
+        // Double tap detection
+        let lastTapTime = 0;
+        let doubleTapItemId = null;
+        const DOUBLE_TAP_DELAY = 500;
+
+        // ==================== DOM REFS ====================
         const listaContainer = document.getElementById("listaContainer");
         const totalSpan = document.getElementById("total");
         const gradeListas = document.getElementById("gradeListas");
@@ -1026,18 +1226,6 @@
             }
             if (users[nome].senha !== senha) throw new Error("Senha incorreta!");
             return { success: true };
-        }
-
-        function atualizarSenhaUsuario(nome, novaSenha) {
-            let users = JSON.parse(localStorage.getItem("listaUsers") || "{}");
-            if (!users[nome]) return false;
-            if (!/^\d+$/.test(novaSenha)) throw new Error("A senha deve conter apenas números!");
-            users[nome].senha = novaSenha;
-            localStorage.setItem("listaUsers", JSON.stringify(users));
-            if (localStorage.getItem("login_lembrado_usuario") === nome) {
-                localStorage.setItem("login_lembrado_senha", novaSenha);
-            }
-            return true;
         }
 
         function excluirUsuario(nome, senha) {
@@ -1237,7 +1425,6 @@
             if (telaDetalhe.classList.contains("ativa")) salvarListaAtual();
             listas.push(nome);
             salvarListas();
-            // cria estrutura vazia
             localStorage.setItem(`lista_${usuarioAtual}_${nome}`, JSON.stringify({ itens: [], total: 0 }));
             fecharModalNovaLista();
             if (telaDetalhe.classList.contains("ativa")) {
@@ -1295,12 +1482,17 @@
                 row.addEventListener('dragend', handleDragEnd);
                 row.addEventListener('dragover', e => handleDragOver(e, item.id, item.comprado));
                 row.addEventListener('drop', e => handleDrop(e, item.id, item.comprado));
-                row.addEventListener('mousedown', e => handleSwipeStart(e, item.id, item.comprado));
-                row.addEventListener('mousemove', e => handleSwipeMove(e, row, item.comprado));
-                row.addEventListener('mouseup', handleSwipeEnd);
-                row.addEventListener('touchstart', e => handleSwipeStart(e, item.id, item.comprado));
-                row.addEventListener('touchmove', e => handleSwipeMove(e, row, item.comprado));
-                row.addEventListener('touchend', handleSwipeEnd);
+
+                // Double Tap detection (ao invés de long press)
+                row.addEventListener('click', e => handleDoubleTap(e, item.id, item.comprado, row));
+                row.addEventListener('touchstart', e => handleTouchStart(e, item.id, item.comprado, row), { passive: true });
+
+                // Double tap hint indicator
+                const hint = document.createElement('span');
+                hint.className = 'double-tap-hint';
+                hint.textContent = '👆';
+                row.appendChild(hint);
+
                 if (item.comprado && i === pcIndex && hasComp && pcIndex > 0) {
                     const sep = document.createElement("div");
                     sep.style.cssText =
@@ -1309,37 +1501,151 @@
                     listaContainer.appendChild(sep);
                 }
                 row.innerHTML =
-                    `<div class="produto-nome">${escapeHtml(item.nome)}</div><span>${item.quantidade}</span><span>R$ ${item.preco.toFixed(2)}</span><span>R$ ${sub.toFixed(2)}</span><div class="acoes"><button class="btn-acao btn-check" onclick="toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button><button class="btn-acao btn-del" onclick="removerItemComConfirmacao('${item.id}')">🗑️</button></div>`;
+                    `<div class="produto-nome">${escapeHtml(item.nome)}</div><span>${item.quantidade}</span><span>R$ ${item.preco.toFixed(2)}</span><span>R$ ${sub.toFixed(2)}</span><div class="acoes"><button class="btn-acao btn-check" onclick="event.stopPropagation(); toggleComprado('${item.id}')">${item.comprado ? '↩️' : '✔️'}</button><button class="btn-acao btn-del" onclick="event.stopPropagation(); removerItemComConfirmacao('${item.id}')">🗑️</button></div>`;
                 listaContainer.appendChild(row);
             }
             atualizarTotalUI();
         }
 
-        function atualizarTotalUI() {
-            if (totalSpan) totalSpan.innerText = totalGeral.toFixed(2);
+        // ==================== DOUBLE TAP DETECTION ====================
+        let touchStartTime = 0;
+        let touchStartItemId = null;
+        let touchStartRow = null;
+
+        function handleTouchStart(e, itemId, comprado, row) {
+            if (comprado) return;
+            touchStartTime = Date.now();
+            touchStartItemId = itemId;
+            touchStartRow = row;
         }
 
-        window.toggleComprado = function(id) {
-            let item = currentListItems.find(i => i.id === id);
-            if (item) {
-                item.comprado = !item.comprado;
-                recalcularTotal();
-                salvarEstadoCompleto();
-                separarLista();
-                renderizarLista();
+        function handleDoubleTap(e, itemId, comprado, row) {
+            if (comprado) return;
+            
+            // Para clique duplo com mouse
+            const now = Date.now();
+            const timeSinceLastTap = now - lastTapTime;
+            
+            if (timeSinceLastTap < DOUBLE_TAP_DELAY && doubleTapItemId === itemId) {
+                // Double tap detectado!
+                e.preventDefault();
+                e.stopPropagation();
+                doubleTapItemId = null;
+                lastTapTime = 0;
+                row.classList.remove('double-tap-ready');
+                abrirItemActionMenu(itemId);
+                return;
             }
-        };
+            
+            doubleTapItemId = itemId;
+            lastTapTime = now;
+            row.classList.add('double-tap-ready');
+            
+            // Remove o destaque após um tempo
+            setTimeout(() => {
+                row.classList.remove('double-tap-ready');
+                if (doubleTapItemId === itemId) {
+                    doubleTapItemId = null;
+                }
+            }, DOUBLE_TAP_DELAY + 200);
+        }
 
-        window.removerItemComConfirmacao = function(id) {
-            let item = currentListItems.find(i => i.id === id);
-            if (item && confirm(`Remover "${item.nome}" permanentemente?`)) {
-                totalGeral -= (item.quantidade * item.preco);
-                currentListItems = currentListItems.filter(i => i.id !== id);
-                salvarEstadoCompleto();
-                separarLista();
-                renderizarLista();
+        // Detecta double tap em dispositivos touch
+        document.addEventListener('touchend', function(e) {
+            if (!touchStartItemId || !touchStartRow) return;
+            
+            const now = Date.now();
+            const timeSinceStart = now - touchStartTime;
+            
+            // Se foi um toque curto (não foi arrasto)
+            if (timeSinceStart < 300) {
+                const item = currentListItems.find(i => i.id === touchStartItemId);
+                if (item && !item.comprado) {
+                    const timeSinceLastTap = now - lastTapTime;
+                    
+                    if (timeSinceLastTap < DOUBLE_TAP_DELAY && doubleTapItemId === touchStartItemId) {
+                        // Double tap detectado!
+                        e.preventDefault();
+                        doubleTapItemId = null;
+                        lastTapTime = 0;
+                        touchStartRow.classList.remove('double-tap-ready');
+                        abrirItemActionMenu(touchStartItemId);
+                    } else {
+                        doubleTapItemId = touchStartItemId;
+                        lastTapTime = now;
+                        touchStartRow.classList.add('double-tap-ready');
+                        
+                        setTimeout(() => {
+                            if (touchStartRow) {
+                                touchStartRow.classList.remove('double-tap-ready');
+                            }
+                            if (doubleTapItemId === touchStartItemId) {
+                                doubleTapItemId = null;
+                            }
+                        }, DOUBLE_TAP_DELAY + 200);
+                    }
+                }
             }
-        };
+            
+            touchStartItemId = null;
+            touchStartRow = null;
+            touchStartTime = 0;
+        }, { passive: true });
+
+        // ==================== ITEM ACTION MENU ====================
+        function abrirItemActionMenu(itemId) {
+            const item = currentListItems.find(i => i.id === itemId);
+            if (!item || item.comprado) {
+                if (item && item.comprado) alert("⚠️ Itens adquiridos não podem ser editados.");
+                return;
+            }
+            actionItemId = itemId;
+            document.getElementById('actionItemName').textContent = `"${item.nome}"`;
+            document.getElementById('itemActionMenu').classList.add('active');
+        }
+
+        function fecharItemActionMenu() {
+            document.getElementById('itemActionMenu').classList.remove('active');
+            actionItemId = null;
+        }
+
+        function actionEditarItem() {
+            if (actionItemId) {
+                const id = actionItemId;
+                fecharItemActionMenu();
+                abrirModalEdicao(id);
+            }
+        }
+
+        function actionAlternarComprado() {
+            if (actionItemId) {
+                const id = actionItemId;
+                fecharItemActionMenu();
+                toggleComprado(id);
+            }
+        }
+
+        function actionExcluirItem() {
+            if (actionItemId) {
+                const id = actionItemId;
+                fecharItemActionMenu();
+                removerItemComConfirmacao(id);
+            }
+        }
+
+        // Fechar menu com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                fecharItemActionMenu();
+            }
+        });
+
+        // Fechar menu clicando fora
+        document.getElementById('itemActionMenu').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharItemActionMenu();
+            }
+        });
 
         // ==================== DRAG & SWIPE ====================
         function handleDragStart(e, id, comprado) {
@@ -1387,27 +1693,30 @@
             draggedItemId = null;
         }
 
-        function handleSwipeStart(e, id, comprado) {
-            if (comprado) return;
-            swipeStartX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
-            swipeItemId = id;
+        function atualizarTotalUI() {
+            if (totalSpan) totalSpan.innerText = totalGeral.toFixed(2);
         }
 
-        function handleSwipeMove(e, row, comprado) {
-            if (comprado || !swipeStartX || !swipeItemId) return;
-            const diff = (e.type === 'mousemove' ? e.clientX : e.touches[0].clientX) - swipeStartX;
-            if (Math.abs(diff) > 50) {
-                row.classList.add('editing-swipe');
-                setTimeout(() => row.classList.remove('editing-swipe'), 200);
-                abrirModalEdicao(swipeItemId);
-                swipeStartX = null;
-                swipeItemId = null;
+        function toggleComprado(id) {
+            let item = currentListItems.find(i => i.id === id);
+            if (item) {
+                item.comprado = !item.comprado;
+                recalcularTotal();
+                salvarEstadoCompleto();
+                separarLista();
+                renderizarLista();
             }
         }
 
-        function handleSwipeEnd() {
-            swipeStartX = null;
-            swipeItemId = null;
+        function removerItemComConfirmacao(id) {
+            let item = currentListItems.find(i => i.id === id);
+            if (item && confirm(`Remover "${item.nome}" permanentemente?`)) {
+                totalGeral -= (item.quantidade * item.preco);
+                currentListItems = currentListItems.filter(i => i.id !== id);
+                salvarEstadoCompleto();
+                separarLista();
+                renderizarLista();
+            }
         }
 
         // ==================== EDIÇÃO ====================
@@ -1447,10 +1756,6 @@
             }
             fecharModalEdicao();
         }
-
-        // ==================== MODAL EDIÇÃO HTML (já existe) ====================
-        document.getElementById("modalEdicao")?.querySelector('.btn-confirmar')?.addEventListener('click', salvarEdicao);
-        document.getElementById("modalEdicao")?.querySelector('.btn-cancelar')?.addEventListener('click', fecharModalEdicao);
 
         // ==================== UTILITÁRIOS ====================
         function escapeHtml(str) {
@@ -1662,18 +1967,19 @@
         }
 
         // ==================== SAIR ====================
-        window.sair = function() {
+        function sair() {
             if (confirm("Deseja sair da sua conta?")) {
                 document.getElementById('mainApp').style.display = 'none';
                 document.getElementById('loginScreen').style.display = 'flex';
                 usuarioAtual = "";
                 currentListItems = [];
-                renderizarLista();
+                if (listaContainer) listaContainer.innerHTML = '';
+                if (totalSpan) totalSpan.innerText = '0.00';
                 carregarLoginLembrado();
                 document.getElementById("loginErrorMsg").innerText = "";
                 fecharModalMenu();
             }
-        };
+        }
 
         // ==================== LOGIN ====================
         function mostrarDialogoSalvarLogin(usuario, senha) {
@@ -1685,13 +1991,13 @@
             if (loginPendente.usuario && loginPendente.senha) {
                 salvarLoginLembrado(loginPendente.usuario, loginPendente.senha);
             }
-            loginPendente = {};
+            loginPendente = { usuario: null, senha: null };
             document.getElementById("modalSalvarLogin").classList.remove("active");
         }
 
         function cancelarSalvarLogin() {
             limparLoginLembrado();
-            loginPendente = {};
+            loginPendente = { usuario: null, senha: null };
             document.getElementById("modalSalvarLogin").classList.remove("active");
         }
 
@@ -1757,6 +2063,24 @@
         }
 
         // ==================== EVENTOS ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarModoEscuro();
+            try {
+                const loginAutomatico = tentarLoginAutomatico();
+                if (!loginAutomatico) {
+                    carregarLoginLembrado();
+                    document.getElementById("loginScreen").style.display = "flex";
+                    document.getElementById("mainApp").style.display = "none";
+                } else {
+                    history.pushState({ page: 'main' }, '');
+                }
+            } catch (e) {
+                console.error("Erro no carregamento:", e);
+                document.getElementById("loginScreen").style.display = "flex";
+                document.getElementById("mainApp").style.display = "none";
+            }
+        });
+
         document.getElementById("showRegLink")?.addEventListener("click", function(e) {
             e.preventDefault();
             document.getElementById("loginScreen").style.display = "none";
@@ -1823,25 +2147,6 @@
                 event.preventDefault();
             }
         });
-
-        // ==================== INIT ====================
-        window.onload = function() {
-            carregarModoEscuro();
-            try {
-                const loginAutomatico = tentarLoginAutomatico();
-                if (!loginAutomatico) {
-                    carregarLoginLembrado();
-                    document.getElementById("loginScreen").style.display = "flex";
-                    document.getElementById("mainApp").style.display = "none";
-                } else {
-                    history.pushState({ page: 'main' }, '');
-                }
-            } catch (e) {
-                console.error("Erro no carregamento:", e);
-                document.getElementById("loginScreen").style.display = "flex";
-                document.getElementById("mainApp").style.display = "none";
-            }
-        };
     </script>
 </body>
 </html>
